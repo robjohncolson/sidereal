@@ -92,11 +92,14 @@ Shipped seeds:
 | `seed_3_placements_v1.json` | 256 ready personal-planet×house, sign×house, Midheaven×sign, and pattern readings |
 | `seed_4_placements_v1.json` | 99 ready Mercury/Venus/Mars×sign and Uranus/Neptune/Pluto/lunar-node×house readings |
 | `seed_5_relationships_v1.json` | 210 ready personal↔outer/North Node and personal↔Ascendant/Midheaven major-aspect readings |
+| `seed_7_sign_character_v1.json` | 91 ready Jupiter–Pluto + lunar nodes × all 13 Midpoint signs (zodiac character) |
 
-After import: **746 ready**, **166 stubs**, **0 missing**. Seeds 3–4 cover every
-sign—including Ophiuchus—on every house cusp, Mercury/Venus/Mars in every
-sign, all twelve houses for Sun through Pluto, and both calculated lunar nodes
-in every house. Seed 5 fills the highest-value remaining relationship language.
+After import: **837 ready**, **75 stubs**, **0 missing**. Seed 7 completes
+planet/node × Midpoint-sign character so aspect reports can attach zodiac color
+(not only planet-to-planet lore). Seeds 3–4 cover every sign—including
+Ophiuchus—on every house cusp, Mercury/Venus/Mars in every sign, all twelve
+houses for Sun through Pluto, and both calculated lunar nodes in every house.
+Seed 5 fills the highest-value remaining relationship language.
 `gaps` audits the complete inventory. `SIDEREAL_DB_PATH` changes the default
 `data/sidereal.db` path. A chart still calculates if that database does not
 exist; its report lists the interpretation keys as missing.

@@ -166,12 +166,15 @@ def test_all_required_content_seeds_reach_the_phase4_inventory_target(
 ) -> None:
     seed_directory = tmp_path / "all-seeds"
     write_seed_files(seed_directory)
+    from sidereal.interpret.schema import SEED7_READY_COUNT
+
     ready_total = (
         SEED1_READY_COUNT
         + SEED2_READY_COUNT
         + SEED3_READY_COUNT
         + SEED4_READY_COUNT
         + SEED5_READY_COUNT
+        + SEED7_READY_COUNT
     )
 
     with InterpretationStore(tmp_path / "all-seeds.db") as store:
@@ -179,9 +182,9 @@ def test_all_required_content_seeds_reach_the_phase4_inventory_target(
         first = store.import_path(seed_directory)
         audit = store.audit()
 
-        assert ready_total == 746
-        assert first.files == 6
+        assert ready_total == 837
+        assert first.files == 7
         assert first.records == TOTAL_INVENTORY_COUNT + ready_total
         assert first.inserted == TOTAL_INVENTORY_COUNT
         assert first.updated == ready_total
-        assert (audit.ready, audit.stub, audit.missing) == (746, 166, 0)
+        assert (audit.ready, audit.stub, audit.missing) == (837, 75, 0)

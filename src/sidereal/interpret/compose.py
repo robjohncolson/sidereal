@@ -9,7 +9,15 @@ import json
 from pathlib import Path
 from typing import Any, Mapping, Protocol
 
-from .schema import ANGLES, ASPECT_TYPES, PLANETS, InterpretationEntry, aspect_key
+from .schema import (
+    ANGLES,
+    ASPECT_FRAMES,
+    ASPECT_TYPES,
+    PLANETS,
+    SIGN_CONTENT,
+    InterpretationEntry,
+    aspect_key,
+)
 
 
 EPISTEMIC_NOTE = (
@@ -218,17 +226,40 @@ class InterpretationReport:
                     if aspect.get("applying") is False
                     else "motion indeterminate"
                 )
+                character = item.get("character") if isinstance(item.get("character"), Mapping) else {}
+                title = str(
+                    character.get("title")
+                    or (
+                        f"{_display(str(aspect['body_a']))} "
+                        f"{str(aspect['aspect_id']).replace('_', ' ')} "
+                        f"{_display(str(aspect['body_b']))}"
+                    )
+                )
                 lines.extend(
                     (
-                        f"### {_display(str(aspect['body_a']))} {str(aspect['aspect_id']).replace('_', ' ')} "
-                        f"{_display(str(aspect['body_b']))}",
+                        f"### {title}",
                         "",
                         f"Geometry: separation {_format_number(aspect['separation'], 4)}°, "
                         f"orb {_format_number(aspect['exactness'], 4)}°, {state}.",
                         "",
                     )
                 )
+                synthesis = str(character.get("synthesis") or "").strip()
+                if synthesis:
+                    lines.extend((synthesis, ""))
                 _append_readings(lines, (item["reading"],))
+                for side_key, side_label in (
+                    ("body_a_placement", "First body · Midpoint sign character"),
+                    ("body_b_placement", "Second body · Midpoint sign character"),
+                ):
+                    side = character.get(side_key)
+                    if not isinstance(side, Mapping):
+                        continue
+                    reading = side.get("reading")
+                    if not isinstance(reading, Mapping):
+                        continue
+                    lines.extend((f"#### {side_label}", ""))
+                    _append_readings(lines, (reading,))
         else:
             lines.append("No configured major aspects were found.")
 
@@ -379,6 +410,10 @@ def compose_report(
         )
         house_readings.append({"cusp": cusp_data, "readings": [reading]})
 
+    points_by_id = {
+        str(getattr(point, "id")): point for point in getattr(chart, "points", ())
+    }
+
     relationships: list[Mapping[str, Any]] = []
     for aspect in sorted(getattr(chart, "aspects", ()), key=_relationship_sort_key):
         body_a = str(getattr(aspect, "body_a"))
@@ -395,6 +430,14 @@ def compose_report(
             {
                 "aspect": _json_value(aspect),
                 "reading": resolver.resolve(key, context),
+                "character": _relationship_character(
+                    resolver,
+                    points_by_id,
+                    body_a=body_a,
+                    body_b=body_b,
+                    aspect_id=aspect_id,
+                    context_prefix=context,
+                ),
             }
         )
 
@@ -469,6 +512,135 @@ def _format_point(point: Mapping[str, Any]) -> str:
     if point.get("blend") and point.get("secondary_sign"):
         text += f", boundary blend with {_display(str(point['secondary_sign']))}"
     return text
+
+
+def _relationship_character(
+    resolver: "_Resolver",
+    points_by_id: Mapping[str, Any],
+    *,
+    body_a: str,
+    body_b: str,
+    aspect_id: str,
+    context_prefix: str,
+) -> dict[str, Any]:
+    """Attach Midpoint sign character to a planet-pair aspect reading.
+
+    Base aspect lore is planet-to-planet. Zodiac character comes from each
+    body's actual chart placement and is joined here so reports never leave
+    sign color behind when an aspect fires.
+    """
+
+    placement_a = _body_sign_placement(
+        resolver,
+        points_by_id.get(body_a),
+        body_id=body_a,
+        context=f"{context_prefix} · {body_a} sign character",
+    )
+    placement_b = _body_sign_placement(
+        resolver,
+        points_by_id.get(body_b),
+        body_id=body_b,
+        context=f"{context_prefix} · {body_b} sign character",
+    )
+    sign_a = placement_a.get("sign")
+    sign_b = placement_b.get("sign")
+    title_bits = [_display(body_a)]
+    if sign_a:
+        title_bits.extend(["in", _display(str(sign_a))])
+    title_bits.append(str(aspect_id).replace("_", " "))
+    title_bits.append(_display(body_b))
+    if sign_b:
+        title_bits.extend(["in", _display(str(sign_b))])
+    title = " ".join(title_bits)
+
+    synthesis = _sign_colored_aspect_synthesis(
+        body_a=body_a,
+        sign_a=str(sign_a) if sign_a else None,
+        body_b=body_b,
+        sign_b=str(sign_b) if sign_b else None,
+        aspect_id=aspect_id,
+    )
+    return {
+        "title": title,
+        "synthesis": synthesis,
+        "body_a_placement": placement_a,
+        "body_b_placement": placement_b,
+    }
+
+
+def _body_sign_placement(
+    resolver: "_Resolver",
+    point: Any | None,
+    *,
+    body_id: str,
+    context: str,
+) -> dict[str, Any]:
+    if point is None:
+        return {
+            "body": body_id,
+            "sign": None,
+            "house": None,
+            "degree_in_sign": None,
+            "reading": None,
+        }
+    sign = getattr(point, "sign", None)
+    house = getattr(point, "house", None)
+    degree = getattr(point, "degree_in_sign", None)
+    reading = None
+    if sign and body_id in PLANETS:
+        reading = resolver.resolve(f"planet_in_sign:{body_id}:{sign}", context)
+    elif sign and body_id in ANGLES:
+        reading = resolver.resolve(f"angle_in_sign:{body_id}:{sign}", context)
+    return {
+        "body": body_id,
+        "sign": sign,
+        "house": house,
+        "degree_in_sign": degree,
+        "blend": bool(getattr(point, "blend", False)),
+        "secondary_sign": getattr(point, "secondary_sign", None),
+        "reading": reading,
+    }
+
+
+def _sign_colored_aspect_synthesis(
+    *,
+    body_a: str,
+    sign_a: str | None,
+    body_b: str,
+    sign_b: str | None,
+    aspect_id: str,
+) -> str:
+    frame = ASPECT_FRAMES.get(aspect_id, {})
+    relation = frame.get("relation", "relate")
+    detail = frame.get("detail", "")
+    if sign_a in SIGN_CONTENT and sign_b in SIGN_CONTENT:
+        expr_a = SIGN_CONTENT[sign_a]["expression"]
+        expr_b = SIGN_CONTENT[sign_b]["expression"]
+        return (
+            f"{_display(body_a)} in {_display(sign_a)} {aspect_id.replace('_', ' ')} "
+            f"{_display(body_b)} in {_display(sign_b)} pairs Midpoint "
+            f"{_display(sign_a)} character ({expr_a}) with Midpoint "
+            f"{_display(sign_b)} character ({expr_b}) so those planetary themes "
+            f"{relation}. {detail} "
+            "Read each body's sign note below for zodiac color; this synthesis is "
+            "symbolic study language, not a prediction of events or personality."
+        )
+    if sign_a in SIGN_CONTENT or sign_b in SIGN_CONTENT:
+        known = sign_a if sign_a in SIGN_CONTENT else sign_b
+        known_body = body_a if sign_a in SIGN_CONTENT else body_b
+        expr = SIGN_CONTENT[str(known)]["expression"]
+        return (
+            f"This {aspect_id.replace('_', ' ')} is colored on one side by "
+            f"{_display(known_body)} in {_display(str(known))} ({expr}). "
+            f"The planetary themes {relation}. {detail} "
+            "Sign notes are attached when placement geometry is available."
+        )
+    return (
+        f"{_display(body_a)} {aspect_id.replace('_', ' ')} {_display(body_b)} "
+        f"is a planetary relationship in which those themes {relation}. {detail} "
+        "Midpoint sign character could not be attached because one or both points "
+        "lack a mapped sign in this chart."
+    )
 
 
 def _relationship_sort_key(aspect: Any) -> tuple[Any, ...]:

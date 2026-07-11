@@ -81,7 +81,8 @@ Seeds: `seed_0` inventory stubs · `seed_1` core primers (76) · `seed_2`
 personal-planet major aspects (105) · `seed_3` placements/house cusps/MC/patterns
 (256) · `seed_4` Mercury/Venus/Mars×sign plus outer/node×house placements (99)
 · `seed_5` personal↔outer/node and personal↔Asc/MC major aspects (210). Import
-result: 746 ready / 166 stub / 0 missing. Regenerate with
+result: 837 ready / 75 stub / 0 missing (Seed 7 fills remaining sign
+character). Regenerate with
 `python -m sidereal.interpret.generate_seeds` and keep all seed output
 deterministic.
 

@@ -16,6 +16,7 @@ from sidereal.interpret.schema import (
     SEED3_READY_COUNT,
     SEED4_READY_COUNT,
     SEED5_READY_COUNT,
+    SEED7_READY_COUNT,
     TOTAL_INVENTORY_COUNT,
     ASPECT_TYPES,
     aspect_key,
@@ -131,6 +132,7 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         + SEED3_READY_COUNT
         + SEED4_READY_COUNT
         + SEED5_READY_COUNT
+        + SEED7_READY_COUNT
     )
     with InterpretationStore(db_path) as store:
         store.initialize()
@@ -138,8 +140,9 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         audit = store.audit()
         sun_ophiuchus = store.get("planet_in_sign:sun:ophiuchus")
         moon_sun_square = store.get("aspect:moon:square:sun")
+        jupiter_aries = store.get("planet_in_sign:jupiter:aries")
 
-        assert first.files == 6
+        assert first.files == 7
         assert first.records == TOTAL_INVENTORY_COUNT + ready_total
         assert first.inserted == TOTAL_INVENTORY_COUNT
         assert first.updated == ready_total
@@ -147,6 +150,7 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         assert (audit.ready, audit.stub, audit.missing) == (ready_total, TOTAL_INVENTORY_COUNT - ready_total, 0)
         assert sun_ophiuchus is not None and sun_ophiuchus.status == "ready"
         assert moon_sun_square is not None and moon_sun_square.status == "ready"
+        assert jupiter_aries is not None and jupiter_aries.status == "ready"
 
         second = store.import_path(SEED_DIRECTORY)
         assert second.inserted == second.updated == 0

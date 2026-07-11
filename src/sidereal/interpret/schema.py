@@ -135,6 +135,19 @@ SEED5_OUTER_NODE_BODIES: tuple[str, ...] = (
 SEED5_ANGLES: tuple[str, ...] = ANGLES
 # 7 personal bodies x (4 outer/node bodies + 2 angles) x 5 major aspects.
 SEED5_READY_COUNT = 210
+# Seed 7 completes Midpoint sign character for every remaining planet/node so
+# aspect composition can always attach zodiac-colored placement notes.
+SEED7_SIGN_BODIES: tuple[str, ...] = (
+    "jupiter",
+    "saturn",
+    "uranus",
+    "neptune",
+    "pluto",
+    "north_node",
+    "south_node",
+)
+# 7 bodies x 13 signs.
+SEED7_READY_COUNT = 91
 
 _SLUG_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
@@ -649,6 +662,38 @@ SEED4_SIGN_FRAMES: dict[str, dict[str, str]] = {
     "mars": {
         "focus": "agency, desire, conflict, and the way effort is directed",
         "practice": "choose a proportionate action, state boundaries clearly, and distinguish purposeful effort from reflexive force",
+    },
+}
+
+# Sign-character frames for bodies still stubbed after Seeds 1 and 4.
+SEED7_SIGN_FRAMES: dict[str, dict[str, str]] = {
+    "jupiter": {
+        "focus": "expansion, confidence, teaching, and the search for a larger frame of meaning",
+        "practice": "test broad convictions against lived detail and share perspective without overselling certainty",
+    },
+    "saturn": {
+        "focus": "limits, responsibility, time, and structures tested through sustained effort",
+        "practice": "build durable boundaries, honor real constraints, and revise ambition when capacity is finite",
+    },
+    "uranus": {
+        "focus": "independence, experimentation, and revision of an established pattern",
+        "practice": "introduce change in accountable increments and keep unusual insight answerable to consequences",
+    },
+    "neptune": {
+        "focus": "imagination, idealization, ambiguity, and sensitivity to porous boundaries",
+        "practice": "give subtle impressions a workable form while checking projection against evidence and consent",
+    },
+    "pluto": {
+        "focus": "power, depth, compulsion, and processes of symbolic renewal",
+        "practice": "name power dynamics plainly and choose forms of intensity that preserve agency",
+    },
+    "north_node": {
+        "focus": "unfamiliar development, constructive stretch, and emerging orientation",
+        "practice": "approach stretch goals through small experiments rather than treating discomfort as destiny",
+    },
+    "south_node": {
+        "focus": "familiar capacities, inherited habits, and material already close at hand",
+        "practice": "use familiar strengths consciously while releasing habits that no longer serve the situation",
     },
 }
 
@@ -1359,6 +1404,68 @@ def generate_seed5_entries() -> tuple[InterpretationEntry, ...]:
         raise AssertionError("Seed 5 summaries must be substantive")
     if len({entry.id for entry in records}) != len(records):
         raise AssertionError("Seed 5 generator produced duplicate ids")
+    return tuple(records)
+
+
+def generate_seed7_entries() -> tuple[InterpretationEntry, ...]:
+    """Complete planet/node × Midpoint-sign character for remaining bodies."""
+
+    records: list[InterpretationEntry] = []
+    for planet in SEED7_SIGN_BODIES:
+        planet_frame = SEED7_SIGN_FRAMES[planet]
+        for sign in SIGNS:
+            sign_content = SIGN_CONTENT[sign]
+            title = f"{_display(planet)} in {_display(sign)}"
+            if planet in {"north_node", "south_node"}:
+                summary = (
+                    f"{title} symbolically pairs {planet_frame['focus']} with "
+                    f"{sign_content['expression']}. {PLANET_CONTENT[planet]['summary']} "
+                    f"In {_display(sign)}, the working invitation is to "
+                    f"{sign_content['invitation']}. This is a reflective placement note, "
+                    "not a command about fate or a fixed personality claim."
+                )
+            else:
+                summary = (
+                    f"{title} symbolically links {planet_frame['focus']} with "
+                    f"{sign_content['expression']}. This Midpoint-sign placement is a "
+                    "traditional lens for how that planetary theme may be colored, not a "
+                    "fixed character verdict or a prediction of events."
+                )
+            records.append(
+                _ready_entry(
+                    entry_id=f"planet_in_sign:{planet}:{sign}",
+                    entry_type="planet_in_sign",
+                    title=title,
+                    keywords=(
+                        PLANET_CONTENT[planet]["keywords"][:2]
+                        + sign_content["keywords"]
+                    ),
+                    summary=summary,
+                    growth=(
+                        f"In this symbolic style, {sign_content['invitation']}; also "
+                        f"{planet_frame['practice']}."
+                    ),
+                    blend_note=(
+                        "When near a boundary, read this alongside the adjacent sign as "
+                        "two symbolic lenses rather than a fractional identity."
+                    ),
+                    planet=planet,
+                    sign=sign,
+                )
+            )
+
+    if len(records) != SEED7_READY_COUNT:
+        raise AssertionError(
+            f"Seed 7 bug: expected {SEED7_READY_COUNT}, generated {len(records)}"
+        )
+    if any(entry.status != "ready" or entry.source != "original" for entry in records):
+        raise AssertionError("Seed 7 must contain only original ready records")
+    if any(entry.version <= 1 for entry in records):
+        raise AssertionError("Seed 7 records must upgrade the v1 inventory stubs")
+    if any(len(entry.summary) < 100 for entry in records):
+        raise AssertionError("Seed 7 summaries must be substantive")
+    if len({entry.id for entry in records}) != len(records):
+        raise AssertionError("Seed 7 generator produced duplicate ids")
     return tuple(records)
 
 

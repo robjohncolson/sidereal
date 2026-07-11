@@ -193,11 +193,22 @@ def test_transit_interpretations_surface_ready_stub_and_missing_in_force_order(
         ("aspect:neptune:square:uranus", "stub"),
     }
     markdown = report.to_markdown()
-    assert markdown.index("Transit Sun conjunction natal Sun") < markdown.index(
-        "Transit Sun trine natal Ascendant"
+    # Titles include Midpoint sign character when placements are known.
+    sun_self = next(
+        line
+        for line in markdown.splitlines()
+        if line.startswith("### Transit Sun") and "conjunction natal Sun" in line
     )
+    sun_asc = next(
+        line
+        for line in markdown.splitlines()
+        if line.startswith("### Transit Sun") and "trine natal Ascendant" in line
+    )
+    assert markdown.index(sun_self) < markdown.index(sun_asc)
     assert "interpretation record missing" in markdown
     assert "_(stub)_" in markdown
+    # Sign-colored synthesis is attached when both sides have signs.
+    assert "Midpoint" in markdown or "sign character" in markdown.lower()
 
 
 def test_live_transit_golden_has_uranus_conjunct_natal_jupiter(

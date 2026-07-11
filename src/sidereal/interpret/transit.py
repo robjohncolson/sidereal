@@ -13,8 +13,8 @@ from typing import Any, Protocol
 from ..config import ChartConfig
 from ..transit import TransitGeometry, TransitPlacement, compute_transit_geometry
 from ..types import Chart, MomentInput, TransitAspectHit
-from .compose import ReportGap
-from .schema import InterpretationEntry, aspect_key
+from .compose import ReportGap, _sign_colored_aspect_synthesis
+from .schema import ANGLES, PLANETS, InterpretationEntry, aspect_key
 
 
 TRANSIT_EPISTEMIC_NOTE = (
@@ -113,19 +113,40 @@ class TransitReport:
             for item in self.relationships:
                 aspect = item["aspect"]
                 reading = item["reading"]
+                character = item.get("character") if isinstance(item.get("character"), Mapping) else {}
                 state = _motion_state(aspect.get("applying"), aspect.get("exactness"))
+                title = str(
+                    character.get("title")
+                    or (
+                        f"Transit {_display(str(aspect['transit_body']))} "
+                        f"{str(aspect['aspect_id']).replace('_', ' ')} natal "
+                        f"{_display(str(aspect['natal_point']))}"
+                    )
+                )
                 lines.extend(
                     (
-                        f"### Transit {_display(str(aspect['transit_body']))} "
-                        f"{str(aspect['aspect_id']).replace('_', ' ')} natal "
-                        f"{_display(str(aspect['natal_point']))}",
+                        f"### {title}",
                         "",
                         f"Geometry: separation {float(aspect['separation']):.4f}°, "
                         f"orb {float(aspect['exactness']):.4f}°, {state}.",
                         "",
                     )
                 )
+                synthesis = str(character.get("synthesis") or "").strip()
+                if synthesis:
+                    lines.extend((synthesis, ""))
                 _append_reading(lines, reading)
+                for side_key, side_label in (
+                    ("transit_placement", "Transit body · Midpoint sign character"),
+                    ("natal_placement", "Natal point · Midpoint sign character"),
+                ):
+                    side = character.get(side_key)
+                    if not isinstance(side, Mapping):
+                        continue
+                    side_reading = side.get("reading")
+                    if isinstance(side_reading, Mapping):
+                        lines.extend((f"#### {side_label}", ""))
+                        _append_reading(lines, side_reading)
         else:
             lines.append("No configured major transit–natal aspects were found.")
 
@@ -150,6 +171,10 @@ def compose_transit_report(
     """Join transit geometry to the primary interpretation database once."""
 
     resolver = _TransitResolver(store)
+    natal_points = {
+        str(getattr(point, "id")): point for point in geometry.natal.points
+    }
+    transit_by_id = {placement.id: placement for placement in geometry.placements}
     relationships: list[Mapping[str, Any]] = []
     for hit in sorted(
         geometry.aspects,
@@ -169,6 +194,13 @@ def compose_transit_report(
             {
                 "aspect": _json_value(hit),
                 "reading": resolver.resolve(key, context),
+                "character": _transit_relationship_character(
+                    resolver,
+                    transit_by_id=transit_by_id,
+                    natal_points=natal_points,
+                    hit=hit,
+                    context_prefix=context,
+                ),
             }
         )
 
@@ -269,6 +301,77 @@ def _transit_interpretation_key(hit: TransitAspectHit) -> str:
     except ValueError:
         body_a, body_b = sorted((hit.transit_body, hit.natal_point))
         return f"aspect:{body_a}:{hit.aspect_id}:{body_b}"
+
+
+def _transit_relationship_character(
+    resolver: _TransitResolver,
+    *,
+    transit_by_id: Mapping[str, TransitPlacement],
+    natal_points: Mapping[str, Any],
+    hit: TransitAspectHit,
+    context_prefix: str,
+) -> dict[str, Any]:
+    transit_placement = transit_by_id.get(hit.transit_body)
+    natal_point = natal_points.get(hit.natal_point)
+    transit_sign = transit_placement.sign if transit_placement is not None else None
+    natal_sign = getattr(natal_point, "sign", None) if natal_point is not None else None
+
+    transit_reading = None
+    if transit_sign and hit.transit_body in PLANETS:
+        transit_reading = resolver.resolve(
+            f"planet_in_sign:{hit.transit_body}:{transit_sign}",
+            f"{context_prefix} · transit sign character",
+        )
+    natal_reading = None
+    if natal_sign and hit.natal_point in PLANETS:
+        natal_reading = resolver.resolve(
+            f"planet_in_sign:{hit.natal_point}:{natal_sign}",
+            f"{context_prefix} · natal sign character",
+        )
+    elif natal_sign and hit.natal_point in ANGLES:
+        natal_reading = resolver.resolve(
+            f"angle_in_sign:{hit.natal_point}:{natal_sign}",
+            f"{context_prefix} · natal angle sign character",
+        )
+
+    title_bits = ["Transit", _display(hit.transit_body)]
+    if transit_sign:
+        title_bits.extend(["in", _display(transit_sign)])
+    title_bits.append(hit.aspect_id.replace("_", " "))
+    title_bits.extend(["natal", _display(hit.natal_point)])
+    if natal_sign:
+        title_bits.extend(["in", _display(str(natal_sign))])
+    synthesis = _sign_colored_aspect_synthesis(
+        body_a=hit.transit_body,
+        sign_a=transit_sign,
+        body_b=hit.natal_point,
+        sign_b=str(natal_sign) if natal_sign else None,
+        aspect_id=hit.aspect_id,
+    )
+    if transit_sign and natal_sign:
+        synthesis = (
+            f"In transit timing language: moving {_display(hit.transit_body)} in "
+            f"{_display(transit_sign)} contacts natal {_display(hit.natal_point)} in "
+            f"{_display(str(natal_sign))}. {synthesis}"
+        )
+    return {
+        "title": " ".join(title_bits),
+        "synthesis": synthesis,
+        "transit_placement": {
+            "body": hit.transit_body,
+            "sign": transit_sign,
+            "natal_house": (
+                transit_placement.natal_house if transit_placement is not None else None
+            ),
+            "reading": transit_reading,
+        },
+        "natal_placement": {
+            "body": hit.natal_point,
+            "sign": natal_sign,
+            "house": getattr(natal_point, "house", None) if natal_point is not None else None,
+            "reading": natal_reading,
+        },
+    }
 
 
 def _chart_summary(chart: Chart) -> dict[str, Any]:
