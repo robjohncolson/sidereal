@@ -474,6 +474,9 @@ def _point_from_dict(value: Any, index: int) -> PointPos:
         secondary_sign=_optional_string(
             item.get("secondary_sign"), f"{name}.secondary_sign"
         ),
+        speed_long_j2000=_optional_finite_float(
+            item.get("speed_long_j2000"), f"{name}.speed_long_j2000"
+        ),
     )
 
 

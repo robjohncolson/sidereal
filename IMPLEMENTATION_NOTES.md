@@ -39,3 +39,20 @@ degrees within those signs change. The comparison is attached to the report as
 geometry and never generates a second set of interpretation lookups or gaps.
 Saved charts retain both longitude frames, so the same comparison can be
 reconstructed from a local geometry snapshot without another ephemeris call.
+
+## Common frame for cross-time transit geometry
+
+Within one natal or transit chart, ordinary aspects use tropical ecliptic
+longitude of that chart's date: every point shares the same instantaneous
+frame, so their angular separations are coherent. A transit comparison joins
+two different dates. Comparing each point's `lon_date` directly would mix two
+precessing axes and can change aspect membership or put a moving planet on the
+wrong side of a natal house cusp.
+
+Transit-to-natal aspects therefore compare both points' `lon_j2000` values,
+and natal-house overlays compare the transit body's J2000 longitude with the
+natal Ascendant's J2000 longitude. Applying/separating uses the moving body's
+Swiss Ephemeris `FLG_J2000` longitudinal speed while the natal point remains a
+fixed reference. Older saved snapshots that predate the additive J2000-speed
+field remain loadable and fall back to their stored date-frame speed; newly
+calculated and saved charts retain both speed frames.

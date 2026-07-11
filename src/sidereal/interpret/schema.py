@@ -109,6 +109,32 @@ SEED2_READY_COUNT = 105
 SEED3_PERSONAL_PLANETS: tuple[str, ...] = SEED2_PERSONAL_PLANETS
 # 7 planets x 12 houses + 13 signs x 12 houses + 13 MC signs + 3 patterns.
 SEED3_READY_COUNT = 256
+# Phase 4 completes the sign readings for the three personal planets whose
+# house readings shipped in Seed 3, then upgrades every remaining outer-planet
+# and lunar-node house stub.
+SEED4_SIGN_PLANETS: tuple[str, ...] = ("mercury", "venus", "mars")
+SEED4_HOUSE_BODIES: tuple[str, ...] = (
+    "uranus",
+    "neptune",
+    "pluto",
+    "north_node",
+    "south_node",
+)
+# 3 planets x 13 signs + 5 bodies/points x 12 houses.
+SEED4_READY_COUNT = 99
+# Phase 4 relationship readings pair the same seven personal bodies used by
+# Seed 2 with four outer/node counterparts and the two chart angles.  The
+# resulting ids remain canonical unordered aspect ids in the Seed 0 inventory.
+SEED5_PERSONAL_BODIES: tuple[str, ...] = SEED2_PERSONAL_PLANETS
+SEED5_OUTER_NODE_BODIES: tuple[str, ...] = (
+    "uranus",
+    "neptune",
+    "pluto",
+    "north_node",
+)
+SEED5_ANGLES: tuple[str, ...] = ANGLES
+# 7 personal bodies x (4 outer/node bodies + 2 angles) x 5 major aspects.
+SEED5_READY_COUNT = 210
 
 _SLUG_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
@@ -511,6 +537,148 @@ PLANET_FOCUS: dict[str, str] = {
     "mars": "drive, assertion, and how effort is applied",
     "jupiter": "expansion, confidence, and meaning-making",
     "saturn": "limits, responsibility, and long-term structure",
+}
+
+
+# Seed 5 preserves the five reusable aspect dynamics above while giving every
+# endpoint its own authored focus and practical counterweight.  The two angle
+# qualifications are deliberately geometry-conditional, and the North Node
+# language keeps the calculated point distinct from a physical planet.
+SEED5_PERSONAL_FRAMES: dict[str, dict[str, str]] = {
+    "sun": {
+        "focus": "core purpose, self-definition, and the wish to act from a coherent center",
+        "practice": "Keep purpose flexible enough to answer evidence, circumstance, and other people's agency.",
+    },
+    "moon": {
+        "focus": "emotional needs, memory, familiar rhythms, and instinctive adaptation",
+        "practice": "Name the present need without assuming that the most familiar response is the only safe one.",
+    },
+    "mercury": {
+        "focus": "attention, reasoning, language, and the exchange of information",
+        "practice": "Make the reasoning process visible, check assumptions, and revise the message when new information arrives.",
+    },
+    "venus": {
+        "focus": "values, attraction, pleasure, and the cultivation of reciprocal relationship",
+        "practice": "State preferences without coercion and let consent, proportion, and reciprocity refine what is valued.",
+    },
+    "mars": {
+        "focus": "agency, desire, assertion, and the way effort is directed",
+        "practice": "Choose a proportionate action and distinguish a useful boundary from force applied by reflex.",
+    },
+    "jupiter": {
+        "focus": "expansion, confidence, teaching, and the search for a larger frame of meaning",
+        "practice": "Let experience enlarge the frame while checking confidence for overstatement, excess, or missing detail.",
+    },
+    "saturn": {
+        "focus": "limits, responsibility, time, and structures tested through sustained effort",
+        "practice": "Use boundaries to support accountable work without turning delay, difficulty, or limitation into a verdict of worth.",
+    },
+}
+
+
+SEED5_COUNTERPART_FRAMES: dict[str, dict[str, str]] = {
+    "uranus": {
+        "focus": "independence, experimentation, and revision of an established pattern",
+        "bridge": (
+            "For this pairing, the question is how {personal_focus} can meet change "
+            "without making novelty or reflexive disruption an end in itself."
+        ),
+        "practice": "Test experiments in workable increments and remain accountable to the people and systems they affect.",
+        "qualification": "Uranus does not promise sudden events or require rebellion.",
+    },
+    "neptune": {
+        "focus": "imagination, idealization, ambiguity, and the loosening of ordinary boundaries",
+        "bridge": (
+            "For this pairing, the question is how {personal_focus} can remain open to "
+            "imagination while checking projection against evidence, consent, and practical limits."
+        ),
+        "practice": "Give subtle impressions a concrete form and keep inspiration answerable to observable reality.",
+        "qualification": "Neptune does not diagnose confusion or guarantee inspiration.",
+    },
+    "pluto": {
+        "focus": "power, depth, compulsion, and processes of symbolic breakdown and renewal",
+        "bridge": (
+            "For this pairing, the question is how {personal_focus} can encounter "
+            "intensity and consequential change while preserving choice and accountability."
+        ),
+        "practice": "Name power dynamics plainly and favor forms of change that preserve agency rather than demanding control.",
+        "qualification": "Pluto does not forecast crisis, loss, or inevitable transformation.",
+    },
+    "north_node": {
+        "focus": "an unfamiliar direction of development, constructive stretch, and emerging orientation",
+        "bridge": (
+            "For this pairing, the question is how {personal_focus} can test unfamiliar "
+            "capacities without mistaking novelty, discomfort, or symbolism for an instruction."
+        ),
+        "practice": "Approach unfamiliar capacities through small experiments and evaluate what they actually make possible.",
+        "qualification": "The North Node is a calculated point, not a planet or a destiny signal.",
+    },
+    "asc": {
+        "focus": "observable approach, embodied entry into situations, and self-presentation",
+        "bridge": (
+            "For this pairing, the question is how that personal focus becomes legible in "
+            "first responses without reducing the whole person to an outward manner."
+        ),
+        "practice": "Notice how an inner theme enters visible behavior, then compare the first response with the fuller context.",
+        "qualification": "This reading applies only when known birth-time geometry supplies the Ascendant; it is not a fixed identity.",
+    },
+    "mc": {
+        "focus": "public direction, visible contribution, and accountability within a role",
+        "bridge": (
+            "For this pairing, the question is how {personal_focus} can participate in "
+            "visible responsibility without equating public response with personal worth."
+        ),
+        "practice": "Connect visible choices to useful contribution and revise the role when circumstances or responsibilities change.",
+        "qualification": "This reading applies only when known birth-time geometry supplies the Midheaven; it does not promise a career outcome.",
+    },
+}
+
+
+# Authored Seed 4 axes.  Pairing these compact body frames with the distinct
+# sign and house frames keeps generation deterministic without flattening
+# Ophiuchus or treating the calculated lunar nodes as planets.
+SEED4_SIGN_FRAMES: dict[str, dict[str, str]] = {
+    "mercury": {
+        "focus": "attention, language, exchange, and the methods used to organize information",
+        "practice": "make the reasoning process visible, test assumptions, and adapt the message to its actual audience",
+    },
+    "venus": {
+        "focus": "values, attraction, pleasure, and the practices through which relationship is cultivated",
+        "practice": "name what is valued, communicate preferences without coercion, and let reciprocity refine taste",
+    },
+    "mars": {
+        "focus": "agency, desire, conflict, and the way effort is directed",
+        "practice": "choose a proportionate action, state boundaries clearly, and distinguish purposeful effort from reflexive force",
+    },
+}
+
+
+SEED4_HOUSE_FRAMES: dict[str, dict[str, str]] = {
+    "uranus": {
+        "focus": "independence, experimentation, and revision of an established pattern",
+        "qualification": "Uranus does not promise disruption or sudden events",
+        "practice": "test changes in workable increments and remain accountable to the people and systems they affect",
+    },
+    "neptune": {
+        "focus": "imagination, idealization, ambiguity, and sensitivity to porous boundaries",
+        "qualification": "Neptune does not diagnose confusion or guarantee inspiration",
+        "practice": "give imagination a concrete form while checking projections against evidence and consent",
+    },
+    "pluto": {
+        "focus": "power, depth, compulsion, and processes of symbolic renewal",
+        "qualification": "Pluto does not forecast crisis, loss, or inevitable transformation",
+        "practice": "notice power dynamics plainly and choose forms of change that preserve agency and accountability",
+    },
+    "north_node": {
+        "focus": "an unfamiliar direction of development, constructive stretch, and emerging orientation",
+        "qualification": "The North Node is a calculated point, not a planet or a command about destiny",
+        "practice": "approach unfamiliar capacities through small experiments rather than treating discomfort as an instruction",
+    },
+    "south_node": {
+        "focus": "familiar capacities, inherited habits, and material already close at hand",
+        "qualification": "The South Node is a calculated point, not a planet or proof of a predetermined past",
+        "practice": "use familiar strengths consciously while releasing habits that no longer serve the situation",
+    },
 }
 
 ASPECT_FRAMES: dict[str, dict[str, str]] = {
@@ -1038,6 +1206,159 @@ def generate_seed3_entries() -> tuple[InterpretationEntry, ...]:
         raise AssertionError("Seed 3 records must upgrade the v1 inventory stubs")
     if len({entry.id for entry in records}) != len(records):
         raise AssertionError("Seed 3 generator produced duplicate ids")
+    return tuple(records)
+
+
+def generate_seed4_entries() -> tuple[InterpretationEntry, ...]:
+    """Generate the required original placement readings for Seed 4."""
+
+    records: list[InterpretationEntry] = []
+
+    for planet in SEED4_SIGN_PLANETS:
+        planet_frame = SEED4_SIGN_FRAMES[planet]
+        for sign in SIGNS:
+            sign_content = SIGN_CONTENT[sign]
+            title = f"{_display(planet)} in {_display(sign)}"
+            summary = (
+                f"{title} symbolically links {planet_frame['focus']} with "
+                f"{sign_content['expression']}. This traditional placement is a reflective "
+                "lens for how those themes may be expressed and revised, not a fixed "
+                "personality description or a prediction of outcomes."
+            )
+            records.append(
+                _ready_entry(
+                    entry_id=f"planet_in_sign:{planet}:{sign}",
+                    entry_type="planet_in_sign",
+                    title=title,
+                    keywords=(
+                        PLANET_CONTENT[planet]["keywords"][:2]
+                        + sign_content["keywords"]
+                    ),
+                    summary=summary,
+                    growth=(
+                        f"In this symbolic style, {sign_content['invitation']}; also "
+                        f"{planet_frame['practice']}."
+                    ),
+                    blend_note=(
+                        "When near a boundary, read this alongside the adjacent sign as "
+                        "two symbolic lenses rather than a fractional identity."
+                    ),
+                    planet=planet,
+                    sign=sign,
+                )
+            )
+
+    for planet in SEED4_HOUSE_BODIES:
+        planet_frame = SEED4_HOUSE_FRAMES[planet]
+        for house in range(1, 13):
+            house_frame = HOUSE_FRAMES[house]
+            title = f"{_display(planet)} in House {house}"
+            summary = (
+                f"{title} symbolically locates {planet_frame['focus']} in the life arena "
+                f"of {house_frame['arena']}. Houses are life-arena metaphors, not "
+                f"predictions. {planet_frame['qualification']}. Read this pairing as a "
+                "prompt for attention and choice rather than a forecast of events."
+            )
+            records.append(
+                _ready_entry(
+                    entry_id=f"planet_in_house:{planet}:{house}",
+                    entry_type="planet_in_house",
+                    title=title,
+                    keywords=(
+                        PLANET_CONTENT[planet]["keywords"][:2]
+                        + HOUSE_CONTENT[house]["keywords"]
+                    ),
+                    summary=summary,
+                    growth=(
+                        f"Within this arena, {planet_frame['practice']}; also practice "
+                        f"{house_frame['practice']}."
+                    ),
+                    planet=planet,
+                    house=house,
+                )
+            )
+
+    if len(records) != SEED4_READY_COUNT:
+        raise AssertionError(
+            f"Seed 4 bug: expected {SEED4_READY_COUNT}, generated {len(records)}"
+        )
+    if any(entry.status != "ready" or entry.source != "original" for entry in records):
+        raise AssertionError("Seed 4 must contain only original ready records")
+    if any(entry.version <= 1 for entry in records):
+        raise AssertionError("Seed 4 records must upgrade the v1 inventory stubs")
+    if any(len(entry.summary) < 100 for entry in records):
+        raise AssertionError("Seed 4 summaries must be substantive")
+    if len({entry.id for entry in records}) != len(records):
+        raise AssertionError("Seed 4 generator produced duplicate ids")
+    return tuple(records)
+
+
+def generate_seed5_entries() -> tuple[InterpretationEntry, ...]:
+    """Generate personal-to-outer/node and personal-to-angle major aspects."""
+
+    records: list[InterpretationEntry] = []
+    counterparts = SEED5_OUTER_NODE_BODIES + SEED5_ANGLES
+
+    for personal in SEED5_PERSONAL_BODIES:
+        personal_frame = SEED5_PERSONAL_FRAMES[personal]
+        for counterpart in counterparts:
+            counterpart_frame = SEED5_COUNTERPART_FRAMES[counterpart]
+            body_a, body_b = sorted((personal, counterpart))
+            counterpart_keywords = (
+                PLANET_CONTENT[counterpart]["keywords"][:1]
+                if counterpart in PLANET_CONTENT
+                else ANGLE_KEYWORDS[counterpart][:1]
+            )
+            for aspect_type in ASPECT_TYPES:
+                aspect_frame = ASPECT_FRAMES[aspect_type]
+                title = f"{_display(body_a)} {aspect_type.title()} {_display(body_b)}"
+                bridge = counterpart_frame["bridge"].rstrip(".")
+                detail = aspect_frame["detail"]
+                detail_after_semicolon = detail[0].lower() + detail[1:]
+                qualification = counterpart_frame["qualification"].rstrip(".")
+                summary = (
+                    f"{title} is traditionally read as a symbolic relationship in which "
+                    f"{personal_frame['focus']} and {counterpart_frame['focus']} "
+                    f"{aspect_frame['relation']}. "
+                    f"{bridge.format(personal_focus=personal_frame['focus'])}; "
+                    f"{detail_after_semicolon} "
+                    f"{qualification}; this is a symbolic study lens for themes that may "
+                    "be observed and worked with, "
+                    "not proof of character or a prediction of events or outcomes."
+                )
+                records.append(
+                    _ready_entry(
+                        entry_id=f"aspect:{body_a}:{aspect_type}:{body_b}",
+                        entry_type="aspect",
+                        title=title,
+                        keywords=(
+                            PLANET_CONTENT[personal]["keywords"][:1]
+                            + ASPECT_KEYWORDS[aspect_type]
+                            + counterpart_keywords
+                        ),
+                        summary=summary,
+                        growth=(
+                            f"{aspect_frame['growth']} {personal_frame['practice']} "
+                            f"{counterpart_frame['practice']}"
+                        ),
+                        body_a=body_a,
+                        body_b=body_b,
+                        aspect_type=aspect_type,
+                    )
+                )
+
+    if len(records) != SEED5_READY_COUNT:
+        raise AssertionError(
+            f"Seed 5 bug: expected {SEED5_READY_COUNT}, generated {len(records)}"
+        )
+    if any(entry.status != "ready" or entry.source != "original" for entry in records):
+        raise AssertionError("Seed 5 must contain only original ready records")
+    if any(entry.version <= 1 for entry in records):
+        raise AssertionError("Seed 5 records must upgrade the v1 inventory stubs")
+    if any(len(entry.summary) < 100 for entry in records):
+        raise AssertionError("Seed 5 summaries must be substantive")
+    if len({entry.id for entry in records}) != len(records):
+        raise AssertionError("Seed 5 generator produced duplicate ids")
     return tuple(records)
 
 

@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10131f">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'self'"
+    >
+    <title>Sidereal desk</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header">
+      <div class="brand-lockup">
+        <div class="orbit-mark" aria-hidden="true">
+          <span></span>
+        </div>
+        <div>
+          <p class="eyebrow">Local study tool</p>
+          <h1>Sidereal desk</h1>
+        </div>
+      </div>
+      <div class="health" id="health-status" role="status" aria-live="polite">
+        <span class="health-dot" aria-hidden="true"></span>
+        <span class="health-copy">Checking local engine…</span>
+      </div>
+    </header>
+
+    <aside class="principles" aria-label="Privacy and interpretation notice">
+      <div class="principle">
+        <span class="principle-icon" aria-hidden="true">⌂</span>
+        <p><strong>Private by design.</strong> Birth data and saved charts stay on this machine. This page has no accounts, analytics, or external assets.</p>
+      </div>
+      <div class="principle">
+        <span class="principle-icon" aria-hidden="true">◇</span>
+        <p><strong>Epistemic note.</strong> Positions are astronomical; interpretations are symbolic study notes, not predictions or scientific claims.</p>
+      </div>
+    </aside>
+
+    <nav class="view-tabs" aria-label="Workspace">
+      <button class="view-tab is-active" type="button" data-view="chart" aria-controls="chart-view" aria-selected="true">
+        <span aria-hidden="true">✦</span> New chart
+      </button>
+      <button class="view-tab" type="button" data-view="library" aria-controls="library-view" aria-selected="false">
+        <span aria-hidden="true">▤</span> Library
+        <span class="tab-count" id="library-count" hidden>0</span>
+      </button>
+      <button class="view-tab" type="button" data-view="transit" aria-controls="transit-view" aria-selected="false">
+        <span aria-hidden="true">↗</span> Transits
+      </button>
+    </nav>
+
+    <main id="main-content">
+      <section class="view-panel is-active" id="chart-view" data-panel="chart" aria-labelledby="chart-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Midpoint unequal 13-sign map</p>
+            <h2 id="chart-heading">Calculate a chart</h2>
+          </div>
+          <p>Time may be left blank. Without an exact civil time, angles and houses are deliberately omitted.</p>
+        </div>
+
+        <div class="workspace-grid">
+          <aside class="card form-card">
+            <form id="chart-form">
+              <fieldset>
+                <legend>Moment</legend>
+                <div class="field">
+                  <label for="chart-label">Chart label</label>
+                  <input id="chart-label" name="label" type="text" maxlength="120" placeholder="My chart" autocomplete="off">
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="chart-date">Date</label>
+                    <input id="chart-date" name="date" type="date" required>
+                  </div>
+                  <div class="field">
+                    <label for="chart-time">Civil time <span class="optional">optional</span></label>
+                    <input id="chart-time" name="time" type="time" step="60">
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="chart-tz">IANA timezone</label>
+                  <input id="chart-tz" name="tz" type="text" required placeholder="America/New_York" autocomplete="off" spellcheck="false">
+                  <p class="field-help">Use a city-based zone so historical daylight-saving rules can be applied.</p>
+                </div>
+                <div class="field compact-field" data-time-fold>
+                  <label for="chart-fold">Repeated clock time</label>
+                  <select id="chart-fold" name="fold">
+                    <option value="">Resolve automatically</option>
+                    <option value="0">First occurrence</option>
+                    <option value="1">Second occurrence</option>
+                  </select>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Location <span class="optional">optional pair</span></legend>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="chart-lat">Latitude</label>
+                    <input id="chart-lat" name="lat" type="number" min="-89.999999" max="89.999999" step="any" placeholder="40.7128" inputmode="decimal">
+                  </div>
+                  <div class="field">
+                    <label for="chart-lon">Longitude</label>
+                    <input id="chart-lon" name="lon" type="number" min="-180" max="180" step="any" placeholder="-74.0060" inputmode="decimal">
+                  </div>
+                </div>
+                <p class="field-help">Latitude and longitude are used only for angles and equal houses.</p>
+              </fieldset>
+
+              <fieldset class="options-fieldset">
+                <legend>Study options</legend>
+                <label class="check-row">
+                  <input name="include_houses" type="checkbox" checked>
+                  <span>
+                    <strong>Calculate angles and houses</strong>
+                    <small>Requires both a known time and location.</small>
+                  </span>
+                </label>
+                <label class="check-row">
+                  <input name="compare_tropical" type="checkbox">
+                  <span>
+                    <strong>Show tropical comparison</strong>
+                    <small>Neutral labels side by side; neither system is declared “true.”</small>
+                  </span>
+                </label>
+              </fieldset>
+
+              <div class="form-actions">
+                <button class="button primary" type="submit">
+                  <span aria-hidden="true">✦</span> Calculate chart
+                </button>
+                <button class="button secondary" id="save-chart-button" type="button" disabled>Save to library</button>
+              </div>
+              <p class="form-status" id="chart-form-status" role="status" aria-live="polite"></p>
+            </form>
+          </aside>
+
+          <section class="report-shell" aria-label="Chart report">
+            <div class="empty-state" id="chart-empty">
+              <div class="empty-orbit" aria-hidden="true"><span></span></div>
+              <h3>Your study report will appear here</h3>
+              <p>Choose a moment, then calculate. Geometry, interpretations, comparison notes, and explicit content gaps remain visibly separated.</p>
+            </div>
+            <div class="report-root" id="chart-report" hidden></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view-panel" id="library-view" data-panel="library" aria-labelledby="library-heading" hidden>
+        <div class="section-heading action-heading">
+          <div>
+            <p class="eyebrow">Files under your local charts directory</p>
+            <h2 id="library-heading">Saved chart library</h2>
+          </div>
+          <button class="button secondary small" id="refresh-library-button" type="button">Refresh library</button>
+        </div>
+
+        <div class="library-layout">
+          <aside class="card library-card">
+            <div class="library-card-head">
+              <h3>Saved charts</h3>
+              <span id="library-summary">Loading…</span>
+            </div>
+            <div class="library-list" id="library-list" aria-live="polite"></div>
+          </aside>
+          <section class="report-shell library-report-shell" aria-label="Saved chart">
+            <div class="empty-state" id="library-empty">
+              <div class="empty-glyph" aria-hidden="true">▤</div>
+              <h3>Select a saved chart</h3>
+              <p>Open its frozen geometry, re-interpret it against the current local database, or use it as the natal chart for a transit study.</p>
+            </div>
+            <div id="library-selection" hidden>
+              <div class="selection-toolbar">
+                <div>
+                  <p class="eyebrow">Selected natal</p>
+                  <h3 id="selected-chart-title">Saved chart</h3>
+                </div>
+                <div class="toolbar-actions">
+                  <button class="button secondary small" id="reinterpret-button" type="button">Re-interpret</button>
+                  <button class="button primary small" id="library-transit-button" type="button">Run transit</button>
+                </div>
+              </div>
+              <p class="form-status" id="library-status" role="status" aria-live="polite"></p>
+              <div class="report-root" id="library-report"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view-panel" id="transit-view" data-panel="transit" aria-labelledby="transit-heading" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Moving sky · fixed natal geometry</p>
+            <h2 id="transit-heading">Study transits</h2>
+          </div>
+          <p>Transits show geometric correlations for study. They are not forecasts, promises, or predictions.</p>
+        </div>
+
+        <div class="workspace-grid">
+          <aside class="card form-card">
+            <form id="transit-form">
+              <fieldset>
+                <legend>Natal chart</legend>
+                <div class="field">
+                  <label for="transit-natal">Saved natal</label>
+                  <select id="transit-natal" name="natal_id" required>
+                    <option value="">Choose a saved chart…</option>
+                  </select>
+                  <p class="field-help">Save a chart from the chart workspace if this list is empty.</p>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Transit moment</legend>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="transit-date">Date</label>
+                    <input id="transit-date" name="date" type="date" required>
+                  </div>
+                  <div class="field">
+                    <label for="transit-time">Civil time</label>
+                    <input id="transit-time" name="time" type="time" step="60" required>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="transit-tz">IANA timezone</label>
+                  <input id="transit-tz" name="tz" type="text" required placeholder="America/New_York" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="field compact-field">
+                  <label for="transit-fold">Repeated clock time</label>
+                  <select id="transit-fold" name="fold">
+                    <option value="">Resolve automatically</option>
+                    <option value="0">First occurrence</option>
+                    <option value="1">Second occurrence</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="transit-label">Moment label <span class="optional">optional</span></label>
+                  <input id="transit-label" name="label" type="text" maxlength="120" placeholder="Today at noon" autocomplete="off">
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Transit location <span class="optional">optional pair</span></legend>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="transit-lat">Latitude</label>
+                    <input id="transit-lat" name="lat" type="number" min="-89.999999" max="89.999999" step="any" inputmode="decimal">
+                  </div>
+                  <div class="field">
+                    <label for="transit-lon">Longitude</label>
+                    <input id="transit-lon" name="lon" type="number" min="-180" max="180" step="any" inputmode="decimal">
+                  </div>
+                </div>
+                <p class="field-help">The natal chart’s houses are used for overlays. Transit location is optional and does not replace the natal location.</p>
+              </fieldset>
+
+              <button class="button primary full" type="submit"><span aria-hidden="true">↗</span> Calculate transits</button>
+              <p class="form-status" id="transit-form-status" role="status" aria-live="polite"></p>
+            </form>
+          </aside>
+
+          <section class="report-shell" aria-label="Transit report">
+            <div class="empty-state" id="transit-empty">
+              <div class="empty-orbit transit-orbit" aria-hidden="true"><span></span></div>
+              <h3>Choose a natal and transit moment</h3>
+              <p>The report will show transit signs, natal-house overlays when available, and moving-body aspects to fixed natal points.</p>
+            </div>
+            <div class="report-root" id="transit-report" hidden></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Sidereal runs locally and offline after installation.</p>
+      <p>Midpoint unequal 13-sign zodiac · Equal 12 houses · Swiss Ephemeris or documented fallback</p>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

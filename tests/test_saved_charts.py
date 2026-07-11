@@ -16,6 +16,7 @@ from sidereal.config import AspectRule, ChartConfig
 from sidereal.library import (
     AmbiguousChartError,
     ChartNotFoundError,
+    chart_from_dict,
     list_charts,
     load_chart,
     save_chart,
@@ -204,3 +205,13 @@ def test_update_report_pointer_and_missing_library_behavior(tmp_path: Path) -> N
     assert updated.last_report_path == str(tmp_path / "report.md")
     assert updated.chart_object() == saved.chart_object()
     assert load_chart("Report", charts_dir) == updated
+
+
+def test_older_saved_points_without_j2000_speed_remain_loadable() -> None:
+    payload = _fixture_chart("Legacy").to_dict()
+    for point in payload["points"]:
+        point.pop("speed_long_j2000")
+
+    restored = chart_from_dict(payload)
+
+    assert restored.points[0].speed_long_j2000 is None

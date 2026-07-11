@@ -158,10 +158,22 @@ def _body_points(
         lon_date = float(getattr(raw, "lon_date"))
         lon_j2000 = float(getattr(raw, "lon_j2000"))
         speed_long = float(getattr(raw, "speed_long"))
+        raw_speed_long_j2000 = getattr(raw, "speed_long_j2000", None)
+        speed_long_j2000 = (
+            speed_long
+            if raw_speed_long_j2000 is None
+            else float(raw_speed_long_j2000)
+        )
         latitude = float(getattr(raw, "lat"))
         if not all(
             math.isfinite(value)
-            for value in (lon_date, lon_j2000, latitude, speed_long)
+            for value in (
+                lon_date,
+                lon_j2000,
+                latitude,
+                speed_long,
+                speed_long_j2000,
+            )
         ):
             raise ValueError(f"Ephemeris returned non-finite geometry for {body_id!r}")
         placement = zodiac.map(lon_j2000, blend_orb_deg=blend_orb_deg)
@@ -179,6 +191,7 @@ def _body_points(
             house=assign_house(lon_date, house_data.asc_date) if house_data is not None else None,
             blend=placement.blend,
             secondary_sign=placement.secondary_sign,
+            speed_long_j2000=speed_long_j2000,
         )
 
 

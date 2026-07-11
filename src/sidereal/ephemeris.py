@@ -32,6 +32,7 @@ class RawPosition:
     lon_j2000: float
     lat: float
     speed_long: float
+    speed_long_j2000: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -158,6 +159,7 @@ class SwissEphemeris:
                         lon_j2000=normalize_longitude(position_j2000[0]),
                         lat=float(position_date[1]),
                         speed_long=float(position_date[3]),
+                        speed_long_j2000=float(position_j2000[3]),
                     )
                 )
 
@@ -179,6 +181,7 @@ class SwissEphemeris:
                 lon_j2000=normalize_longitude(north.lon_j2000 + 180.0),
                 lat=-north.lat,
                 speed_long=north.speed_long,
+                speed_long_j2000=north.speed_long_j2000,
             )
         )
         by_id = {item.id: item for item in raw}

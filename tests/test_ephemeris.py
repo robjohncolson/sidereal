@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, time
+import math
 
 import pytest
 
@@ -130,3 +131,12 @@ def test_provider_reapplies_its_process_global_path_for_every_calculation(
     calls.clear()
     first.calculate_houses(j2000_utc_jd(), 0, 0)
     assert calls[0] == str(first_path.resolve())
+
+
+def test_position_batch_retains_j2000_longitudinal_speed() -> None:
+    batch = SwissEphemeris(swe_module=swe).calculate_positions(j2000_utc_jd())
+    by_id = {item.id: item for item in batch.positions}
+
+    assert by_id["sun"].speed_long_j2000 is not None
+    assert math.isfinite(by_id["sun"].speed_long_j2000)
+    assert by_id["south_node"].speed_long_j2000 == by_id["north_node"].speed_long_j2000

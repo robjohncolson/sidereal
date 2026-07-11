@@ -9,17 +9,19 @@ from typing import Iterable
 
 from .config import (
     ASPECT_POINT_IDS,
+    BODY_IDS,
     LUMINARY_IDS,
     MAJOR_ASPECT_RULES,
     OUTER_PLANET_IDS,
     PERSONAL_POINT_IDS,
     AspectRule,
 )
-from .types import AspectHit, PatternHit, PointPos
+from .types import AspectHit, PatternHit, PointPos, TransitAspectHit
 
 
 _MOTION_EPSILON = 1e-12
 _EXACT_EPSILON = 1e-10
+TRANSIT_ASPECT_BODY_IDS = frozenset(BODY_IDS) & ASPECT_POINT_IDS
 
 
 def signed_arc(angle_deg: float) -> float:
@@ -59,33 +61,18 @@ def compute_aspects(
     for body_a, body_b in combinations(sorted(eligible), 2):
         point_a = eligible[body_a]
         point_b = eligible[body_b]
-        separation = shortest_arc(point_a.lon_date, point_b.lon_date)
-        phase = signed_arc(point_b.lon_date - point_a.lon_date)
-        relative_speed = point_b.speed_long - point_a.speed_long
-        candidates: list[tuple[float, int, AspectRule, float]] = []
-        for rule_index, rule in enumerate(rules):
-            orb = _resolved_orb(
-                body_a,
-                body_b,
-                rule.orb_deg,
-                luminary_orb_bonus_deg=luminary_orb_bonus_deg,
-                outer_pair_orb_penalty_deg=outer_pair_orb_penalty_deg,
-            )
-            exactness = abs(separation - rule.angle_deg)
-            if exactness <= orb:
-                candidates.append((exactness, rule_index, rule, orb))
-        if candidates:
-            # Custom profiles can create overlapping windows. The closest
-            # exact geometry wins; declaration order is only a stable tie-break.
-            exactness, _, rule, orb = min(candidates, key=lambda item: item[:2])
-            error = _oriented_error(phase, rule.angle_deg)
-            applying: bool | None
-            if abs(error) <= _EXACT_EPSILON or abs(relative_speed) <= _MOTION_EPSILON:
-                applying = None
-            else:
-                # d(error)/dt is the relative longitudinal speed.  The aspect
-                # applies exactly when |error| is decreasing.
-                applying = error * relative_speed < 0.0
+        matched = _match_pair(
+            body_a,
+            point_a.lon_date,
+            body_b,
+            point_b.lon_date,
+            rules=rules,
+            luminary_orb_bonus_deg=luminary_orb_bonus_deg,
+            outer_pair_orb_penalty_deg=outer_pair_orb_penalty_deg,
+            relative_speed=point_b.speed_long - point_a.speed_long,
+        )
+        if matched is not None:
+            rule, separation, orb, exactness, force, applying = matched
             hits.append(
                 AspectHit(
                     body_a=body_a,
@@ -94,11 +81,126 @@ def compute_aspects(
                     separation=separation,
                     orb_used=orb,
                     exactness=exactness,
-                    force=max(0.0, min(1.0, 1.0 - exactness / orb)),
+                    force=force,
                     applying=applying,
                 )
             )
     return tuple(hits)
+
+
+def compute_transit_aspects(
+    transit_points: Iterable[PointPos],
+    natal_points: Iterable[PointPos],
+    *,
+    rules: tuple[AspectRule, ...] = MAJOR_ASPECT_RULES,
+    luminary_orb_bonus_deg: float = 1.0,
+    outer_pair_orb_penalty_deg: float = 2.0,
+    transit_ids: frozenset[str] = TRANSIT_ASPECT_BODY_IDS,
+    natal_ids: frozenset[str] = ASPECT_POINT_IDS,
+) -> tuple[TransitAspectHit, ...]:
+    """Return aspects from moving transit bodies to fixed natal points.
+
+    Both moments are compared in their common J2000 ecliptic frame. Natal
+    positions are fixed reference longitudes, so applying/separating uses the
+    transit body's current speed rather than its natal counterpart's birth
+    speed. Roles remain explicit even for a body transiting its own natal point.
+    """
+
+    transit_by_id = _eligible_points(transit_points, transit_ids, "transit")
+    natal_by_id = _eligible_points(natal_points, natal_ids, "natal")
+    hits: list[TransitAspectHit] = []
+    for transit_body in sorted(transit_by_id):
+        transit_point = transit_by_id[transit_body]
+        for natal_point_id in sorted(natal_by_id):
+            natal_point = natal_by_id[natal_point_id]
+            transit_speed = (
+                transit_point.speed_long_j2000
+                if transit_point.speed_long_j2000 is not None
+                else transit_point.speed_long
+            )
+            matched = _match_pair(
+                transit_body,
+                transit_point.lon_j2000,
+                natal_point_id,
+                natal_point.lon_j2000,
+                rules=rules,
+                luminary_orb_bonus_deg=luminary_orb_bonus_deg,
+                outer_pair_orb_penalty_deg=outer_pair_orb_penalty_deg,
+                relative_speed=-transit_speed,
+            )
+            if matched is None:
+                continue
+            rule, separation, orb, exactness, force, applying = matched
+            hits.append(
+                TransitAspectHit(
+                    transit_body=transit_body,
+                    natal_point=natal_point_id,
+                    aspect_id=rule.id,
+                    separation=separation,
+                    orb_used=orb,
+                    exactness=exactness,
+                    force=force,
+                    applying=applying,
+                )
+            )
+    return tuple(hits)
+
+
+def _eligible_points(
+    points: Iterable[PointPos],
+    allowed_ids: frozenset[str],
+    role: str,
+) -> dict[str, PointPos]:
+    eligible: dict[str, PointPos] = {}
+    for point in points:
+        if point.id not in allowed_ids:
+            continue
+        if point.id in eligible:
+            raise ValueError(f"Duplicate {role} aspect point id: {point.id!r}")
+        eligible[point.id] = point
+    return eligible
+
+
+def _match_pair(
+    body_a: str,
+    longitude_a: float,
+    body_b: str,
+    longitude_b: float,
+    *,
+    rules: tuple[AspectRule, ...],
+    luminary_orb_bonus_deg: float,
+    outer_pair_orb_penalty_deg: float,
+    relative_speed: float,
+) -> tuple[AspectRule, float, float, float, float, bool | None] | None:
+    separation = shortest_arc(longitude_a, longitude_b)
+    phase = signed_arc(longitude_b - longitude_a)
+    candidates: list[tuple[float, int, AspectRule, float]] = []
+    for rule_index, rule in enumerate(rules):
+        orb = _resolved_orb(
+            body_a,
+            body_b,
+            rule.orb_deg,
+            luminary_orb_bonus_deg=luminary_orb_bonus_deg,
+            outer_pair_orb_penalty_deg=outer_pair_orb_penalty_deg,
+        )
+        exactness = abs(separation - rule.angle_deg)
+        if exactness <= orb:
+            candidates.append((exactness, rule_index, rule, orb))
+    if not candidates:
+        return None
+
+    # Custom profiles can create overlapping windows. The closest exact
+    # geometry wins; declaration order is only a stable tie-break.
+    exactness, _, rule, orb = min(candidates, key=lambda item: item[:2])
+    error = _oriented_error(phase, rule.angle_deg)
+    if abs(error) <= _EXACT_EPSILON or abs(relative_speed) <= _MOTION_EPSILON:
+        applying = None
+    else:
+        # d(error)/dt is the relative longitudinal speed. The aspect applies
+        # exactly when |error| is decreasing.
+        applying = error * relative_speed < 0.0
+    force = max(0.0, min(1.0, 1.0 - exactness / orb))
+    return rule, separation, orb, exactness, force, applying
 
 
 def detect_patterns(
@@ -185,4 +287,11 @@ def _oriented_error(phase_deg: float, aspect_angle_deg: float) -> float:
     return positive if abs(positive) <= abs(negative) else negative
 
 
-__all__ = ["compute_aspects", "detect_patterns", "shortest_arc", "signed_arc"]
+__all__ = [
+    "TRANSIT_ASPECT_BODY_IDS",
+    "compute_aspects",
+    "compute_transit_aspects",
+    "detect_patterns",
+    "shortest_arc",
+    "signed_arc",
+]

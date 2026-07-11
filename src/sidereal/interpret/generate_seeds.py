@@ -16,6 +16,8 @@ from .schema import (
     generate_seed1_entries,
     generate_seed2_entries,
     generate_seed3_entries,
+    generate_seed4_entries,
+    generate_seed5_entries,
     seed_payload,
 )
 
@@ -71,6 +73,12 @@ def rendered_seed_files() -> dict[str, str]:
         ),
         "seed_3_placements_v1.json": seed_payload(
             "seed_3_placements_v1", generate_seed3_entries()
+        ),
+        "seed_4_placements_v1.json": seed_payload(
+            "seed_4_placements_v1", generate_seed4_entries()
+        ),
+        "seed_5_relationships_v1.json": seed_payload(
+            "seed_5_relationships_v1", generate_seed5_entries()
         ),
     }
     return {

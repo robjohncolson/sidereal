@@ -42,6 +42,19 @@ def test_required_data_is_declared_for_wheel_installation() -> None:
     assert (PROJECT_ROOT / "data/boundaries/midpoint_j2000_v1.json").is_file()
 
 
+def test_optional_web_stack_and_static_assets_are_packaged() -> None:
+    config = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text("utf-8"))
+    web_dependencies = config["project"]["optional-dependencies"]["web"]
+
+    assert any(item.startswith("fastapi") for item in web_dependencies)
+    assert any(item.startswith("uvicorn") for item in web_dependencies)
+    assert config["tool"]["setuptools"]["package-data"]["sidereal.web"] == [
+        "static/*.html",
+        "static/*.css",
+        "static/*.js",
+    ]
+
+
 def test_module_help_works_without_loading_the_geometry_stack() -> None:
     env = os.environ.copy()
     src = str(PROJECT_ROOT / "src")

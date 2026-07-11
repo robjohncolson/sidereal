@@ -12,7 +12,9 @@ from .types import (
     MomentInput,
     PatternHit,
     PointPos,
+    TransitAspectHit,
 )
+from .transit import TransitGeometry, TransitPlacement, compute_transit_geometry
 
 try:
     __version__ = version("sidereal")
@@ -27,6 +29,9 @@ __all__ = [
     "MomentInput",
     "PatternHit",
     "PointPos",
+    "TransitAspectHit",
+    "TransitGeometry",
+    "TransitPlacement",
+    "compute_transit_geometry",
     "__version__",
 ]
-

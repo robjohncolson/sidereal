@@ -4,7 +4,7 @@ from collections import Counter
 import json
 from pathlib import Path
 
-from sidereal.interpret.generate_seeds import rendered_seed_files, write_seed_files
+from sidereal.interpret.generate_seeds import rendered_seed_files
 from sidereal.interpret.schema import (
     PATTERN_TYPES,
     SEED1_READY_COUNT,
@@ -93,7 +93,15 @@ def test_seed3_file_is_registered_with_deterministic_payload() -> None:
 
 def test_seed3_store_import_upgrades_stubs_and_is_idempotent(tmp_path: Path) -> None:
     seed_directory = tmp_path / "seeds"
-    write_seed_files(seed_directory)
+    seed_directory.mkdir()
+    rendered = rendered_seed_files()
+    for name in (
+        "seed_0_inventory_v1.json",
+        "seed_1_core_v1.json",
+        "seed_2_personal_aspects_v1.json",
+        "seed_3_placements_v1.json",
+    ):
+        (seed_directory / name).write_text(rendered[name], encoding="utf-8")
     ready_total = SEED1_READY_COUNT + SEED2_READY_COUNT + SEED3_READY_COUNT
 
     with InterpretationStore(tmp_path / "sidereal.db") as store:

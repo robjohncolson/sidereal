@@ -50,6 +50,7 @@ class PointPos:
     house: int | None
     blend: bool
     secondary_sign: str | None
+    speed_long_j2000: float | None = None
 
     @property
     def retrograde(self) -> bool:
@@ -83,6 +84,20 @@ class AspectHit:
 
     body_a: str
     body_b: str
+    aspect_id: str
+    separation: float
+    orb_used: float
+    exactness: float
+    force: float
+    applying: bool | None
+
+
+@dataclass(frozen=True, slots=True)
+class TransitAspectHit:
+    """A major aspect from a moving transit body to a fixed natal point."""
+
+    transit_body: str
+    natal_point: str
     aspect_id: str
     separation: float
     orb_used: float
@@ -190,4 +205,5 @@ __all__ = [
     "MomentInput",
     "PatternHit",
     "PointPos",
+    "TransitAspectHit",
 ]

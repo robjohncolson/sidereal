@@ -6,7 +6,8 @@ Local 13-sign Midpoint chart calculator and symbolic interpretation database.
 
 1. `SPEC.md` is the product, calculation, content, and acceptance contract.
 2. `CODEX_PROMPT.md` defines Phase 1 + Phase 2; `CODEX_PROMPT_PHASE3.md`
-   defines the additive usability delivery. `SPEC.md` wins on conflicts.
+   defines saved charts and comparison; `CODEX_PROMPT_PHASE4.md` defines Seeds
+   4–5, polish, transits, and the local web desk. `SPEC.md` wins on conflicts.
 3. Keep astronomy/geometry reproducible and interpretations explicitly
    symbolic. Never move interpretive prose into the calculation engine.
 
@@ -33,13 +34,21 @@ do not start concurrent analyzers.
   primary-only.
 - Saved birth data stays in local, gitignored `charts/` JSON. Treat it as
   sensitive and keep saved geometry separate from the interpretation DB.
+- Transits compare a moving chart from the primary engine with fixed natal
+  geometry. Include the time-sensitive Moon; unknown natal time means no natal
+  house overlays and no aspects to natal Ascendant/Midheaven.
+- The optional FastAPI server binds to `127.0.0.1` by default. Non-loopback
+  binds require explicit `--allow-lan`; the web layer must call Python engine,
+  library, and DB services rather than implement a calculation stack in JS.
+  Preserve Host-header/DNS-rebinding protection; LAN DNS names must be exact
+  `--trusted-host` values, never wildcard allowances.
 
 ## Local workflow
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,web]"
 # Optional Swiss .se1 files (gitignored):
 # curl -fL -o data/ephe/sepl_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/sepl_18.se1
 # curl -fL -o data/ephe/semo_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/semo_18.se1
@@ -59,12 +68,22 @@ python -m sidereal save \
   --label "Smoke" --date 2000-12-12 --time 12:00 --tz UTC \
   --lat 0 --lon 0
 python -m sidereal list
+python -m sidereal db gaps --db data/sidereal.db --chart-id "Smoke"
+python -m sidereal transit --natal "Smoke" \
+  --date 2026-07-11 --time 12:00 --tz UTC \
+  --out /tmp/sidereal-transit.json --md /tmp/sidereal-transit.md
+# Local web smoke (run while developing the optional UI):
+# python -m sidereal serve
+# curl http://127.0.0.1:8742/api/health
 ```
 
 Seeds: `seed_0` inventory stubs · `seed_1` core primers (76) · `seed_2`
 personal-planet major aspects (105) · `seed_3` placements/house cusps/MC/patterns
-(256). Import result: 437 ready / 475 stub / 0 missing. Regenerate with
-`python -m sidereal.interpret.generate_seeds`.
+(256) · `seed_4` Mercury/Venus/Mars×sign plus outer/node×house placements (99)
+· `seed_5` personal↔outer/node and personal↔Asc/MC major aspects (210). Import
+result: 746 ready / 166 stub / 0 missing. Regenerate with
+`python -m sidereal.interpret.generate_seeds` and keep all seed output
+deterministic.
 
 Use `2000-12-12 12:00 UTC` for the central Ophiuchus Sun fixture. Under the
 canonical J2000 Midpoint table (`254.7132°`–`267.0711°`), a J2000-era
@@ -80,6 +99,13 @@ window for that epoch. Geometry beats marketing date labels.
 - `comparison.py` + `zodiac/tropical.py`: label-only comparison over existing
   geometry; do not recalculate aspects or duplicate interpretation lookups.
 - `library.py`: strict local saved-chart JSON and frozen geometry restoration.
+- `transit.py`: pure role-preserving transit-to-natal geometry over existing
+  chart/aspect services; no interpretive prose.
+- `interpret/transit.py`: transit report composition and one DB join;
+  `interpret/audit.py`: report-scoped interpretation-key extraction.
+- `web/`: optional FastAPI/static same-origin shell over the same chart,
+  transit, library, and DB paths used by the CLI. Keep `/api/...` JSON routes
+  local-first and never add a second ephemeris implementation in JavaScript.
 - `cli.py`: argument validation and adapters; keep heavyweight imports local.
 - Root `data/boundaries/` and `data/seeds/` are installed under
   `share/sidereal/`; runtime resolvers must work outside the repository cwd.

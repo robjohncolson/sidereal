@@ -104,8 +104,8 @@ def test_composer_renders_stubs_and_lists_them_as_gaps(tmp_path: Path) -> None:
                 lon_j2000=260.0,
                 sign="ophiuchus",
                 degree_in_sign=5.2868,
-                blend=False,
-                secondary_sign=None,
+                blend=True,
+                secondary_sign="sagittarius",
             ),
         ),
         # Deliberately reverse priority order to exercise report sorting.
@@ -115,6 +115,7 @@ def test_composer_renders_stubs_and_lists_them_as_gaps(tmp_path: Path) -> None:
             AspectHit("mc", "sun", "trine", 121.0, 9.0, 1.0, 0.8, True),
             AspectHit("moon", "sun", "conjunction", 2.0, 9.0, 2.0, 0.7, True),
             AspectHit("moon", "pluto", "opposition", 179.0, 9.0, 1.0, 0.8, False),
+            AspectHit("asc", "uranus", "square", 89.75, 7.0, 0.25, 0.96, True),
         ),
         patterns=(PatternHit("t_square", ("moon", "sun", "pluto"), apex="sun"),),
     )
@@ -137,8 +138,9 @@ def test_composer_renders_stubs_and_lists_them_as_gaps(tmp_path: Path) -> None:
     gap_keys = {gap.key for gap in report.gaps}
     assert "planet_in_house:sun:1" not in gap_keys
     assert "pattern:t_square" not in gap_keys
-    assert "aspect:mc:trine:sun" in gap_keys
-    assert "aspect:moon:opposition:pluto" in gap_keys
+    assert "aspect:mc:trine:sun" not in gap_keys
+    assert "aspect:moon:opposition:pluto" not in gap_keys
+    assert "aspect:asc:square:uranus" in gap_keys
     ordered_pairs = [
         (item["aspect"]["body_a"], item["aspect"]["body_b"])
         for item in data["interpretation"]["relationships"]
@@ -147,6 +149,7 @@ def test_composer_renders_stubs_and_lists_them_as_gaps(tmp_path: Path) -> None:
         ("moon", "sun"),
         ("mc", "sun"),
         ("mars", "venus"),
+        ("asc", "uranus"),
         ("moon", "pluto"),
         ("jupiter", "saturn"),
     ]
@@ -155,6 +158,8 @@ def test_composer_renders_stubs_and_lists_them_as_gaps(tmp_path: Path) -> None:
     assert EPISTEMIC_NOTE in markdown
     assert "## Missing interpretation keys" in markdown
     assert "within 3.00° of the boundary with Sagittarius" in markdown
+    assert markdown.count("within 3.00° of the boundary with Sagittarius") >= 3
+    assert "### Sun · Ophiuchus · House 1" in markdown
     assert "orb 2.0000°, applying" in markdown
     assert "_(stub)_" in markdown
     assert json.loads(report.to_json())["report_version"] == 1

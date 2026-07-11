@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, is_dataclass
+from dataclasses import asdict, is_dataclass, replace
 from datetime import date, time
 import json
 import os
@@ -177,6 +177,58 @@ def build_parser() -> argparse.ArgumentParser:
     _add_charts_argument(interpret)
     interpret.set_defaults(handler=_run_interpret)
 
+    transit = commands.add_parser(
+        "transit",
+        help="study a moving sky against saved or inline natal geometry",
+    )
+    natal_source = transit.add_mutually_exclusive_group(required=True)
+    natal_source.add_argument(
+        "--natal",
+        help="saved natal chart id or label",
+    )
+    natal_source.add_argument(
+        "--natal-date",
+        type=_date_value,
+        help="inline natal civil date (YYYY-MM-DD)",
+    )
+    transit.add_argument("--natal-time", type=_time_value)
+    transit.add_argument("--natal-tz", help="inline natal IANA timezone or UTC offset")
+    transit.add_argument("--natal-fold", choices=(0, 1), type=int)
+    transit.add_argument("--natal-lat", type=float)
+    transit.add_argument("--natal-lon", type=float)
+    transit.add_argument("--natal-label")
+    transit.add_argument("--date", required=True, type=_date_value, dest="local_date")
+    transit.add_argument("--time", required=True, type=_time_value, dest="local_time")
+    transit.add_argument(
+        "--tz",
+        required=True,
+        help="transit IANA timezone (for example America/New_York) or UTC offset",
+    )
+    transit.add_argument("--fold", choices=(0, 1), type=int)
+    transit.add_argument("--lat", type=float, help="optional transit latitude")
+    transit.add_argument("--lon", type=float, help="optional transit longitude")
+    transit.add_argument("--label", default="Transit", help="transit moment label")
+    transit.add_argument("--out", type=Path, help="write the transit JSON report")
+    transit.add_argument("--md", type=Path, help="write the transit Markdown report")
+    transit.add_argument(
+        "--boundary-path",
+        type=Path,
+        help="override the packaged Midpoint boundary JSON",
+    )
+    transit.add_argument(
+        "--ephe-path",
+        type=Path,
+        help="directory containing Swiss Ephemeris .se1 files",
+    )
+    transit.add_argument(
+        "--require-swiss-ephemeris",
+        action="store_true",
+        help="fail instead of accepting Swiss Ephemeris' Moshier fallback",
+    )
+    _add_db_argument(transit)
+    _add_charts_argument(transit)
+    transit.set_defaults(handler=_run_transit)
+
     db = commands.add_parser("db", help="manage interpretation records")
     db_commands = db.add_subparsers(dest="db_command", metavar="DB_COMMAND")
 
@@ -196,12 +248,51 @@ def build_parser() -> argparse.ArgumentParser:
 
     db_gaps = db_commands.add_parser("gaps", help="audit missing and stub records")
     _add_db_argument(db_gaps)
+    gap_scope = db_gaps.add_mutually_exclusive_group()
+    gap_scope.add_argument(
+        "--chart",
+        type=Path,
+        help="scope the audit to interpretation keys in a full report JSON",
+    )
+    gap_scope.add_argument(
+        "--chart-id",
+        help="scope the audit to a saved chart id or label",
+    )
+    _add_charts_argument(db_gaps)
     db_gaps.set_defaults(handler=_run_db_gaps)
 
     db_get = db_commands.add_parser("get", help="print one interpretation record")
     db_get.add_argument("key", help="canonical interpretation id")
     _add_db_argument(db_get)
     db_get.set_defaults(handler=_run_db_get)
+
+    serve = commands.add_parser(
+        "serve",
+        help="serve the local browser UI and JSON API",
+    )
+    serve.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="bind address (default: %(default)s; non-loopback requires --allow-lan)",
+    )
+    serve.add_argument("--port", type=int, default=8742, help="TCP port (default: %(default)s)")
+    serve.add_argument(
+        "--allow-lan",
+        action="store_true",
+        help="explicitly permit a non-loopback bind; exposes sensitive chart data",
+    )
+    serve.add_argument(
+        "--trusted-host",
+        action="append",
+        default=[],
+        help="allow an exact additional Host header (repeatable; no wildcards)",
+    )
+    serve.add_argument("--boundary-path", type=Path)
+    serve.add_argument("--ephe-path", type=Path)
+    serve.add_argument("--require-swiss-ephemeris", action="store_true")
+    _add_db_argument(serve)
+    _add_charts_argument(serve)
+    serve.set_defaults(handler=_run_serve)
 
     return parser
 
@@ -243,12 +334,23 @@ def _add_db_argument(parser: argparse.ArgumentParser) -> None:
 
 
 def _validate_location(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
-    if (args.lat is None) != (args.lon is None):
-        parser.error("--lat and --lon must be provided together")
-    if args.lat is not None and not -90.0 < args.lat < 90.0:
-        parser.error("--lat must be strictly between -90 and 90 degrees")
-    if args.lon is not None and not -180.0 <= args.lon <= 180.0:
-        parser.error("--lon must be between -180 and 180 degrees")
+    _validate_coordinate_pair(parser, args.lat, args.lon)
+
+
+def _validate_coordinate_pair(
+    parser: argparse.ArgumentParser,
+    lat: float | None,
+    lon: float | None,
+    *,
+    prefix: str = "",
+) -> None:
+    option = f"--{prefix}" if prefix else "--"
+    if (lat is None) != (lon is None):
+        parser.error(f"{option}lat and {option}lon must be provided together")
+    if lat is not None and not -90.0 < lat < 90.0:
+        parser.error(f"{option}lat must be strictly between -90 and 90 degrees")
+    if lon is not None and not -180.0 <= lon <= 180.0:
+        parser.error(f"{option}lon must be between -180 and 180 degrees")
 
 
 def _run_chart(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -439,6 +541,133 @@ def _run_interpret(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
     return 0
 
 
+def _run_transit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    _validate_location(parser, args)
+    _validate_coordinate_pair(
+        parser,
+        args.natal_lat,
+        args.natal_lon,
+        prefix="natal-",
+    )
+    if args.out is not None and args.md is not None and _same_output_path(args.out, args.md):
+        parser.error("--out and --md must refer to different files")
+
+    from .chart import compute
+    from .config import ChartConfig
+    from .interpret.store import InterpretationStore
+    from .interpret.transit import calculate_transit_report
+    from .library import load_chart
+    from .types import MomentInput
+
+    natal_id: str | None = None
+    natal_source = "inline"
+    saved_source_path: Path | None = None
+    if args.natal is not None:
+        inline_values = (
+            args.natal_time,
+            args.natal_tz,
+            args.natal_fold,
+            args.natal_lat,
+            args.natal_lon,
+            args.natal_label,
+        )
+        if any(value is not None for value in inline_values):
+            parser.error("--natal cannot be combined with inline --natal-* options")
+        record = load_chart(args.natal, args.charts_dir.expanduser())
+        natal = record.chart_object()
+        base_config = record.chart_config()
+        natal_id = record.id
+        natal_source = "saved"
+        saved_source_path = record.source_path
+    else:
+        if not args.natal_tz:
+            parser.error("--natal-tz is required with --natal-date")
+        if args.natal_fold is not None and args.natal_time is None:
+            parser.error("--natal-fold requires --natal-time")
+        base_config = ChartConfig(
+            boundary_path=args.boundary_path,
+            ephe_path=args.ephe_path,
+            require_swiss_ephemeris=args.require_swiss_ephemeris,
+            include_houses=True,
+        )
+        natal_moment = MomentInput(
+            local_date=args.natal_date,
+            local_time=args.natal_time,
+            tz=args.natal_tz,
+            lat=args.natal_lat,
+            lon=args.natal_lon,
+            label=(args.natal_label or "Inline natal").strip(),
+            fold=args.natal_fold,
+        )
+        natal = compute(natal_moment, base_config)
+
+    if saved_source_path is not None:
+        _reject_saved_chart_overwrite(
+            parser,
+            saved_source_path,
+            args.out,
+            args.md,
+        )
+    transit_config = replace(
+        base_config,
+        boundary_path=(
+            args.boundary_path
+            if args.boundary_path is not None
+            else base_config.boundary_path
+        ),
+        ephe_path=(args.ephe_path if args.ephe_path is not None else base_config.ephe_path),
+        require_swiss_ephemeris=(
+            args.require_swiss_ephemeris
+            or base_config.require_swiss_ephemeris
+        ),
+        include_houses=args.lat is not None,
+        include_patterns=False,
+    )
+    transit_moment = MomentInput(
+        local_date=args.local_date,
+        local_time=args.local_time,
+        tz=args.tz,
+        lat=args.lat,
+        lon=args.lon,
+        label=args.label.strip(),
+        fold=args.fold,
+    )
+
+    db_path = args.db.expanduser()
+    if db_path.is_file():
+        with InterpretationStore(db_path) as store:
+            report = calculate_transit_report(
+                natal,
+                transit_moment,
+                transit_config,
+                store,
+                natal_source=natal_source,
+                natal_id=natal_id,
+            )
+    else:
+        report = calculate_transit_report(
+            natal,
+            transit_moment,
+            transit_config,
+            None,
+            natal_source=natal_source,
+            natal_id=natal_id,
+        )
+
+    json_text = report.to_json(indent=2)
+    markdown_text = report.to_markdown()
+    wrote_output = False
+    if args.out is not None:
+        _write_text(args.out, json_text)
+        wrote_output = True
+    if args.md is not None:
+        _write_text(args.md, markdown_text)
+        wrote_output = True
+    if not wrote_output:
+        print(json_text)
+    return 0
+
+
 def _run_db_init(args: argparse.Namespace, _parser: argparse.ArgumentParser) -> int:
     from .interpret.store import InterpretationStore
 
@@ -471,11 +700,22 @@ def _run_db_import(args: argparse.Namespace, _parser: argparse.ArgumentParser) -
 
 
 def _run_db_gaps(args: argparse.Namespace, _parser: argparse.ArgumentParser) -> int:
+    from .interpret.audit import report_interpretation_ids
+    from .interpret.compose import compose_report
     from .interpret.store import InterpretationStore
+    from .library import load_chart
 
     path = _require_db(args.db)
     with InterpretationStore(path) as store:
-        audit = store.audit()
+        if args.chart is not None:
+            report_payload = _read_json_object(args.chart)
+            audit = store.audit(report_interpretation_ids(report_payload))
+        elif args.chart_id is not None:
+            record = load_chart(args.chart_id, args.charts_dir.expanduser())
+            report = compose_report(record.chart_object(), store)
+            audit = store.audit(report_interpretation_ids(report.to_dict()))
+        else:
+            audit = store.audit()
     print(json.dumps(_json_ready(audit), indent=2, sort_keys=True))
     return 0
 
@@ -490,6 +730,54 @@ def _run_db_get(args: argparse.Namespace, _parser: argparse.ArgumentParser) -> i
         print(f"Interpretation key not found: {args.key}", file=sys.stderr)
         return 1
     print(json.dumps(_json_ready(entry), indent=2, sort_keys=True, ensure_ascii=False))
+    return 0
+
+
+def _run_serve(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    import ipaddress
+
+    if not 1 <= args.port <= 65535:
+        parser.error("--port must be between 1 and 65535")
+    host = args.host.strip()
+    if not host:
+        parser.error("--host must not be blank")
+    try:
+        loopback = ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        loopback = host.casefold() == "localhost"
+    if not loopback and not args.allow_lan:
+        parser.error(
+            "refusing a non-loopback bind without --allow-lan; birth data is sensitive"
+        )
+    if not loopback:
+        print(
+            "WARNING: sidereal is exposed beyond localhost; there is no authentication.",
+            file=sys.stderr,
+        )
+
+    try:
+        import uvicorn
+        from .web import create_app
+    except ImportError as exc:
+        raise RuntimeError(
+            "web dependencies are not installed; run `python -m pip install -e '.[web]'`"
+        ) from exc
+
+    app = create_app(
+        db_path=args.db.expanduser(),
+        charts_dir=args.charts_dir.expanduser(),
+        boundary_path=(
+            args.boundary_path.expanduser()
+            if args.boundary_path is not None
+            else None
+        ),
+        ephe_path=(args.ephe_path.expanduser() if args.ephe_path is not None else None),
+        require_swiss_ephemeris=args.require_swiss_ephemeris,
+        bind_host=host,
+        allow_lan=args.allow_lan,
+        trusted_hosts=tuple(args.trusted_host),
+    )
+    uvicorn.run(app, host=host, port=args.port)
     return 0
 
 
@@ -520,6 +808,19 @@ def _write_text(path: Path, content: str) -> None:
     expanded = path.expanduser()
     expanded.parent.mkdir(parents=True, exist_ok=True)
     expanded.write_text(content.rstrip() + "\n", encoding="utf-8")
+
+
+def _read_json_object(path: Path) -> dict[str, Any]:
+    expanded = path.expanduser()
+    try:
+        payload = json.loads(expanded.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f"Report JSON does not exist: {expanded}") from exc
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Could not read report JSON {expanded}: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise ValueError(f"Report JSON must contain an object: {expanded}")
+    return payload
 
 
 def _same_output_path(left: Path, right: Path) -> bool:

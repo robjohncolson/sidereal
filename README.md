@@ -15,6 +15,7 @@ symbolic interpretations. Ophiuchus is a first-class sign.
 - Python 3.11 or newer
 - `pyswisseph` (installed by the project; imported in Python as `swisseph`)
 - `pytest` for development/testing
+- FastAPI and Uvicorn only when using the optional local web desk
 
 Create an isolated environment and install the package:
 
@@ -23,6 +24,12 @@ python3 -m venv .venv
 source .venv/bin/activate             # Windows: .venv\Scripts\activate
 python -m pip install -e ".[dev]"
 python -m sidereal --help
+```
+
+To develop or run the browser UI, install the optional web dependencies too:
+
+```bash
+python -m pip install -e ".[dev,web]"
 ```
 
 On this repository's WSL environment the system command is `python3`; after
@@ -83,13 +90,31 @@ Shipped seeds:
 | `seed_1_core_v1.json` | 76 ready primers (signs, houses, planets, Sun/Moon×sign, Asc×sign) |
 | `seed_2_personal_aspects_v1.json` | 105 ready major aspects among Sun–Saturn |
 | `seed_3_placements_v1.json` | 256 ready personal-planet×house, sign×house, Midheaven×sign, and pattern readings |
+| `seed_4_placements_v1.json` | 99 ready Mercury/Venus/Mars×sign and Uranus/Neptune/Pluto/lunar-node×house readings |
+| `seed_5_relationships_v1.json` | 210 ready personal↔outer/North Node and personal↔Ascendant/Midheaven major-aspect readings |
 
-After import: **437 ready**, **475 stubs**, **0 missing**. Seed 3 covers every
-sign—including Ophiuchus—on every house cusp, plus all twelve houses for Sun
-through Saturn. `gaps` audits the
-complete inventory. `SIDEREAL_DB_PATH` changes the default `data/sidereal.db`
-path. A chart still calculates if that database does not exist; its report
-lists the interpretation keys as missing.
+After import: **746 ready**, **166 stubs**, **0 missing**. Seeds 3–4 cover every
+sign—including Ophiuchus—on every house cusp, Mercury/Venus/Mars in every
+sign, all twelve houses for Sun through Pluto, and both calculated lunar nodes
+in every house. Seed 5 fills the highest-value remaining relationship language.
+`gaps` audits the complete inventory. `SIDEREAL_DB_PATH` changes the default
+`data/sidereal.db` path. A chart still calculates if that database does not
+exist; its report lists the interpretation keys as missing.
+
+Scope the gap audit to the interpretations actually used by a report or saved
+chart when deciding what to author next:
+
+```bash
+python -m sidereal db gaps --db data/sidereal.db
+python -m sidereal db gaps --db data/sidereal.db \
+  --chart reports/me.json
+python -m sidereal db gaps --db data/sidereal.db \
+  --chart-id "Me" --charts-dir charts
+```
+
+`--chart` reads a full report JSON. `--chart-id` resolves a local saved-chart id
+or unambiguous label and composes its current interpretation key set. The
+result reports ready, stub, and missing ids only within that scope.
 
 ## Calculate a chart
 
@@ -184,6 +209,99 @@ and Swiss Ephemeris' proleptic Gregorian calendar flag (`GREG_CAL`); for an
 old civil record, independently verify the historical offset and whether the
 local calendar had adopted Gregorian dating.
 
+## Study transits
+
+A transit report compares one moving sky moment with a fixed natal chart. The
+natal can come from the saved chart library:
+
+```bash
+python -m sidereal transit \
+  --natal "Me" --charts-dir charts \
+  --date 2026-07-11 --time 12:00 --tz UTC \
+  --db data/sidereal.db \
+  --out reports/me-transit.json --md reports/me-transit.md
+```
+
+Or supply the natal moment inline without saving it:
+
+```bash
+python -m sidereal transit \
+  --natal-date 2000-12-12 --natal-time 12:00 --natal-tz UTC \
+  --natal-lat 0 --natal-lon 0 --natal-label "Inline natal" \
+  --date 2026-07-11 --time 12:00 --tz UTC \
+  --out reports/inline-transit.json --md reports/inline-transit.md
+```
+
+The transit date, civil time, and timezone are required. Transit latitude and
+longitude are an optional pair; without them the moving chart stays
+planet-only. Placements still show each moving body in its Midpoint sign, and
+when the natal has known time and location they show which natal house the
+moving body occupies. Relationships are moving-body-to-fixed-natal major
+aspects with orb, applying/separating state, and the current interpretation DB
+record. The transit Moon is always included and explicitly labeled
+time-sensitive.
+
+Because natal and transit moments have different ecliptic-of-date axes,
+cross-time aspects and natal-house overlays compare their shared J2000
+longitudes. Applying/separating uses the moving body's J2000 longitudinal
+speed. This is distinct from ordinary within-one-chart aspects, where all
+points already share that chart's tropical frame of date.
+
+Omitting `--natal-time` on an inline natal preserves the unknown-time contract:
+local noon is only the body-position convention, natal Ascendant/Midheaven and
+houses remain absent, aspects to natal angles are omitted, and transit
+placements receive no natal-house overlay. Transit reports describe geometric
+correlations for symbolic study, not predictions, and do not declare one
+zodiac uniquely true.
+
+## Local web desk
+
+The optional web interface is a same-origin shell over the existing Python
+services:
+
+```text
+browser UI -> localhost FastAPI -> chart / transit / library / interpretation DB
+```
+
+There is no ephemeris or second calculation stack in JavaScript. Install the
+web extra, initialize the DB as above, and start the server:
+
+```bash
+python -m pip install -e ".[web]"
+python -m sidereal serve --db data/sidereal.db --charts-dir charts
+# open http://127.0.0.1:8742/
+```
+
+The default bind is `127.0.0.1:8742`. Sidereal refuses a non-loopback host
+unless exposure is explicit, for example
+`--host 0.0.0.0 --allow-lan`. That flag can expose sensitive birth data and
+saved charts to the local network; the app provides no accounts, access
+control, TLS, cloud storage, or telemetry. Keep the default unless you have
+secured the surrounding network yourself. LAN mode accepts numeric IP Host
+headers; if you deliberately browse through a local DNS name, add that exact
+name with repeatable `--trusted-host NAME`. Wildcards are refused so the Host
+guard continues to block DNS-rebinding origins.
+
+The browser provides chart calculation and readable reports, saved-chart
+library actions, current-DB reinterpretation, and transits to a selected saved
+natal. Its JSON API uses the same validation and calculation paths as the CLI:
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| `GET` | `/api/health` | Version, ephemeris probe, DB availability, and saved-chart count |
+| `POST` | `/api/chart` | Calculate and compose a full chart report |
+| `POST` | `/api/transit` | Run a saved-natal or inline-natal transit report |
+| `GET` | `/api/charts` | List saved charts |
+| `GET` | `/api/charts/{id}` | Read one frozen saved geometry record |
+| `POST` | `/api/charts` | Calculate and save a chart locally |
+| `POST` | `/api/charts/{id}/interpret` | Recompose saved geometry with the current DB |
+| `GET` | `/api/db/gaps` | Audit all gaps or scope with `?chart_id=...` |
+| `GET` | `/api/db/entry/{id}` | Read one interpretation record |
+
+Interactive API documentation is available locally at `/api/docs` while the
+server is running. After dependencies are installed, calculations and saved
+data remain local and require no external runtime network access.
+
 ### Ophiuchus example
 
 The canonical table defines Ophiuchus as J2000 ecliptic longitude
@@ -224,21 +342,45 @@ start. Boundary geometry takes precedence over a conventional date label.
   and complete geometry for offline re-interpretation. Permissions are made
   owner-private on platforms that support POSIX modes; the user remains
   responsible for protecting the directory elsewhere.
+- Transits: one current chart calculated by the primary engine against frozen
+  natal geometry; natal-house overlays and natal-angle aspects exist only when
+  natal time is known.
+- Web: optional FastAPI adapter and static same-origin UI. It delegates to the
+  chart, transit, library, and interpretation modules and binds to loopback by
+  default.
 
 ## Validate the installation
 
 ```bash
 python -m pytest
+python -m sidereal db init --db data/sidereal.db
+python -m sidereal db import --db data/sidereal.db
+python -m sidereal db gaps --db data/sidereal.db
 python -m sidereal chart \
   --date 2000-01-01 --time 12:00 --tz UTC --lat 0 --lon 0 \
   --md /tmp/sidereal-smoke.md --out /tmp/sidereal-smoke.json
+python -m sidereal save \
+  --label "Smoke" --date 2000-12-12 --time 12:00 --tz UTC \
+  --lat 0 --lon 0
+python -m sidereal db gaps --db data/sidereal.db --chart-id "Smoke"
+python -m sidereal transit \
+  --natal "Smoke" --date 2026-07-11 --time 12:00 --tz UTC \
+  --md /tmp/sidereal-transit.md --out /tmp/sidereal-transit.json
+# With .[web] installed, in another terminal:
+python -m sidereal serve
+# curl http://127.0.0.1:8742/api/health
 ```
 
 Tests cover boundary invariants and wraparound, representative Midpoint
 placements, time conversion, a real Swiss Ephemeris sanity value, equal
 houses, aspect dynamics, unknown-time omission rules, inventory counts,
 report gaps, tropical comparison frames, saved-chart round trips, CLI behavior,
-and installed-data discovery.
+scoped gap audits, transit role/orb and unknown-time rules, the local API,
+loopback binding safety, and installed-data discovery.
+
+The repeatable CLI + test smoke is also available as
+`bash scripts/smoke_phase4.sh`; set `SIDEREAL_SMOKE_DIR` to choose its local
+artifact directory.
 
 ## Attribution and licensing
 

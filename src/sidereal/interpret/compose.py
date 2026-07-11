@@ -124,10 +124,16 @@ class InterpretationReport:
         if self.house_readings:
             for item in self.house_readings:
                 cusp = item["cusp"]
-                lines.append(
+                text = (
                     f"- House {cusp['number']}: {_display(str(cusp['sign']))} "
                     f"({_format_number(cusp['degree_in_sign'], 4)}° in sign)"
                 )
+                if cusp.get("blend") and cusp.get("secondary_sign"):
+                    text += (
+                        f" — within {blend_orb}° of the boundary with "
+                        f"{_display(str(cusp['secondary_sign']))}"
+                    )
+                lines.append(text)
         else:
             lines.append("Houses were not calculated; no cusp signs have been inferred.")
 
@@ -138,7 +144,11 @@ class InterpretationReport:
         if self.planet_readings:
             for item in self.planet_readings:
                 point = item["point"]
-                house_note = f", house {point['house']}" if point.get("house") is not None else ""
+                house_note = (
+                    f" · House {point['house']}"
+                    if point.get("house") is not None
+                    else ""
+                )
                 blend_note = (
                     f" — within {blend_orb}° of the boundary with "
                     f"{_display(str(point['secondary_sign']))}"
@@ -147,7 +157,7 @@ class InterpretationReport:
                 )
                 lines.extend(
                     (
-                        f"### {_display(str(point['id']))} in {_display(str(point['sign']))}{house_note}{blend_note}",
+                        f"### {_display(str(point['id']))} · {_display(str(point['sign']))}{house_note}{blend_note}",
                         "",
                     )
                 )
@@ -179,7 +189,18 @@ class InterpretationReport:
         if self.house_readings:
             for item in self.house_readings:
                 cusp = item["cusp"]
-                lines.extend((f"### House {cusp['number']}", ""))
+                blend_note = (
+                    f" — within {blend_orb}° of the boundary with "
+                    f"{_display(str(cusp['secondary_sign']))}"
+                    if cusp.get("blend") and cusp.get("secondary_sign")
+                    else ""
+                )
+                lines.extend(
+                    (
+                        f"### House {cusp['number']} · {_display(str(cusp['sign']))}{blend_note}",
+                        "",
+                    )
+                )
                 _append_readings(lines, item["readings"])
         else:
             lines.append("No house cusp readings are applicable.")
@@ -475,9 +496,10 @@ def _relationship_sort_key(aspect: Any) -> tuple[Any, ...]:
             group, subgroup = 3, 0
     aspect_id = str(getattr(aspect, "aspect_id"))
     aspect_rank = ASPECT_TYPES.index(aspect_id) if aspect_id in ASPECT_TYPES else len(ASPECT_TYPES)
+    force = float(getattr(aspect, "force", 0.0))
     exactness = float(getattr(aspect, "exactness", 0.0))
     a, b = sorted((body_a, body_b))
-    return group, subgroup, exactness, a, b, aspect_rank
+    return group, subgroup, -force, exactness, a, b, aspect_rank
 
 
 def _append_comparison(lines: list[str], comparison: Mapping[str, Any]) -> None:
