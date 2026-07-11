@@ -1536,6 +1536,126 @@ footer p {
   }
 }
 
+/* Timezone / place picker */
+.timezone-picker {
+  position: relative;
+}
+
+.timezone-picker .tz-search {
+  width: 100%;
+}
+
+.tz-current {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.65rem;
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.tz-current-label {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tz-current-value {
+  color: var(--lavender);
+  font-size: 0.78rem;
+  word-break: break-all;
+}
+
+.tz-results {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% - 0.15rem);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  margin: 0;
+  padding: 0.35rem 0;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line-strong, var(--line));
+  border-radius: var(--radius-md);
+  background: #141827;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+.tz-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+.tz-option:hover,
+.tz-option:focus {
+  background: rgba(184, 167, 222, 0.1);
+}
+
+.tz-option-title {
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.tz-option-meta {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.tz-empty {
+  padding: 0.7rem 0.85rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+/* Planets in houses */
+.house-number-cell {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--lavender);
+}
+
+.house-occupancy-stack {
+  margin-top: 0.9rem;
+}
+
+.house-occupancy-card {
+  padding: 0.95rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(184, 167, 222, 0.04);
+}
+
+.house-occupancy-card > h4 {
+  margin: 0 0 0.65rem;
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
+.house-occupant-block + .house-occupant-block {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.house-occupant-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+}
+
+.house-occupant-list li + li {
+  margin-top: 0.3rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

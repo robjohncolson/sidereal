@@ -28,10 +28,84 @@ const TRANSIT_NOTE_FALLBACK =
 const CHART_NOTE_FALLBACK =
   "Positions, houses, and angular relationships are astronomical geometry. Interpretations are symbolic cultural study notes, not scientific claims about personality, fate, health, or outcomes.";
 
+// Offline city → IANA helpers (no network). Names are search aliases only.
+const KNOWN_PLACES = [
+  { label: "Tokyo, Japan", aliases: ["tokyo", "tokyo japan", "japan tokyo"], tz: "Asia/Tokyo", lat: 35.6762, lon: 139.6503 },
+  { label: "Osaka, Japan", aliases: ["osaka", "osaka japan"], tz: "Asia/Tokyo", lat: 34.6937, lon: 135.5023 },
+  { label: "Seoul, South Korea", aliases: ["seoul", "seoul korea", "south korea"], tz: "Asia/Seoul", lat: 37.5665, lon: 126.978 },
+  { label: "Beijing, China", aliases: ["beijing", "peking", "beijing china"], tz: "Asia/Shanghai", lat: 39.9042, lon: 116.4074 },
+  { label: "Shanghai, China", aliases: ["shanghai", "shanghai china"], tz: "Asia/Shanghai", lat: 31.2304, lon: 121.4737 },
+  { label: "Hong Kong", aliases: ["hong kong", "hongkong"], tz: "Asia/Hong_Kong", lat: 22.3193, lon: 114.1694 },
+  { label: "Taipei, Taiwan", aliases: ["taipei", "taiwan"], tz: "Asia/Taipei", lat: 25.033, lon: 121.5654 },
+  { label: "Singapore", aliases: ["singapore"], tz: "Asia/Singapore", lat: 1.3521, lon: 103.8198 },
+  { label: "Bangkok, Thailand", aliases: ["bangkok", "thailand"], tz: "Asia/Bangkok", lat: 13.7563, lon: 100.5018 },
+  { label: "Jakarta, Indonesia", aliases: ["jakarta", "indonesia"], tz: "Asia/Jakarta", lat: -6.2088, lon: 106.8456 },
+  { label: "Manila, Philippines", aliases: ["manila", "philippines"], tz: "Asia/Manila", lat: 14.5995, lon: 120.9842 },
+  { label: "New Delhi, India", aliases: ["delhi", "new delhi", "india delhi"], tz: "Asia/Kolkata", lat: 28.6139, lon: 77.209 },
+  { label: "Mumbai, India", aliases: ["mumbai", "bombay"], tz: "Asia/Kolkata", lat: 19.076, lon: 72.8777 },
+  { label: "Dubai, UAE", aliases: ["dubai", "uae"], tz: "Asia/Dubai", lat: 25.2048, lon: 55.2708 },
+  { label: "Tel Aviv, Israel", aliases: ["tel aviv", "israel"], tz: "Asia/Jerusalem", lat: 32.0853, lon: 34.7818 },
+  { label: "Istanbul, Turkey", aliases: ["istanbul", "turkey", "constantinople"], tz: "Europe/Istanbul", lat: 41.0082, lon: 28.9784 },
+  { label: "Moscow, Russia", aliases: ["moscow", "moskva"], tz: "Europe/Moscow", lat: 55.7558, lon: 37.6173 },
+  { label: "Cairo, Egypt", aliases: ["cairo", "egypt"], tz: "Africa/Cairo", lat: 30.0444, lon: 31.2357 },
+  { label: "Johannesburg, South Africa", aliases: ["johannesburg", "joburg", "south africa"], tz: "Africa/Johannesburg", lat: -26.2041, lon: 28.0473 },
+  { label: "Lagos, Nigeria", aliases: ["lagos", "nigeria"], tz: "Africa/Lagos", lat: 6.5244, lon: 3.3792 },
+  { label: "Nairobi, Kenya", aliases: ["nairobi", "kenya"], tz: "Africa/Nairobi", lat: -1.2921, lon: 36.8219 },
+  { label: "London, United Kingdom", aliases: ["london", "london uk", "england", "britain", "uk"], tz: "Europe/London", lat: 51.5074, lon: -0.1278 },
+  { label: "Paris, France", aliases: ["paris", "france"], tz: "Europe/Paris", lat: 48.8566, lon: 2.3522 },
+  { label: "Berlin, Germany", aliases: ["berlin", "germany"], tz: "Europe/Berlin", lat: 52.52, lon: 13.405 },
+  { label: "Amsterdam, Netherlands", aliases: ["amsterdam", "netherlands", "holland"], tz: "Europe/Amsterdam", lat: 52.3676, lon: 4.9041 },
+  { label: "Rome, Italy", aliases: ["rome", "italy", "roma"], tz: "Europe/Rome", lat: 41.9028, lon: 12.4964 },
+  { label: "Madrid, Spain", aliases: ["madrid", "spain"], tz: "Europe/Madrid", lat: 40.4168, lon: -3.7038 },
+  { label: "Lisbon, Portugal", aliases: ["lisbon", "portugal"], tz: "Europe/Lisbon", lat: 38.7223, lon: -9.1393 },
+  { label: "Athens, Greece", aliases: ["athens", "greece"], tz: "Europe/Athens", lat: 37.9838, lon: 23.7275 },
+  { label: "Stockholm, Sweden", aliases: ["stockholm", "sweden"], tz: "Europe/Stockholm", lat: 59.3293, lon: 18.0686 },
+  { label: "Warsaw, Poland", aliases: ["warsaw", "poland"], tz: "Europe/Warsaw", lat: 52.2297, lon: 21.0122 },
+  { label: "Zurich, Switzerland", aliases: ["zurich", "zürich", "switzerland"], tz: "Europe/Zurich", lat: 47.3769, lon: 8.5417 },
+  { label: "Vienna, Austria", aliases: ["vienna", "wien", "austria"], tz: "Europe/Vienna", lat: 48.2082, lon: 16.3738 },
+  { label: "New York, USA", aliases: ["new york", "nyc", "new york city", "brooklyn"], tz: "America/New_York", lat: 40.7128, lon: -74.006 },
+  { label: "Boston, USA", aliases: ["boston"], tz: "America/New_York", lat: 42.3601, lon: -71.0589 },
+  { label: "Washington, DC, USA", aliases: ["washington", "washington dc", "dc"], tz: "America/New_York", lat: 38.9072, lon: -77.0369 },
+  { label: "Miami, USA", aliases: ["miami"], tz: "America/New_York", lat: 25.7617, lon: -80.1918 },
+  { label: "Chicago, USA", aliases: ["chicago"], tz: "America/Chicago", lat: 41.8781, lon: -87.6298 },
+  { label: "Houston, USA", aliases: ["houston"], tz: "America/Chicago", lat: 29.7604, lon: -95.3698 },
+  { label: "Denver, USA", aliases: ["denver"], tz: "America/Denver", lat: 39.7392, lon: -104.9903 },
+  { label: "Phoenix, USA", aliases: ["phoenix"], tz: "America/Phoenix", lat: 33.4484, lon: -112.074 },
+  { label: "Los Angeles, USA", aliases: ["los angeles", "la", "l.a.", "hollywood"], tz: "America/Los_Angeles", lat: 34.0522, lon: -118.2437 },
+  { label: "San Francisco, USA", aliases: ["san francisco", "sf", "bay area"], tz: "America/Los_Angeles", lat: 37.7749, lon: -122.4194 },
+  { label: "Seattle, USA", aliases: ["seattle"], tz: "America/Los_Angeles", lat: 47.6062, lon: -122.3321 },
+  { label: "Anchorage, USA", aliases: ["anchorage", "alaska"], tz: "America/Anchorage", lat: 61.2181, lon: -149.9003 },
+  { label: "Honolulu, USA", aliases: ["honolulu", "hawaii"], tz: "Pacific/Honolulu", lat: 21.3069, lon: -157.8583 },
+  { label: "Toronto, Canada", aliases: ["toronto", "canada"], tz: "America/Toronto", lat: 43.6532, lon: -79.3832 },
+  { label: "Vancouver, Canada", aliases: ["vancouver"], tz: "America/Vancouver", lat: 49.2827, lon: -123.1207 },
+  { label: "Mexico City, Mexico", aliases: ["mexico city", "mexico", "cdmx"], tz: "America/Mexico_City", lat: 19.4326, lon: -99.1332 },
+  { label: "São Paulo, Brazil", aliases: ["sao paulo", "são paulo", "brazil"], tz: "America/Sao_Paulo", lat: -23.5505, lon: -46.6333 },
+  { label: "Buenos Aires, Argentina", aliases: ["buenos aires", "argentina"], tz: "America/Argentina/Buenos_Aires", lat: -34.6037, lon: -58.3816 },
+  { label: "Santiago, Chile", aliases: ["santiago", "chile"], tz: "America/Santiago", lat: -33.4489, lon: -70.6693 },
+  { label: "Lima, Peru", aliases: ["lima", "peru"], tz: "America/Lima", lat: -12.0464, lon: -77.0428 },
+  { label: "Bogotá, Colombia", aliases: ["bogota", "bogotá", "colombia"], tz: "America/Bogota", lat: 4.711, lon: -74.0721 },
+  { label: "Sydney, Australia", aliases: ["sydney", "australia"], tz: "Australia/Sydney", lat: -33.8688, lon: 151.2093 },
+  { label: "Melbourne, Australia", aliases: ["melbourne"], tz: "Australia/Melbourne", lat: -37.8136, lon: 144.9631 },
+  { label: "Auckland, New Zealand", aliases: ["auckland", "new zealand", "nz"], tz: "Pacific/Auckland", lat: -36.8509, lon: 174.7645 },
+  { label: "UTC", aliases: ["utc", "gmt", "zulu"], tz: "UTC", lat: null, lon: null },
+];
+
+const IANA_TIMEZONES = (() => {
+  try {
+    if (typeof Intl !== "undefined" && typeof Intl.supportedValuesOf === "function") {
+      return Intl.supportedValuesOf("timeZone");
+    }
+  } catch (_error) {
+    /* fall through */
+  }
+  return Array.from(new Set(["UTC", ...KNOWN_PLACES.map((place) => place.tz)])).sort();
+})();
+
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   setFormDefaults();
+  initTimezonePickers();
   bindNavigation();
   bindForms();
   activateView(viewFromHash(), { updateHash: false });
@@ -74,10 +148,10 @@ function setFormDefaults() {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
   byId("chart-date").value = localDate;
-  byId("chart-tz").value = timezone;
   byId("transit-date").value = localDate;
   byId("transit-time").value = localTime;
-  byId("transit-tz").value = timezone;
+  // Hidden tz fields + picker displays are filled by initTimezonePickers / setTimezoneValue.
+  state.defaultTimezone = timezone;
 }
 
 async function checkHealth() {
@@ -437,6 +511,7 @@ function renderChartReport(report, root, { saved = false } = {}) {
 
   root.append(makePointSection("Angles", angles, "No angles were calculated for this chart.", { showReadings: true }));
   root.append(makePointSection("Planets", planets, "No planetary positions are available."));
+  root.append(makePlanetsInHousesSection(planets, asArray(chart.cusps).length > 0));
   root.append(makeHouseSection(houses));
   root.append(makePlacementSection(planets, interpretedPlanets.length > 0));
   root.append(
@@ -580,6 +655,117 @@ function makePointSection(title, entries, emptyText, { showReadings = false } = 
     grid.append(card);
   }
   body.append(grid);
+  return section;
+}
+
+function makePlanetsInHousesSection(entries, housesCalculated) {
+  const housed = entries.filter(
+    (entry) => asObject(entry.point).house !== null && asObject(entry.point).house !== undefined,
+  );
+  const { section, body } = makeSection("Planets in houses", housed.length || null, "planets-in-houses");
+  body.append(
+    element(
+      "p",
+      "section-note",
+      housesCalculated
+        ? "Each body is shown in its equal-house arena (1–12). House text is symbolic life-area language, not a prediction."
+        : "Houses were not calculated for this chart (need known civil time and both latitude and longitude).",
+    ),
+  );
+  if (!housesCalculated || !housed.length) {
+    body.append(
+      element(
+        "p",
+        "none-note",
+        housesCalculated
+          ? "No planetary house assignments are available."
+          : "Enable time + location (and angles/houses) to place planets in houses.",
+      ),
+    );
+    return section;
+  }
+
+  const table = element("table", "data-table");
+  const head = element("thead");
+  const headRow = element("tr");
+  for (const label of ["Planet", "House", "Sign", "Degree", "Notes"]) headRow.append(element("th", "", label));
+  head.append(headRow);
+  const tbody = element("tbody");
+  const sorted = [...housed].sort((left, right) => {
+    const a = asObject(left.point);
+    const b = asObject(right.point);
+    const houseDelta = Number(a.house) - Number(b.house);
+    if (houseDelta !== 0) return houseDelta;
+    return String(a.id).localeCompare(String(b.id));
+  });
+  for (const entry of sorted) {
+    const point = asObject(entry.point);
+    const row = element("tr");
+    const notes = [];
+    if (point.retro) notes.push("Rx");
+    if (point.blend && point.secondary_sign) notes.push(`blend ${displayName(point.secondary_sign)}`);
+    row.append(
+      element("td", "", displayName(point.name || point.id)),
+      element("td", "house-number-cell", String(point.house)),
+      element("td", "", displayName(point.sign || "Unknown")),
+      element("td", "", `${numberText(point.degree_in_sign, 4)}°`),
+      element("td", "", notes.join(" · ") || "—"),
+    );
+    tbody.append(row);
+  }
+  table.append(head, tbody);
+  const scroll = element("div", "table-scroll");
+  scroll.append(table);
+  body.append(scroll);
+
+  const byHouse = new Map();
+  for (const entry of sorted) {
+    const house = Number(asObject(entry.point).house);
+    if (!byHouse.has(house)) byHouse.set(house, []);
+    byHouse.get(house).push(entry);
+  }
+  const stack = element("div", "readings-stack house-occupancy-stack");
+  for (const house of [...byHouse.keys()].sort((a, b) => a - b)) {
+    const group = element("article", "house-occupancy-card");
+    const occupants = byHouse.get(house);
+    group.append(
+      element(
+        "h4",
+        "",
+        `House ${house} · ${occupants.map((entry) => displayName(asObject(entry.point).name || asObject(entry.point).id)).join(", ")}`,
+      ),
+    );
+    for (const entry of occupants) {
+      const point = asObject(entry.point);
+      const block = element("div", "house-occupant-block");
+      block.append(
+        element(
+          "p",
+          "placement-line",
+          `${displayName(point.name || point.id)} in House ${point.house} · ${displayName(point.sign)} ${numberText(point.degree_in_sign, 4)}°`,
+        ),
+      );
+      const houseReadings = asArray(entry.readings).filter((reading) =>
+        String(asObject(reading).id || "").startsWith("planet_in_house:"),
+      );
+      const readingList = element("div", "reading-list");
+      if (houseReadings.length) {
+        for (const reading of houseReadings) readingList.append(makeReadingCard(asObject(reading)));
+      } else {
+        readingList.append(
+          element(
+            "p",
+            "none-note",
+            "No planet-in-house interpretation record was joined for this placement.",
+          ),
+        );
+      }
+      block.append(readingList);
+      group.append(block);
+    }
+    stack.append(group);
+  }
+  body.append(stack);
   return section;
 }
 
@@ -808,28 +994,287 @@ function makeTransitPlacementsSection(placements) {
     body.append(element("p", "none-note", "No transit placements are available."));
     return section;
   }
-  const grid = element("div", "placement-grid");
-  for (const placement of placements) {
-    const card = element("article", "placement-card");
-    const head = element("div", "placement-card-head");
-    head.append(
-      element("span", "placement-name", displayName(placement.id)),
-      placement.time_sensitive ? element("span", "status-badge stub", "Time-sensitive") : element("span"),
-    );
-    card.append(head);
-    card.append(element("p", "placement-line", `${displayName(placement.sign)} ${numberText(placement.degree_in_sign, 4)}°`));
-    const details = element("div", "point-detail");
-    if (placement.natal_house !== null && placement.natal_house !== undefined) {
-      details.append(detailChip(`Natal house ${placement.natal_house}`));
-    }
-    if (placement.blend && placement.secondary_sign) {
-      details.append(detailChip(`Boundary blend · ${displayName(placement.secondary_sign)}`, "blend"));
-    }
-    if (details.childElementCount) card.append(details);
-    grid.append(card);
+  body.append(
+    element(
+      "p",
+      "section-note",
+      "Moving bodies are labeled in Midpoint signs. When the natal has houses, each transit body is also shown in the natal house it occupies.",
+    ),
+  );
+
+  const table = element("table", "data-table");
+  const head = element("thead");
+  const headRow = element("tr");
+  for (const label of ["Transit body", "Sign", "Degree", "Natal house", "Notes"]) {
+    headRow.append(element("th", "", label));
   }
-  body.append(grid);
+  head.append(headRow);
+  const tbody = element("tbody");
+  const sorted = [...placements].sort((left, right) => {
+    const houseLeft = left.natal_house == null ? 99 : Number(left.natal_house);
+    const houseRight = right.natal_house == null ? 99 : Number(right.natal_house);
+    if (houseLeft !== houseRight) return houseLeft - houseRight;
+    return String(left.id).localeCompare(String(right.id));
+  });
+  for (const placement of sorted) {
+    const row = element("tr");
+    const notes = [];
+    if (placement.time_sensitive) notes.push("time-sensitive");
+    if (placement.blend && placement.secondary_sign) {
+      notes.push(`blend ${displayName(placement.secondary_sign)}`);
+    }
+    row.append(
+      element("td", "", displayName(placement.id)),
+      element("td", "", displayName(placement.sign)),
+      element("td", "", `${numberText(placement.degree_in_sign, 4)}°`),
+      element(
+        "td",
+        "house-number-cell",
+        placement.natal_house !== null && placement.natal_house !== undefined
+          ? String(placement.natal_house)
+          : "—",
+      ),
+      element("td", "", notes.join(" · ") || "—"),
+    );
+    tbody.append(row);
+  }
+  table.append(head, tbody);
+  const scroll = element("div", "table-scroll");
+  scroll.append(table);
+  body.append(scroll);
+
+  const withHouse = sorted.filter(
+    (placement) => placement.natal_house !== null && placement.natal_house !== undefined,
+  );
+  if (withHouse.length) {
+    const byHouse = new Map();
+    for (const placement of withHouse) {
+      const house = Number(placement.natal_house);
+      if (!byHouse.has(house)) byHouse.set(house, []);
+      byHouse.get(house).push(placement);
+    }
+    const stack = element("div", "readings-stack house-occupancy-stack");
+    stack.append(element("h4", "", "By natal house"));
+    for (const house of [...byHouse.keys()].sort((a, b) => a - b)) {
+      const group = element("article", "house-occupancy-card");
+      const occupants = byHouse.get(house);
+      group.append(
+        element(
+          "h4",
+          "",
+          `Natal house ${house} · transit ${occupants.map((item) => displayName(item.id)).join(", ")}`,
+        ),
+      );
+      const list = element("ul", "house-occupant-list");
+      for (const placement of occupants) {
+        list.append(
+          element(
+            "li",
+            "",
+            `Transit ${displayName(placement.id)} in ${displayName(placement.sign)} ${numberText(placement.degree_in_sign, 4)}° (natal house ${placement.natal_house})`,
+          ),
+        );
+      }
+      group.append(list);
+      stack.append(group);
+    }
+    body.append(stack);
+  }
   return section;
+}
+
+function initTimezonePickers() {
+  document.querySelectorAll("[data-timezone-picker]").forEach((root) => {
+    const search = root.querySelector(".tz-search");
+    const hidden = root.querySelector('input[type="hidden"][name="tz"]');
+    const results = root.querySelector(".tz-results");
+    const display = root.querySelector(".tz-current-value");
+    if (!search || !hidden || !results || !display) return;
+
+    const setValue = (tz, meta = {}) => {
+      hidden.value = tz;
+      display.textContent = tz || "—";
+      if (meta.label) display.title = meta.label;
+      else display.removeAttribute("title");
+      search.dataset.resolvedTz = tz || "";
+      if (meta.fillCoords) {
+        maybeFillCoords(root, meta.lat, meta.lon);
+      }
+    };
+
+    const defaultTz = state.defaultTimezone || "UTC";
+    setValue(defaultTz);
+    search.value = defaultTz;
+    search.placeholder = "Tokyo, Japan or Asia/Tokyo";
+
+    let blurTimer = null;
+    search.addEventListener("focus", () => {
+      renderTimezoneResults(root, search.value);
+    });
+    search.addEventListener("input", () => {
+      renderTimezoneResults(root, search.value);
+    });
+    search.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        results.hidden = true;
+        return;
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const first = results.querySelector("[data-tz]");
+        if (first) first.click();
+      }
+    });
+    search.addEventListener("blur", () => {
+      blurTimer = window.setTimeout(() => {
+        results.hidden = true;
+        // If the user typed a bare IANA id, accept it.
+        const typed = search.value.trim();
+        if (typed && IANA_TIMEZONES.includes(typed)) {
+          setValue(typed);
+        } else if (hidden.value) {
+          search.value = hidden.value;
+        }
+      }, 150);
+    });
+    results.addEventListener("mousedown", (event) => {
+      // Keep focus long enough for the click to register.
+      event.preventDefault();
+    });
+    results.addEventListener("click", (event) => {
+      const option = event.target.closest("[data-tz]");
+      if (!option) return;
+      const tz = option.getAttribute("data-tz");
+      const label = option.getAttribute("data-label") || tz;
+      const lat = option.getAttribute("data-lat");
+      const lon = option.getAttribute("data-lon");
+      setValue(tz, {
+        label,
+        fillCoords: true,
+        lat: lat === "" || lat == null ? null : Number(lat),
+        lon: lon === "" || lon == null ? null : Number(lon),
+      });
+      search.value = label.includes("/") ? tz : `${label} · ${tz}`;
+      results.hidden = true;
+      if (blurTimer) window.clearTimeout(blurTimer);
+    });
+  });
+}
+
+function maybeFillCoords(pickerRoot, lat, lon) {
+  if (lat == null || lon == null || Number.isNaN(lat) || Number.isNaN(lon)) return;
+  const latId = pickerRoot.getAttribute("data-lat-field");
+  const lonId = pickerRoot.getAttribute("data-lon-field");
+  if (!latId || !lonId) return;
+  const latInput = byId(latId);
+  const lonInput = byId(lonId);
+  if (!latInput || !lonInput) return;
+  const latEmpty = !String(latInput.value || "").trim();
+  const lonEmpty = !String(lonInput.value || "").trim();
+  if (latEmpty && lonEmpty) {
+    latInput.value = String(lat);
+    lonInput.value = String(lon);
+  }
+}
+
+function normalizeSearchText(value) {
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[_/,-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function searchTimezoneMatches(query, limit = 80) {
+  const q = normalizeSearchText(query);
+  const matches = [];
+  const seen = new Set();
+
+  const push = (item) => {
+    const key = `${item.tz}::${item.label}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    matches.push(item);
+  };
+
+  if (!q) {
+    for (const place of KNOWN_PLACES.slice(0, 24)) {
+      push({
+        kind: "place",
+        label: place.label,
+        tz: place.tz,
+        lat: place.lat,
+        lon: place.lon,
+        rank: 0,
+      });
+    }
+    for (const tz of IANA_TIMEZONES.slice(0, limit)) {
+      push({ kind: "zone", label: tz, tz, lat: null, lon: null, rank: 1 });
+    }
+    return matches.slice(0, limit);
+  }
+
+  for (const place of KNOWN_PLACES) {
+    const haystacks = [place.label, place.tz, ...place.aliases].map(normalizeSearchText);
+    const hit = haystacks.some((text) => text.includes(q) || q.includes(text));
+    if (!hit) continue;
+    const exact = haystacks.some((text) => text === q);
+    push({
+      kind: "place",
+      label: place.label,
+      tz: place.tz,
+      lat: place.lat,
+      lon: place.lon,
+      rank: exact ? 0 : 1,
+    });
+  }
+
+  for (const tz of IANA_TIMEZONES) {
+    const norm = normalizeSearchText(tz);
+    if (!(norm.includes(q) || tz.toLowerCase().includes(query.trim().toLowerCase()))) continue;
+    push({
+      kind: "zone",
+      label: tz,
+      tz,
+      lat: null,
+      lon: null,
+      rank: norm === q ? 0 : norm.startsWith(q) ? 2 : 3,
+    });
+  }
+
+  matches.sort((a, b) => a.rank - b.rank || a.label.localeCompare(b.label));
+  return matches.slice(0, limit);
+}
+
+function renderTimezoneResults(pickerRoot, query) {
+  const results = pickerRoot.querySelector(".tz-results");
+  if (!results) return;
+  const matches = searchTimezoneMatches(query, 100);
+  results.replaceChildren();
+  if (!matches.length) {
+    results.append(element("li", "tz-empty", "No matching place or IANA zone."));
+    results.hidden = false;
+    return;
+  }
+  for (const match of matches) {
+    const item = element("li", "tz-option");
+    item.setAttribute("role", "option");
+    item.setAttribute("data-tz", match.tz);
+    item.setAttribute("data-label", match.label);
+    item.setAttribute("data-lat", match.lat == null ? "" : String(match.lat));
+    item.setAttribute("data-lon", match.lon == null ? "" : String(match.lon));
+    const title = element("span", "tz-option-title", match.label);
+    const meta = element(
+      "span",
+      "tz-option-meta",
+      match.kind === "place" ? match.tz : "IANA timezone",
+    );
+    item.append(title, meta);
+    results.append(item);
+  }
+  results.hidden = false;
 }
 
 function makeReadingCard(reading) {

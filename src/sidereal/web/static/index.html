@@ -84,10 +84,16 @@
                     <input id="chart-time" name="time" type="time" step="60">
                   </div>
                 </div>
-                <div class="field">
-                  <label for="chart-tz">IANA timezone</label>
-                  <input id="chart-tz" name="tz" type="text" required placeholder="America/New_York" autocomplete="off" spellcheck="false">
-                  <p class="field-help">Use a city-based zone so historical daylight-saving rules can be applied.</p>
+                <div class="field timezone-picker" data-timezone-picker data-lat-field="chart-lat" data-lon-field="chart-lon">
+                  <label for="chart-tz-search">Timezone or place</label>
+                  <input id="chart-tz-search" class="tz-search" type="search" placeholder="Tokyo, Japan or Asia/Tokyo" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-controls="chart-tz-results">
+                  <input id="chart-tz" name="tz" type="hidden" required value="">
+                  <div class="tz-current" aria-live="polite">
+                    <span class="tz-current-label">Selected zone</span>
+                    <code class="tz-current-value" id="chart-tz-display">—</code>
+                  </div>
+                  <ul id="chart-tz-results" class="tz-results" role="listbox" hidden></ul>
+                  <p class="field-help">Type a city (e.g. Tokyo, Japan) or scroll/filter IANA zones. Picking a known place also fills lat/lon when those fields are empty.</p>
                 </div>
                 <div class="field compact-field" data-time-fold>
                   <label for="chart-fold">Repeated clock time</label>
@@ -229,9 +235,16 @@
                     <input id="transit-time" name="time" type="time" step="60" required>
                   </div>
                 </div>
-                <div class="field">
-                  <label for="transit-tz">IANA timezone</label>
-                  <input id="transit-tz" name="tz" type="text" required placeholder="America/New_York" autocomplete="off" spellcheck="false">
+                <div class="field timezone-picker" data-timezone-picker data-lat-field="transit-lat" data-lon-field="transit-lon">
+                  <label for="transit-tz-search">Timezone or place</label>
+                  <input id="transit-tz-search" class="tz-search" type="search" placeholder="Tokyo, Japan or Asia/Tokyo" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-controls="transit-tz-results">
+                  <input id="transit-tz" name="tz" type="hidden" required value="">
+                  <div class="tz-current" aria-live="polite">
+                    <span class="tz-current-label">Selected zone</span>
+                    <code class="tz-current-value" id="transit-tz-display">—</code>
+                  </div>
+                  <ul id="transit-tz-results" class="tz-results" role="listbox" hidden></ul>
+                  <p class="field-help">Search a city or IANA zone; scroll the filtered list. Known places can fill empty transit coordinates.</p>
                 </div>
                 <div class="field compact-field">
                   <label for="transit-fold">Repeated clock time</label>
