@@ -1616,6 +1616,28 @@ footer p {
 }
 
 /* Planets in houses */
+.character-synthesis {
+  margin: 0.55rem 0 0.7rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.character-placement {
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+}
+
+.character-placement > h5 {
+  margin: 0 0 0.45rem;
+  color: var(--lavender);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .house-number-cell {
   font-variant-numeric: tabular-nums;
   font-weight: 700;

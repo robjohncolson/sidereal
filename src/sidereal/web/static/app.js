@@ -869,17 +869,28 @@ function makeRelationshipsSection(entries, { transit = false, geometryOnly = fal
     body.append(element("p", "none-note", "No configured major aspects were found."));
     return section;
   }
+  body.append(
+    element(
+      "p",
+      "section-note",
+      transit
+        ? "Each hit includes planetary aspect lore plus Midpoint sign character for the moving body and the natal point."
+        : "Each aspect includes planetary relationship lore plus Midpoint zodiac character for both bodies as placed in this chart.",
+    ),
+  );
   const list = element("div", "relationships-list");
   for (const entry of entries) {
     const aspect = asObject(entry.aspect || entry);
     const reading = entry.reading ? asObject(entry.reading) : null;
+    const character = asObject(entry.character);
     const card = element("article", "relationship-card");
     const head = element("div", "relationship-head");
     const bodyA = transit ? aspect.transit_body : aspect.body_a;
     const bodyB = transit ? aspect.natal_point : aspect.body_b;
-    const prefixA = transit ? `Transit ${displayName(bodyA)}` : displayName(bodyA);
-    const prefixB = transit ? `natal ${displayName(bodyB)}` : displayName(bodyB);
-    head.append(element("h4", "relationship-title", `${prefixA} ${displayName(aspect.aspect_id).toLowerCase()} ${prefixB}`));
+    const fallbackTitle = transit
+      ? `Transit ${displayName(bodyA)} ${displayName(aspect.aspect_id).toLowerCase()} natal ${displayName(bodyB)}`
+      : `${displayName(bodyA)} ${displayName(aspect.aspect_id).toLowerCase()} ${displayName(bodyB)}`;
+    head.append(element("h4", "relationship-title", character.title || fallbackTitle));
     if (Number.isFinite(Number(aspect.force))) {
       const meter = element("progress", "force-meter");
       meter.max = 1;
@@ -899,10 +910,37 @@ function makeRelationshipsSection(entries, { transit = false, geometryOnly = fal
         ].join(" · "),
       ),
     );
+    if (character.synthesis) {
+      card.append(element("p", "character-synthesis", character.synthesis));
+    }
     if (reading) {
       card.append(makeReadingCard(reading));
     } else if (geometryOnly) {
       card.append(element("p", "none-note", "Geometry only. Re-interpret this chart to join current reading text."));
+    }
+    const placementSides = transit
+      ? [
+          ["transit_placement", "Transit · sign character"],
+          ["natal_placement", "Natal · sign character"],
+        ]
+      : [
+          ["body_a_placement", "First body · sign character"],
+          ["body_b_placement", "Second body · sign character"],
+        ];
+    for (const [key, label] of placementSides) {
+      const side = asObject(character[key]);
+      const sideReading = side.reading ? asObject(side.reading) : null;
+      if (!sideReading) continue;
+      const block = element("div", "character-placement");
+      const headingBits = [label];
+      if (side.sign) headingBits.push(displayName(side.sign));
+      if (side.house !== null && side.house !== undefined) headingBits.push(`House ${side.house}`);
+      if (side.natal_house !== null && side.natal_house !== undefined) {
+        headingBits.push(`Natal house ${side.natal_house}`);
+      }
+      block.append(element("h5", "", headingBits.join(" · ")));
+      block.append(makeReadingCard(sideReading));
+      card.append(block);
     }
     list.append(card);
   }
