@@ -94,8 +94,13 @@ Shipped seeds:
 | `seed_5_relationships_v1.json` | 210 ready personal↔outer/North Node and personal↔Ascendant/Midheaven major-aspect readings |
 | `seed_6_self_aspects_v1.json` | 35 ready same-body transit aspects for Sun–Saturn |
 | `seed_7_sign_character_v1.json` | 91 ready Jupiter–Pluto + lunar nodes × all 13 Midpoint signs (zodiac character) |
+| `seed_8_bobby_chart_deep_v1.json` | 43 deeper placement and natal-aspect readings |
+| `seed_9_parents_deep_v1.json` | 86 deeper placement and natal-aspect readings shared across two charts |
+| `seed_10_family_synastry_v1.json` | 66 sign-agnostic family synastry aspect readings |
+| `seed_11_family_placements_v1.json` | 101 v7 placement readings active across the three family studies |
+| `seed_12_family_tight_aspects_v1.json` | 57 v7 sign-agnostic aspect readings active at 2° exactness or tighter |
 
-After import: **872 ready**, **95 stubs**, **0 missing**. Seed 6 expands the
+After import: **897 ready**, **70 stubs**, **0 missing**. Seed 6 expands the
 inventory with all five major same-body aspect keys for the planets and North
 Node that can occur on both sides of a transit. Its 35 Sun–Saturn readings are
 ready; the 20 outer-planet/North-Node self-aspects remain honest stubs. Seed 7
@@ -104,6 +109,14 @@ zodiac color (not only planet-to-planet lore). Seeds 3–4 cover every
 sign—including Ophiuchus—on every house cusp, Mercury/Venus/Mars in every sign,
 all twelve houses for Sun through Pluto, and both calculated lunar nodes in
 every house. Seed 5 fills the highest-value remaining relationship language.
+Seeds 8–10 establish deeper family-study text. Seeds 11–12 supersede every
+placement active in the three selected natal reports and every inventory-backed
+aspect at 2° exactness or tighter across those natal and synastry reports with
+version 7 prose. Shared aspects remain sign-agnostic because the compose layer
+adds each chart's Midpoint sign character. Ascendant↔Ascendant and
+Midheaven↔Midheaven geometry stays explicitly `not_applicable`; no angle
+self-keys are added to the inventory. The family seed files contain no birth
+moments, coordinates, saved-chart identifiers, or report snapshots.
 `gaps` audits the complete inventory. `SIDEREAL_DB_PATH` changes the default
 `data/sidereal.db` path. A chart still calculates if that database does not
 exist; its report lists the interpretation keys as missing.
@@ -341,8 +354,23 @@ guard continues to block DNS-rebinding origins.
 The browser provides chart calculation and readable reports, a searchable
 timezone/place picker, saved-chart library actions, current-DB
 reinterpretation, transits to a selected saved natal, and two-saved-chart
-synastry. Chart reports retain their planets-in-houses tables and by-house
-readings; transit reports retain their moving-planet-by-natal-house view.
+synastry. Synastry studies can be saved under the gitignored
+`charts/synastry/` directory, reopened locally, and refreshed from their linked
+natal snapshots plus the current interpretation DB. Chart reports retain their
+planets-in-houses tables and by-house readings; transit reports retain their
+moving-planet-by-natal-house view.
+
+Persistent synastry snapshots require two saved natal charts so every saved
+study remains refreshable. Refresh refuses to write if the DB or either linked
+natal is unavailable. Snapshot IDs are safe lowercase filename tokens;
+colliding new labels receive a numeric suffix, while replacement is reserved
+for the explicit refresh path.
+
+Snapshot files use best-effort owner-only POSIX permissions in addition to the
+localhost and gitignore boundaries. On WSL paths mounted from Windows (such as
+`/mnt/c`), mode bits may still display as `0777`; Windows ACLs remain the actual
+filesystem protection. Use a Linux-filesystem `--charts-dir` when meaningful
+POSIX owner-only modes are required.
 Natal and transit results show the Python-rendered wheel above the placement
 tables. Its JSON API uses the same validation and calculation paths as the CLI:
 
@@ -352,6 +380,9 @@ tables. Its JSON API uses the same validation and calculation paths as the CLI:
 | `POST` | `/api/chart` | Calculate and compose a full chart report |
 | `POST` | `/api/transit` | Run a saved-natal or inline-natal transit report |
 | `POST` | `/api/synastry` | Compare two saved and/or inline fixed charts |
+| `GET` | `/api/synastries` | List private local synastry snapshots |
+| `GET` | `/api/synastries/{id}` | Open one saved synastry snapshot |
+| `POST` | `/api/synastries/{id}/refresh` | Recompose a linked snapshot from natal geometry and the current DB |
 | `GET` | `/api/charts` | List saved charts |
 | `GET` | `/api/charts/{id}` | Read one frozen saved geometry record |
 | `POST` | `/api/charts` | Calculate and save a chart locally |

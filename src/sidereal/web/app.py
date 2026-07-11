@@ -25,7 +25,15 @@ from ..interpret.compose import compose_report
 from ..interpret.store import InterpretationStore, InterpretationStoreError
 from ..interpret.synastry import calculate_synastry_report
 from ..interpret.transit import calculate_transit_study
-from ..library import list_charts, load_chart, save_chart
+from ..library import (
+    AmbiguousChartError,
+    ChartLibraryError,
+    ChartNotFoundError,
+    list_charts,
+    load_chart,
+    save_chart,
+)
+from ..synastry_library import list_synastries, load_synastry, save_synastry_snapshot
 from ..types import MomentInput
 from ..wheel import render_svg
 
@@ -358,7 +366,7 @@ def create_app(
         }
 
         with _optional_store(settings) as store:
-            return calculate_synastry_report(
+            report = calculate_synastry_report(
                 charts["a"],
                 charts["b"],
                 config,
@@ -368,6 +376,89 @@ def create_app(
                 source_b=sources["b"],
                 id_b=ids["b"],
             ).to_dict()
+
+        if _boolean(options, "save", False) or payload.get("save") is True:
+            if ids["a"] is None or ids["b"] is None:
+                raise ValueError(
+                    "saving a refreshable synastry snapshot requires two saved charts"
+                )
+            label = payload.get("label")
+            if label in (None, ""):
+                label_a = str(report.get("chart_a", {}).get("label") or "A")
+                label_b = str(report.get("chart_b", {}).get("label") or "B")
+                label = f"{label_a} ↔ {label_b}"
+            snapshot = save_synastry_snapshot(
+                report,
+                label=label,
+                charts_dir=settings.charts_dir,
+                snapshot_id=_optional_snapshot_id(payload.get("snapshot_id")),
+                chart_a_id=ids["a"],
+                chart_b_id=ids["b"],
+            )
+            report["saved_synastry"] = snapshot.summary_dict()
+        return report
+
+    @app.get("/api/synastries")
+    def synastries_index() -> dict[str, Any]:
+        return {
+            "synastries": [
+                item.summary_dict() for item in list_synastries(settings.charts_dir)
+            ]
+        }
+
+    @app.get("/api/synastries/{snapshot_id}")
+    def synastry_show(snapshot_id: str) -> dict[str, Any]:
+        try:
+            record = load_synastry(snapshot_id, settings.charts_dir)
+        except ChartNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except AmbiguousChartError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except ChartLibraryError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        payload = record.to_dict()
+        payload["report"] = dict(record.report)
+        return payload
+
+    @app.post("/api/synastries/{snapshot_id}/refresh")
+    def synastry_refresh(snapshot_id: str) -> dict[str, Any]:
+        """Re-run synastry from linked natal ids and overwrite the snapshot."""
+
+        try:
+            existing = load_synastry(snapshot_id, settings.charts_dir)
+        except ChartNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        if not existing.chart_a_id or not existing.chart_b_id:
+            raise HTTPException(
+                status_code=400,
+                detail="This snapshot has no linked natal chart ids; re-run synastry from the form and save again.",
+            )
+        record_a = load_chart(existing.chart_a_id, settings.charts_dir)
+        record_b = load_chart(existing.chart_b_id, settings.charts_dir)
+        config = replace(record_a.chart_config(), include_patterns=False)
+        with _required_store(settings) as store:
+            report = calculate_synastry_report(
+                record_a.chart_object(),
+                record_b.chart_object(),
+                config,
+                store,
+                source_a="saved",
+                id_a=record_a.id,
+                source_b="saved",
+                id_b=record_b.id,
+            ).to_dict()
+        snapshot = save_synastry_snapshot(
+            report,
+            label=existing.label,
+            charts_dir=settings.charts_dir,
+            snapshot_id=existing.id,
+            chart_a_id=record_a.id,
+            chart_b_id=record_b.id,
+            overwrite=True,
+        )
+        payload = snapshot.to_dict()
+        payload["saved_synastry"] = snapshot.summary_dict()
+        return payload
 
     @app.get("/api/db/gaps")
     def database_gaps(chart_id: str | None = Query(default=None)) -> dict[str, Any]:
@@ -576,6 +667,15 @@ def _boolean(options: Mapping[str, Any], key: str, default: bool) -> bool:
     if not isinstance(value, bool):
         raise ValueError(f"options.{key} must be a boolean")
     return value
+
+
+def _optional_snapshot_id(value: Any) -> str | None:
+    if value is None or value == "":
+        return None
+    if not isinstance(value, str):
+        raise ValueError("snapshot_id must be a string when provided")
+    text = value.strip()
+    return text or None
 
 
 @contextmanager

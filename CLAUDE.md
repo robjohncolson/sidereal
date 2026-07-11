@@ -96,8 +96,12 @@ personal-planet major aspects (105) · `seed_3` placements/house cusps/MC/patter
 (256) · `seed_4` Mercury/Venus/Mars×sign plus outer/node×house placements (99)
 · `seed_5` personal↔outer/node and personal↔Asc/MC major aspects (210) ·
 `seed_6` same-body Sun–Saturn transit aspects (35) · `seed_7` remaining
-planet/node×sign character (91). Import result: 872 ready / 95 stub / 0
-missing across 967 keys. The SQLite database schema is version 2 (version 1
+planet/node×sign character (91) · `seed_8`–`seed_10` deeper family natal and
+synastry waves · `seed_11` 101 active family placements at v7 · `seed_12`
+57 active tight aspects at v7. Import result: 897 ready / 70 stub / 0 missing
+across 967 keys. Family aspect prose must remain sign-agnostic; chart-specific
+Midpoint color belongs to composition. Never create Asc↔Asc or MC↔MC
+interpretation keys. The SQLite database schema is version 2 (version 1
 migrates transactionally); seed JSON remains version 1. Regenerate with
 `python -m sidereal.interpret.generate_seeds` and keep all seed output
 deterministic.
@@ -122,6 +126,9 @@ window for that epoch. Geometry beats marketing date labels.
   `interpret/audit.py`: report-scoped interpretation-key extraction.
 - `synastry.py`: pure, role-preserving two-fixed-chart geometry in J2000;
   `interpret/synastry.py`: symbolic report composition and one DB join.
+- `synastry_library.py`: strict private JSON snapshots under
+  `charts/synastry/`, linked to saved natal ids for current-DB refresh. Snapshot
+  ids are bounded safe ASCII and must never be treated as arbitrary paths.
 - `wheel.py`: deterministic, render-only SVG over stored chart geometry; it
   must not calculate positions, signs, houses, or aspects.
 - `web/`: optional FastAPI/static same-origin shell over the same chart,

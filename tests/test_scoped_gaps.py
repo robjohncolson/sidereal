@@ -67,7 +67,7 @@ def test_db_gaps_can_scope_to_report_json(
                     "readings": [
                         {"id": "planet:sun", "status": "ready"},
                         {
-                            "id": "aspect:neptune:square:uranus",
+                            "id": "aspect:neptune:opposition:uranus",
                             "status": "stub",
                         },
                         {"id": "planet_in_sign:chiron:aries", "status": "missing"},
@@ -96,7 +96,7 @@ def test_db_gaps_can_scope_to_report_json(
         1,
     )
     assert audit["ready_ids"] == ["planet:sun"]
-    assert audit["stub_ids"] == ["aspect:neptune:square:uranus"]
+    assert audit["stub_ids"] == ["aspect:neptune:opposition:uranus"]
     assert audit["missing_ids"] == ["planet_in_sign:chiron:aries"]
 
 

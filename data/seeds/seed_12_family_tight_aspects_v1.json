@@ -1,0 +1,1146 @@
+{
+  "records": [
+    {
+      "aspect_type": "opposition",
+      "body_a": "asc",
+      "body_b": "mercury",
+      "growth": "Slow the exchange by asking what was meant before answering how it appeared, then restate both the observable behavior and the intended message without forcing them to match.",
+      "id": "aspect:asc:opposition:mercury",
+      "keywords": [
+        "opposition",
+        "family",
+        "asc-mercury"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–Mercury opposition places visible style and reflective thought across a polarity. In one chart, immediate presentation may not reveal the full reasoning process; between charts, a family member’s words can challenge another’s first response, creating useful perspective when neither treats first impressions as complete evidence.",
+      "title": "Ascendant Opposition Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "asc",
+      "body_b": "jupiter",
+      "growth": "Offer encouragement as a choice rather than a forecast: name one strength you observe, suggest one manageable opportunity, and leave the decision with the person taking the risk.",
+      "id": "aspect:asc:sextile:jupiter",
+      "keywords": [
+        "sextile",
+        "family",
+        "asc-jupiter"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–Jupiter sextile offers a constructive opening between everyday presence and the urge to learn, broaden, or encourage. Natally it can support confident experimentation; across family charts, generosity and perspective may help someone take up more space, provided enthusiasm does not become pressure to perform optimism.",
+      "title": "Ascendant Sextile Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "asc",
+      "body_b": "sun",
+      "growth": "Ask how the person wants to be seen in the present, mirror one specific quality you genuinely notice, and update any family shorthand that no longer fits their choices.",
+      "id": "aspect:asc:sextile:sun",
+      "keywords": [
+        "sextile",
+        "family",
+        "asc-sun"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–Sun sextile links outward approach with a developing sense of identity in a cooperative way. In one chart it can make self-expression easier to practice; between family charts, recognition may strengthen confidence when it reflects who someone is now rather than preserving an old role for convenience.",
+      "title": "Ascendant Sextile Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "mercury",
+      "growth": "Separate content from delivery during repair: identify the idea worth discussing, name the effect of the presentation without assigning motive, and agree on a clearer way to revisit it.",
+      "id": "aspect:asc:square:mercury",
+      "keywords": [
+        "square",
+        "family",
+        "asc-mercury"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–Mercury square creates friction between immediate manner and the way ideas are formed or communicated. Natally, words and presentation may send different signals; across charts, a family member can react to tone or timing before hearing the thought, even when neither side intends disrespect.",
+      "title": "Ascendant Square Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "north_node",
+      "growth": "Identify one label or routine that feels too narrow, choose a small alternative behavior to test, and ask relatives to respond to the current action rather than the historical role.",
+      "id": "aspect:asc:square:north_node",
+      "keywords": [
+        "square",
+        "family",
+        "asc-north_node"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–North Node square describes tension between a familiar way of meeting the world and an emerging developmental direction. It does not prescribe destiny; in family relationships, established expectations about personality or role may rub against experiments that help someone grow beyond prior definitions.",
+      "title": "Ascendant Square North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "asc",
+      "body_b": "jupiter",
+      "growth": "Pair a hopeful invitation with practical limits: clarify time, resources, and consent, then celebrate participation without turning expansion into a measure of courage or loyalty.",
+      "id": "aspect:asc:trine:jupiter",
+      "keywords": [
+        "trine",
+        "family",
+        "asc-jupiter"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–Jupiter trine gives outward expression an easy connection with confidence, learning, humor, or a wider frame. It can make generosity visible and exploration feel natural; among family members, encouragement may flow readily, though ease can also hide overpromising or assumptions about what should feel possible.",
+      "title": "Ascendant Trine Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "asc",
+      "body_b": "mercury",
+      "growth": "Use the conversational ease to ask one precise follow-up question, and confirm the answer in the speaker’s terms instead of relying on a familiar story about how they think.",
+      "id": "aspect:asc:trine:mercury",
+      "keywords": [
+        "trine",
+        "family",
+        "asc-mercury"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–Mercury trine supports smooth traffic between observation, language, and visible behavior. Natally it can help ideas find an accessible delivery; across family charts, conversation may feel immediately familiar, but quick understanding should not substitute for checking nuance or changed circumstances.",
+      "title": "Ascendant Trine Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "asc",
+      "body_b": "sun",
+      "growth": "Name a current expression of identity that you respect, then ask what has changed recently so affirmation stays responsive rather than reinforcing a comfortable but outdated role.",
+      "id": "aspect:asc:trine:sun",
+      "keywords": [
+        "trine",
+        "family",
+        "asc-sun"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Ascendant–Sun trine aligns everyday presence with identity and creative self-expression. In a natal chart, showing up can feel congruent with inner purpose; between family charts, recognition and warmth may come easily, while genuine support still allows a person’s presentation and priorities to evolve.",
+      "title": "Ascendant Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "jupiter",
+      "body_b": "moon",
+      "growth": "Before offering perspective, ask whether the moment calls for listening, practical help, or brainstorming; match the size of the response to the request and revisit expansion later.",
+      "id": "aspect:jupiter:opposition:moon",
+      "keywords": [
+        "opposition",
+        "family",
+        "jupiter-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Moon opposition sets emotional security across from expansion, conviction, or the wish to improve circumstances. Big reassurance can nourish, but it can also outpace what feelings can absorb; in families, advice or optimism may land as pressure when simple presence is needed first.",
+      "title": "Jupiter Opposition Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "jupiter",
+      "body_b": "sun",
+      "growth": "Frame encouragement around a chosen experiment rather than a grand identity claim, agree on a realistic measure of progress, and make room for the person to change direction.",
+      "id": "aspect:jupiter:opposition:sun",
+      "keywords": [
+        "opposition",
+        "family",
+        "jupiter-sun"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Sun opposition magnifies questions of confidence, meaning, and self-definition. In one chart, ambition may alternate with the need to calibrate limits; across family charts, admiration and challenge can stimulate growth, yet praise, comparison, or certainty may inflate expectations around who someone should become.",
+      "title": "Jupiter Opposition Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "mars",
+      "growth": "Choose one bounded action with a named owner, deadline, and stopping condition; review what the attempt taught before expanding the project or recruiting more participation.",
+      "id": "aspect:jupiter:sextile:mars",
+      "keywords": [
+        "sextile",
+        "family",
+        "jupiter-mars"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Mars sextile creates a usable channel between initiative and a larger purpose, encouraging action that learns through experience. Natally it can support constructive momentum; between family charts, confidence may mobilize shared effort when scope, risk, and responsibility remain explicit.",
+      "title": "Jupiter Sextile Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "mc",
+      "growth": "Offer one resource or introduction with no obligation attached, then ask the recipient to define what a worthwhile outcome would look like before discussing further steps.",
+      "id": "aspect:jupiter:sextile:mc",
+      "keywords": [
+        "sextile",
+        "family",
+        "jupiter-mc"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Midheaven sextile offers opportunities to connect learning, perspective, or ethical meaning with visible responsibilities. It can support vocational exploration without promising status; in family relationships, advice and access may be helpful when they expand options rather than steering someone toward a borrowed definition of success.",
+      "title": "Jupiter Sextile Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "moon",
+      "growth": "Begin by naming the feeling you heard, ask what support would help now, and only then offer a broader frame as one possibility rather than the required positive interpretation.",
+      "id": "aspect:jupiter:sextile:moon",
+      "keywords": [
+        "sextile",
+        "family",
+        "jupiter-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Moon sextile links emotional responsiveness with hope, context, and room to grow. Natally it can help feelings recover perspective without denying their message; across family charts, warmth and encouragement may create safety when optimism follows acknowledgment instead of rushing past discomfort.",
+      "title": "Jupiter Sextile Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "jupiter",
+      "body_b": "mercury",
+      "growth": "For an important claim, write the big idea, two supporting facts, and one exception; invite the other person to test the reasoning rather than defend an intellectual role.",
+      "id": "aspect:jupiter:square:mercury",
+      "keywords": [
+        "square",
+        "family",
+        "jupiter-mercury"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Mercury square pushes detailed thinking against broad conclusions, beliefs, and ambitious plans. It can generate lively learning as well as exaggeration; in family conversations, one person may seek the principle while another tracks exceptions, producing debate that becomes useful when certainty is held lightly.",
+      "title": "Jupiter Square Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "jupiter",
+      "body_b": "mc",
+      "growth": "Define success in the chart holder’s own terms, choose one opportunity consistent with that definition, and review whether family encouragement is supplying resources or adding pressure.",
+      "id": "aspect:jupiter:trine:mc",
+      "keywords": [
+        "trine",
+        "family",
+        "jupiter-mc"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Midheaven trine gives broad perspective, confidence, and visible direction an easy working relationship. It can support meaningful contribution and mentorship, but not guaranteed achievement; among family members, support may open doors while also carrying unspoken assumptions about prestige or the proper path.",
+      "title": "Jupiter Trine Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "jupiter",
+      "body_b": "mercury",
+      "growth": "Use the easy exchange to investigate one topic together, assign each claim a source or uncertainty level, and let correction strengthen trust instead of treating it as defeat.",
+      "id": "aspect:jupiter:trine:mercury",
+      "keywords": [
+        "trine",
+        "family",
+        "jupiter-mercury"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Jupiter–Mercury trine supports fluent movement between facts, interpretation, and a wider conceptual frame. Natally it favors teaching and synthesis; across family charts, ideas may travel easily and shared humor or learning can connect generations, though conversational confidence is not the same as accuracy.",
+      "title": "Jupiter Trine Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "mars",
+      "body_b": "mc",
+      "growth": "Before taking action on a shared concern, name who owns the decision, ask what help is wanted, and convert urgency into one agreed next step with a clear boundary.",
+      "id": "aspect:mars:conjunction:mc",
+      "keywords": [
+        "conjunction",
+        "family",
+        "mars-mc"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Midheaven conjunction concentrates initiative, assertion, and visible direction. In one chart it can make action central to public contribution; across family charts, one person’s pace or decisiveness may strongly activate another’s goals, which can feel motivating or intrusive depending on consent and role clarity.",
+      "title": "Mars Conjunction Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "sun",
+      "growth": "State the concrete objective and the behavior in dispute, schedule pauses before escalation, and seek a division of roles that lets both agency and identity remain intact.",
+      "id": "aspect:mars:opposition:sun",
+      "keywords": [
+        "opposition",
+        "family",
+        "mars-sun"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Sun opposition places initiative and assertion across from identity, vitality, and creative authority. It can sharpen courage through challenge, yet in family dynamics disagreement may become personalized or competitive when a difference in method is treated as a verdict on character.",
+      "title": "Mars Opposition Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "uranus",
+      "growth": "When proposing change, give advance notice, identify what is reversible, and agree on a stop signal; channel excess momentum into a separate task that does not force immediate consensus.",
+      "id": "aspect:mars:opposition:uranus",
+      "keywords": [
+        "opposition",
+        "family",
+        "mars-uranus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Uranus opposition polarizes direct action and the demand for freedom, innovation, or abrupt change. Momentum can be inventive but uneven; across family charts, one person may accelerate while another resists control, making clear opt-outs and reversible experiments more useful than surprise.",
+      "title": "Mars Opposition Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "venus",
+      "growth": "Make requests explicit, treat hesitation as information rather than a challenge, and negotiate timing and reciprocity before assuming that warmth implies consent to an action.",
+      "id": "aspect:mars:opposition:venus",
+      "keywords": [
+        "opposition",
+        "family",
+        "mars-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Venus opposition sets direct desire and initiative across from values, affection, and the wish for relational ease. The polarity can create attraction or creative charge, but in families it may also expose different ways of pursuing, yielding, spending energy, or handling disagreement.",
+      "title": "Mars Opposition Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "sun",
+      "growth": "Agree on one action that advances a stated priority, let the person whose goal it is choose the pace, and recognize completion without immediately raising the demand.",
+      "id": "aspect:mars:sextile:sun",
+      "keywords": [
+        "sextile",
+        "family",
+        "mars-sun"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Sun sextile provides a constructive opening between action and coherent self-expression. Natally it can turn intention into manageable effort; across family charts, initiative may strengthen confidence when help is collaborative and does not make one person’s pace the standard for everyone.",
+      "title": "Mars Sextile Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "uranus",
+      "growth": "Pilot the smallest reversible change, decide in advance what evidence would support keeping it, and preserve an alternative route for anyone who does not want the same level of disruption.",
+      "id": "aspect:mars:sextile:uranus",
+      "keywords": [
+        "sextile",
+        "family",
+        "mars-uranus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Uranus sextile connects initiative with experimentation and practical innovation. It can help break stale routines through decisive trials; in family systems, energy for change becomes most constructive when novelty has consent, safeguards, and a defined way to learn from results.",
+      "title": "Mars Sextile Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mars",
+      "body_b": "venus",
+      "growth": "Name the request and the value behind it, invite a clear yes, no, or counteroffer, and pause if agreement depends on guilt, speed, or avoiding another person’s disappointment.",
+      "id": "aspect:mars:square:venus",
+      "keywords": [
+        "square",
+        "family",
+        "mars-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Venus square creates friction between pursuit, assertion, values, and the wish for harmony. It can animate creativity and clarify preference, but within families indirect accommodation may collide with forceful action, especially when desire or irritation is assumed rather than stated.",
+      "title": "Mars Square Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mars",
+      "body_b": "mars",
+      "growth": "Set a shared objective and divide responsibilities by preference, then appoint a deliberate pause point to assess strain, consent, and whether the original goal still matters.",
+      "id": "aspect:mars:trine:mars",
+      "keywords": [
+        "trine",
+        "family",
+        "mars-mars"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mars trine Mars suggests compatible ways of mobilizing energy, taking initiative, and meeting practical challenges. Across charts it can make coordinated family action feel natural, though shared momentum may also reinforce impatience or competition if nobody is assigned to check pace and impact.",
+      "title": "Mars Trine Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mars",
+      "body_b": "moon",
+      "growth": "Ask what concrete assistance would feel supportive, agree on its limit, and check afterward whether the action reduced burden or unintentionally replaced the other person’s choice.",
+      "id": "aspect:mars:trine:moon",
+      "keywords": [
+        "trine",
+        "family",
+        "mars-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mars–Moon trine lets action and emotional responsiveness cooperate with relative ease. Natally, feeling can guide timely effort; across family charts, practical protection or help may arrive quickly, while the recipient’s autonomy still matters because effective care is not the same as taking over.",
+      "title": "Mars Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mc",
+      "body_b": "moon",
+      "growth": "Map the public obligation and the private need on the same calendar, choose one protected recovery period, and renegotiate any family role that depends on invisible emotional labor.",
+      "id": "aspect:mc:opposition:moon",
+      "keywords": [
+        "opposition",
+        "family",
+        "mc-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Midheaven–Moon opposition balances visible responsibility and long-range direction against private needs, belonging, and emotional rhythm. In one chart, public demands may compete with restoration; across family charts, duty and care can pull in different directions without either side being selfish.",
+      "title": "Midheaven Opposition Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mc",
+      "body_b": "north_node",
+      "growth": "List which expectations are chosen, inherited, and no longer relevant, then take one reversible step toward the chosen direction and review what it teaches before committing further.",
+      "id": "aspect:mc:opposition:north_node",
+      "keywords": [
+        "opposition",
+        "family",
+        "mc-north_node"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Midheaven–North Node opposition places established direction or public expectations across from an evolving developmental path. It is not a fixed destiny statement; in families, inherited ideas about success may clarify choices or become constraints when the learner’s current priorities are not consulted.",
+      "title": "Midheaven Opposition North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mc",
+      "body_b": "saturn",
+      "growth": "Turn a discouraging limit into a specific constraint, decide who actually owns it, and build a phased plan with review points so responsibility supports progress rather than freezing it.",
+      "id": "aspect:mc:opposition:saturn",
+      "keywords": [
+        "opposition",
+        "family",
+        "mc-saturn"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Midheaven–Saturn opposition emphasizes negotiation between visible aims and limits, standards, authority, or duty. It can foster durable achievement through realism, yet family relationships may project responsibility unevenly or confuse caution with a final judgment about what is possible.",
+      "title": "Midheaven Opposition Saturn",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mc",
+      "body_b": "moon",
+      "growth": "Schedule a brief needs-and-capacity check before a major commitment, name what support is freely available, and make other arrangements for anything beyond that limit.",
+      "id": "aspect:mc:sextile:moon",
+      "keywords": [
+        "sextile",
+        "family",
+        "mc-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Midheaven–Moon sextile offers a practical bridge between contribution, public direction, and emotional care. Natally it can help private feedback inform responsible choices; across family charts, support may strengthen purpose when caregiving is requested and does not become an unspoken qualification for belonging.",
+      "title": "Midheaven Sextile Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mc",
+      "body_b": "venus",
+      "growth": "Before advising or accommodating, each person can name one nonnegotiable value and one public obligation, then design a small compromise that honors both.",
+      "id": "aspect:mc:square:venus",
+      "keywords": [
+        "square",
+        "family",
+        "mc-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Midheaven–Venus square describes creative friction between visible direction, responsibility, and the wish for ease, affection, or aesthetic coherence. In one chart it can make public choices test personal values; across charts, a family member’s priorities may challenge another’s sense of vocation without making either side wrong.",
+      "title": "Midheaven Square Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mc",
+      "body_b": "moon",
+      "growth": "Notice when care turns into unasked-for management; use a regular check-in to ask what support is wanted before translating concern into plans or duties.",
+      "id": "aspect:mc:trine:moon",
+      "keywords": [
+        "trine",
+        "family",
+        "mc-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Midheaven–Moon trine links visible purpose with emotional responsiveness, so care and practical direction can reinforce one another with relatively little strain. Natally it can help private needs inform contribution; between family charts, emotional attunement may quietly support confidence about roles and long-range aims.",
+      "title": "Midheaven Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mc",
+      "body_b": "north_node",
+      "growth": "Choose one skill-building action tied to a meaningful responsibility, review what it teaches after a month, and revise the direction instead of treating it as fixed.",
+      "id": "aspect:mc:trine:north_node",
+      "keywords": [
+        "trine",
+        "family",
+        "mc-north_node"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Midheaven–North Node trine suggests that public commitments and an evolving learning path can cooperate. It is not a promise of status or destiny: in natal work it favors experiments that connect growth with contribution, while between family charts one person’s direction may encourage another’s next developmental step.",
+      "title": "Midheaven Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mercury",
+      "body_b": "sun",
+      "growth": "Use reflective listening: summarize what you heard, ask whether it fits, and offer your own view as a perspective rather than the final account of someone’s character.",
+      "id": "aspect:mercury:sextile:sun",
+      "keywords": [
+        "sextile",
+        "family",
+        "mercury-sun"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mercury–Sun sextile offers a workable bridge between thought, speech, and a coherent sense of self. In one chart it supports articulating intentions; across family charts, questions and feedback can help identity become clearer, provided conversation remains curious rather than defining the other person for them.",
+      "title": "Mercury Sextile Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mercury",
+      "body_b": "venus",
+      "growth": "Practice one concrete appreciation followed by one honest request; keeping both specific helps warmth support clarity instead of becoming a way to avoid disagreement.",
+      "id": "aspect:mercury:sextile:venus",
+      "keywords": [
+        "sextile",
+        "family",
+        "mercury-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mercury–Venus sextile connects language with values, tact, and relational awareness. Natally it can make difficult ideas easier to phrase without erasing complexity; between charts, family members may find openings for repair through thoughtful wording, shared interests, humor, or appreciation that is specific rather than automatic.",
+      "title": "Mercury Sextile Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mercury",
+      "body_b": "moon",
+      "growth": "When intensity rises, separate observation, feeling, and request into three sentences, then allow time before seeking agreement so neither logic nor emotion has to win.",
+      "id": "aspect:mercury:square:moon",
+      "keywords": [
+        "square",
+        "family",
+        "mercury-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mercury–Moon square brings productive tension between analysis and felt experience. Thoughts may arrive before emotions are understood, or feelings may resist tidy explanations; in family exchange, different processing speeds can create crossed signals even when both people are trying to communicate responsibly.",
+      "title": "Mercury Square Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mercury",
+      "body_b": "pluto",
+      "growth": "Ask permission before pursuing a sensitive topic, agree on a stopping point, and distinguish a strong interpretation from a verified fact when discussing motives or history.",
+      "id": "aspect:mercury:square:pluto",
+      "keywords": [
+        "square",
+        "family",
+        "mercury-pluto"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Mercury–Pluto square gives language depth, persistence, and a tendency to press beneath the surface. Used carefully it supports rigorous inquiry and honest naming; used without consent it can make conversation feel like interrogation, especially in families where old power patterns already shape who gets heard.",
+      "title": "Mercury Square Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "moon",
+      "body_b": "north_node",
+      "growth": "Track one recurring emotional response and test a slightly different choice the next time it appears; keep what increases both honesty and mutual room to move.",
+      "id": "aspect:moon:conjunction:north_node",
+      "keywords": [
+        "conjunction",
+        "family",
+        "moon-north_node"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Moon–North Node conjunction concentrates emotional habit, belonging, and an unfolding learning direction in the same symbolic place. Familiar responses can become teachers rather than commands; across family charts, a strong sense of recognition may invite care and growth without proving fate, obligation, or permanent compatibility.",
+      "title": "Moon Conjunction North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "moon",
+      "body_b": "venus",
+      "growth": "Compare preferred forms of care explicitly, then alternate one small practice from each person’s list instead of assuming love must use a single shared language.",
+      "id": "aspect:moon:opposition:venus",
+      "keywords": [
+        "opposition",
+        "family",
+        "moon-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Moon–Venus opposition sets emotional nourishment and relational harmony across a polarity. What feels comforting may not match what looks gracious or keeps peace; in families, affection can still be real while people differ about closeness, timing, hospitality, spending, or how care should be expressed.",
+      "title": "Moon Opposition Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "moon",
+      "body_b": "uranus",
+      "growth": "Run changes as time-limited experiments with a clear review date, and keep one familiar anchor in place so innovation does not require anyone to suppress a need for steadiness.",
+      "id": "aspect:moon:sextile:uranus",
+      "keywords": [
+        "sextile",
+        "family",
+        "moon-uranus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Moon–Uranus sextile offers emotional life a constructive opening toward novelty, independence, and changed routines. Natally it can support flexible self-regulation; between family charts, fresh approaches may relieve inherited patterns when experimentation is paired with enough continuity to preserve trust.",
+      "title": "Moon Sextile Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "moon",
+      "body_b": "venus",
+      "growth": "Pause before saying yes, name the need beneath a preference, and negotiate one concrete adjustment rather than measuring the relationship by effortless agreement.",
+      "id": "aspect:moon:square:venus",
+      "keywords": [
+        "square",
+        "family",
+        "moon-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Moon–Venus square highlights friction between immediate emotional needs and the wish to please, harmonize, or maintain familiar relationship customs. The aspect can deepen awareness of genuine preference, but family members may misread accommodation as consent or need as criticism if differences stay implicit.",
+      "title": "Moon Square Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "moon",
+      "body_b": "moon",
+      "growth": "Keep the natural warmth while asking one direct check-in question instead of assuming familiarity supplies the answer, especially when circumstances or needs have changed.",
+      "id": "aspect:moon:trine:moon",
+      "keywords": [
+        "trine",
+        "family",
+        "moon-moon"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Moon–Moon trine suggests compatible emotional rhythms and an easy recognition of familiar needs. Across charts it can help family members settle around one another, yet ease is not mind-reading and may also preserve habits that deserve review; responsiveness still benefits from explicit consent and current information.",
+      "title": "Moon Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "moon",
+      "body_b": "north_node",
+      "growth": "Offer support as a menu rather than a prescription: name two possible forms of help, include the option of space, and let the recipient decide what fits.",
+      "id": "aspect:moon:trine:north_node",
+      "keywords": [
+        "trine",
+        "family",
+        "moon-north_node"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Moon–North Node trine allows emotional awareness and a developing life direction to support each other. Natally, trusted feelings may provide useful feedback without dictating every choice; between family charts, care can encourage growth when it leaves room for the other person to choose their own pace and meaning.",
+      "title": "Moon Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "growth": "Name one shared ideal in plain language, then attach a modest observable action and a review date so inspiration can be tested without demanding certainty.",
+      "id": "aspect:neptune:conjunction:neptune",
+      "keywords": [
+        "conjunction",
+        "family",
+        "neptune-neptune"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Neptune conjunct Neptune marks a shared generational atmosphere of ideals, imagination, sensitivity, and uncertainty. Across family charts it can create familiar hopes or evasions rooted in a common era, but it does not by itself establish personal closeness; houses, other contacts, and lived choices supply the individual expression.",
+      "title": "Neptune Conjunction Neptune",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "neptune",
+      "body_b": "pluto",
+      "growth": "Choose one inherited narrative to examine together, separate known facts from interpretation, and identify a present-day choice that does not require agreement about every meaning.",
+      "id": "aspect:neptune:conjunction:pluto",
+      "keywords": [
+        "conjunction",
+        "family",
+        "neptune-pluto"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Neptune–Pluto conjunction combines collective imagination with deep processes of power, loss, renewal, and cultural change. It often describes a broad historical undertone more than a private verdict; in family interpretation it can illuminate inherited stories while leaving each person free to relate to those stories differently.",
+      "title": "Neptune Conjunction Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "neptune",
+      "body_b": "pluto",
+      "growth": "Turn a large concern into one bounded act of repair or stewardship, agree on who owns it, and revisit whether the action is helping rather than relying on intention alone.",
+      "id": "aspect:neptune:sextile:pluto",
+      "keywords": [
+        "sextile",
+        "family",
+        "neptune-pluto"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Neptune–Pluto sextile offers a subtle channel between compassion or imagination and sustained transformation. It is frequently generational, yet in a family context it may support gentle engagement with difficult legacies when empathy is balanced by boundaries, evidence, and respect for different readiness.",
+      "title": "Neptune Sextile Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "neptune",
+      "body_b": "uranus",
+      "growth": "Before a major change, write down the hope, the evidence, and the likely disruption, then pilot the smallest reversible version and invite feedback from everyone affected.",
+      "id": "aspect:neptune:square:uranus",
+      "keywords": [
+        "square",
+        "family",
+        "neptune-uranus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Neptune–Uranus square places ideals, permeability, and longing in tension with disruption, freedom, and sudden insight. Natally or across charts, inspiration can race ahead of clarity while skepticism can interrupt a meaningful vision; family systems may alternate between hopeful reinvention and abrupt withdrawal.",
+      "title": "Neptune Square Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "neptune",
+      "body_b": "pluto",
+      "growth": "Pair reflective or creative work with one grounded question about facts, consent, or responsibility so a compelling shared story remains open to correction.",
+      "id": "aspect:neptune:trine:pluto",
+      "keywords": [
+        "trine",
+        "family",
+        "neptune-pluto"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Neptune–Pluto trine lets imagination and deep transformation cooperate with relatively little visible friction. This often carries a generational tone, but within families it can make shared symbolic or creative language a resource for approaching complex history, provided resonance is not mistaken for proof.",
+      "title": "Neptune Trine Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "north_node",
+      "body_b": "north_node",
+      "growth": "Compare current learning edges without ranking them, choose one independent next step each, and check back later to share observations rather than enforce matching outcomes.",
+      "id": "aspect:north_node:conjunction:north_node",
+      "keywords": [
+        "conjunction",
+        "family",
+        "north_node-north_node"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "A North Node conjunction across charts points to overlapping developmental questions and similar invitations to practice unfamiliar capacities. It can feel mutually relevant, especially within a family, but it is not evidence of destiny or a duty to follow identical paths; each person retains their own context and timing.",
+      "title": "North Node Conjunction North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "north_node",
+      "body_b": "saturn",
+      "growth": "Translate a broad limit into its specific purpose, then design one safe experiment inside that boundary; review the result before either preserving or discarding the rule.",
+      "id": "aspect:north_node:opposition:saturn",
+      "keywords": [
+        "opposition",
+        "family",
+        "north_node-saturn"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The North Node–Saturn opposition sets growth-oriented experimentation against structure, duty, caution, or inherited standards. Natally it can make development feel accountable to real constraints; between family charts, one person may represent limits while the other highlights change, creating useful debate or discouragement.",
+      "title": "North Node Opposition Saturn",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "growth": "Identify one power pattern that is usually left implicit, state what choice each person actually controls, and agree on a boundary that can be observed in practice.",
+      "id": "aspect:pluto:conjunction:pluto",
+      "keywords": [
+        "conjunction",
+        "family",
+        "pluto-pluto"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Pluto conjunct Pluto is primarily a shared generational signature around power, survival narratives, collective endings, and renewal. Family members from a similar era may normalize comparable intensities, yet the contact alone does not define personal chemistry; individual history and other chart factors shape how power is handled.",
+      "title": "Pluto Conjunction Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "saturn",
+      "body_b": "uranus",
+      "growth": "Choose one tradition or system to evaluate, list the function worth keeping, and test a limited update that protects that function while changing the method.",
+      "id": "aspect:saturn:conjunction:uranus",
+      "keywords": [
+        "conjunction",
+        "family",
+        "saturn-uranus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Saturn–Uranus conjunction binds structure and disruption into one concentrated problem: how to preserve what works while making room for necessary change. In natal work this can alternate restraint and breakthrough; across family charts, different people may carry the stabilizing and reforming roles for each other.",
+      "title": "Saturn Conjunction Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "saturn",
+      "body_b": "sun",
+      "growth": "Set one jointly understood expectation with a realistic deadline, then pair accountability with explicit recognition of effort and the freedom to revise the plan.",
+      "id": "aspect:saturn:trine:sun",
+      "keywords": [
+        "trine",
+        "family",
+        "saturn-sun"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Saturn–Sun trine supports cooperation between identity, vitality, and disciplined follow-through. It can help aspirations become durable through pacing and standards; in family relationships, reliable guidance may strengthen confidence when authority is offered transparently and does not replace the other person’s authorship.",
+      "title": "Saturn Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "sun",
+      "body_b": "uranus",
+      "growth": "Make room for one low-risk personal experiment, define what remains dependable during the change, and discuss results without treating novelty or tradition as automatically superior.",
+      "id": "aspect:sun:trine:uranus",
+      "keywords": [
+        "trine",
+        "family",
+        "sun-uranus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Sun–Uranus trine links self-expression with originality, autonomy, and constructive change. Natally it can make experimentation feel congruent with identity; across family charts, one person’s authenticity may give another permission to try a less conventional path without requiring rebellion for its own sake.",
+      "title": "Sun Trine Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "sun",
+      "body_b": "venus",
+      "growth": "Offer appreciation for a specific choice or quality, then invite an honest difference of opinion so warmth becomes a foundation for candor rather than a condition for belonging.",
+      "id": "aspect:sun:trine:venus",
+      "keywords": [
+        "trine",
+        "family",
+        "sun-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Sun–Venus trine lets identity, warmth, values, and appreciation reinforce one another. It can support gracious self-expression and creative confidence; between family charts, liking and affirmation may flow easily, though genuine harmony still allows differences instead of rewarding only the most agreeable version of someone.",
+      "title": "Sun Trine Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "growth": "Compare which changes feel liberating and which feel destabilizing, then choose one shared experiment with clear opt-out terms and a date to reassess it.",
+      "id": "aspect:uranus:conjunction:uranus",
+      "keywords": [
+        "conjunction",
+        "family",
+        "uranus-uranus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Uranus conjunct Uranus describes a shared generational relationship to innovation, disruption, freedom, and changing social norms. Family members close in era may recognize similar pressures for reinvention, but this broad resonance does not guarantee identical preferences or personal compatibility.",
+      "title": "Uranus Conjunction Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "uranus",
+      "body_b": "venus",
+      "growth": "Refresh one shared routine by offering several options, obtain genuine agreement before changing it, and preserve a familiar alternative for anyone who needs continuity.",
+      "id": "aspect:uranus:trine:venus",
+      "keywords": [
+        "trine",
+        "family",
+        "uranus-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Uranus–Venus trine gives values, affection, creativity, and relationship customs an easy opening toward novelty. Natally it can support flexible tastes and unconventional bonds; across family charts, differences may feel enlivening when freedom is mutual rather than one person repeatedly setting the terms of change.",
+      "title": "Uranus Trine Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "venus",
+      "body_b": "venus",
+      "growth": "Each person can name one valued ritual and one flexible preference, then negotiate a schedule or budget that protects the rituals without demanding identical tastes.",
+      "id": "aspect:venus:square:venus",
+      "keywords": [
+        "square",
+        "family",
+        "venus-venus"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Venus square Venus reveals contrasting styles of valuing, pleasing, spending, creating, and expressing affection. Across charts, especially in families, care may be sincere while tastes or reciprocity rules differ; the tension can clarify values if neither person treats preference as a moral verdict.",
+      "title": "Venus Square Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 7
+    }
+  ],
+  "schema_version": 1,
+  "seed_id": "seed_12_family_tight_aspects_v1"
+}

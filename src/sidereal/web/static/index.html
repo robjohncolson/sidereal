@@ -325,16 +325,46 @@
                   <p class="field-help">Save charts in the New chart workspace. The CLI and API also accept inline moments.</p>
                 </div>
               </fieldset>
+              <fieldset>
+                <legend>Save this study</legend>
+                <div class="field">
+                  <label for="synastry-label">Snapshot label <span class="optional">optional</span></label>
+                  <input id="synastry-label" name="label" type="text" maxlength="120" placeholder="Chart A ↔ Chart B" autocomplete="off">
+                </div>
+                <label class="check-row">
+                  <input name="save_synastry" type="checkbox" checked>
+                  <span>
+                    <strong>Save to synastry library</strong>
+                    <small>Stores the full report under charts/synastry/ for one-click reopen.</small>
+                  </span>
+                </label>
+              </fieldset>
               <button class="button primary full" type="submit"><span aria-hidden="true">↔</span> Compare fixed charts</button>
               <p class="form-status" id="synastry-form-status" role="status" aria-live="polite"></p>
             </form>
+
+            <div class="card library-card synastry-library-card">
+              <div class="library-card-head">
+                <h3>Saved synastries</h3>
+                <button class="button secondary small" id="refresh-synastry-library-button" type="button">Refresh</button>
+              </div>
+              <p class="field-help" id="synastry-library-summary">Loading…</p>
+              <div class="library-list" id="synastry-library-list" aria-live="polite"></div>
+            </div>
           </aside>
 
           <section class="report-shell" aria-label="Two-natal synastry report">
             <div class="empty-state" id="synastry-empty">
               <div class="empty-orbit" aria-hidden="true"><span></span></div>
               <h3>Choose two saved charts</h3>
-              <p>The report preserves A/B roles, compares both fixed moments in J2000, and keeps interpretation gaps explicit.</p>
+              <p>The report preserves A/B roles, compares both fixed moments in J2000, and keeps interpretation gaps explicit. Open a saved snapshot from the list to reload a prior study.</p>
+            </div>
+            <div id="synastry-selection" hidden>
+              <div class="toolbar-actions">
+                <p class="selected-chart-title" id="selected-synastry-title">Saved synastry</p>
+                <button class="button secondary small" id="refresh-synastry-button" type="button">Refresh from natals + DB</button>
+              </div>
+              <p class="form-status" id="synastry-library-status" role="status" aria-live="polite"></p>
             </div>
             <div class="report-root" id="synastry-report" hidden></div>
           </section>

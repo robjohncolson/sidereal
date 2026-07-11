@@ -114,3 +114,38 @@ versions allowed by the project's compatibility range. Current Starlette picks
 `httpx2`, so the web/API suite can be exercised with
 `StarletteDeprecationWarning` promoted to an error so a future dependency change
 cannot silently restore the fallback.
+
+## Family interpretation deepening
+
+Seeds 8–10 are retained as earlier family-study waves. Seeds 11–12 use version
+7 to supersede the 101 placement keys active in the three selected natal
+reports and the 57 canonical interpretation-backed aspects found at 2°
+exactness or tighter across those natal and two-chart reports. They contain
+generic interpretation keys and prose only—not birth moments, coordinates,
+saved-chart ids, geometry, names, or report payloads.
+
+Aspect rows are deliberately sign-agnostic even when a key appears in only one
+current report. The compose layer already joins each side's
+`planet_in_sign:*` reading, so encoding a current sign into shared aspect prose
+would make the database false for another chart. Same-point Ascendant and
+Midheaven contacts remain geometry-only `not_applicable` readings and have no
+inventory rows.
+
+## Private synastry snapshots
+
+Saved two-chart reports live beneath the already gitignored `charts/synastry/`
+directory. Each snapshot stores linked natal chart ids so refresh can reuse the
+frozen natal geometry and recompose interpretations from the current SQLite
+database. Snapshot ids accept only bounded ASCII letters, numbers, underscores,
+and hyphens; they are never accepted as filesystem paths. The reader rejects
+symlinks, non-finite JSON, malformed report envelopes, and filename/id
+mismatches. New saves never silently replace a collision. Refresh is the only
+overwrite path, requires the current DB plus both linked saved natals, and
+verifies that the pair still matches before its atomic write. Files remain
+best-effort owner-private, subject to the host filesystem's permission model.
+Birth-bearing chart, report, database, and snapshot files remain outside version
+control.
+
+On Windows-backed WSL mounts, `chmod` may be advisory and files can report mode
+`0777`; Windows ACLs govern access there. A charts directory on the Linux
+filesystem is required when enforced POSIX `0700`/`0600` semantics matter.

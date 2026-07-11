@@ -95,12 +95,23 @@ assert.deepEqual(
 for (const id of ["synastry-view", "synastry-form", "synastry-a", "synastry-b", "synastry-report"]) {
   assert.match(html, new RegExp(`id=["']${id}["']`));
 }
+for (const id of [
+  "synastry-library-list",
+  "refresh-synastry-library-button",
+  "synastry-selection",
+  "refresh-synastry-button",
+]) {
+  assert.match(html, new RegExp(`id=["']${id}["']`));
+}
 assert.match(html, /Transits \(sky vs birth chart\)/);
 assert.match(html, /id=["']library-transit-button["']/);
 assert.match(source, /byId\("transit-date"\)\.value = localDate/);
 assert.match(source, /addEventListener\("click", openSelectedTransit\)/);
 assert.match(source, /function openSelectedTransit\(\)[\s\S]*activateView\("transit"\)/);
 assert.match(source, /api\("\/api\/synastry"/);
+assert.match(source, /api\("\/api\/synastries"/);
+assert.match(source, /\/api\/synastries\/\$\{encodeURIComponent\(state\.selectedSynastryId\)\}\/refresh/);
+assert.match(source, /save_synastry/);
 assert.match(source, /Same-body sky–natal contacts/);
 assert.match(source, /Two-natal aspects/);
 assert.match(source, /function makePlanetsInHousesSection\(/);
@@ -114,5 +125,6 @@ assert.match(css, /\.tz-results\s*\{[^}]*overflow-y:\s*auto/s);
 assert.match(source, /data:image\/svg\+xml;charset=utf-8/);
 assert.doesNotMatch(source, /\.innerHTML\s*=/);
 assert.match(source, /makeWheelSection\(report\.wheel/);
+assert.doesNotMatch(`${html}\n${source}`, /\b(?:bobby|mom|dad)\b/i);
 
 console.log("frontend UX tests passed");

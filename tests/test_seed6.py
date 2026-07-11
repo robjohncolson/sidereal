@@ -232,7 +232,6 @@ def test_seed6_artifact_is_v1_and_prior_content_seeds_are_byte_stable() -> None:
 
 
 def test_fresh_v2_store_imports_all_v1_seed_files_without_gaps(tmp_path: Path) -> None:
-    ready_count = 872
     with InterpretationStore(tmp_path / "fresh.db") as store:
         store.initialize()
         connection = store._require_schema()
@@ -241,11 +240,12 @@ def test_fresh_v2_store_imports_all_v1_seed_files_without_gaps(tmp_path: Path) -
         result = store.import_path(SEED_DIRECTORY)
         audit = store.audit()
 
-        assert result.files == 8
-        assert result.records == 1839
+        assert result.files == 13
+        assert result.records == 2192
         assert result.inserted == 967
-        assert result.updated == ready_count
-        assert (audit.ready, audit.stub, audit.missing) == (872, 95, 0)
+        assert result.updated == 963
+        assert result.skipped == 262
+        assert (audit.ready, audit.stub, audit.missing) == (897, 70, 0)
         assert store.get("aspect:jupiter:sextile:jupiter").status == "ready"  # type: ignore[union-attr]
         assert store.get("aspect:uranus:square:uranus").status == "stub"  # type: ignore[union-attr]
 

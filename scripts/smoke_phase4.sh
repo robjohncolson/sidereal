@@ -14,7 +14,7 @@ cd "${ROOT_DIR}"
 "${PYTHON_BIN}" -m sidereal db init --db "${DB_PATH}"
 "${PYTHON_BIN}" -m sidereal db import --db "${DB_PATH}"
 "${PYTHON_BIN}" -m sidereal db gaps --db "${DB_PATH}" |
-  "${PYTHON_BIN}" -c 'import json, sys; p=json.load(sys.stdin); assert (p["ready"], p["stub"], p["missing"]) == (872, 95, 0); print("inventory: 872 ready / 95 stub / 0 missing")'
+  "${PYTHON_BIN}" -c 'import json, sys; p=json.load(sys.stdin); assert (p["ready"], p["stub"], p["missing"]) == (897, 70, 0); print("inventory: 897 ready / 70 stub / 0 missing")'
 
 "${PYTHON_BIN}" -m sidereal chart \
   --date 2000-12-12 --time 12:00 --tz UTC --lat 0 --lon 0 \

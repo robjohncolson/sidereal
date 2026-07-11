@@ -1,0 +1,1571 @@
+{
+  "records": [
+    {
+      "angle": "asc",
+      "growth": "Lead with sincerity; share credit so pride becomes hospitality.",
+      "id": "angle_in_sign:asc:leo",
+      "keywords": [
+        "presence",
+        "warmth",
+        "pride",
+        "generosity"
+      ],
+      "license": "personal-use",
+      "sign": "leo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Leo rising presents as warmth, dignity, and a wish to meet life with visible heart. First impressions may carry protective pride and creative presence—wanting to be seen as generous and capable without becoming a performance.",
+      "title": "Ascendant in Leo",
+      "type": "angle_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "angle": "mc",
+      "growth": "Channel pioneering drive into sustainable leadership, not only first moves.",
+      "id": "angle_in_sign:mc:aries",
+      "keywords": [
+        "initiative",
+        "vocation",
+        "courage",
+        "directness"
+      ],
+      "license": "personal-use",
+      "sign": "aries",
+      "source": "original",
+      "status": "ready",
+      "summary": "Aries Midheaven colors vocation with initiative, competitive spark, and a public path that favors starting, leading, and decisive contribution. Reputation may form around courage and direct action.",
+      "title": "Midheaven in Aries",
+      "type": "angle_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Give compassion a boundary and a craft so it does not become self-erasure.",
+      "id": "planet_in_sign:sun:pisces",
+      "keywords": [
+        "empathy",
+        "imagination",
+        "permeability",
+        "devotion"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Pisces organizes identity around empathy, imagination, and sensitivity to atmospheres others miss. Purpose often involves care, art, faith, or dissolving hard edges—while the work is keeping a self that is kind without disappearing.",
+      "title": "Sun in Pisces",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Name needs in plain language before dissolving into others’ weather.",
+      "id": "planet_in_sign:moon:pisces",
+      "keywords": [
+        "feeling",
+        "dream",
+        "attunement",
+        "refuge"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Pisces seeks emotional safety in music, rest, spiritual mood, and porous connection. Feelings arrive as tides; refuge may be solitude, water, or imaginative escape.",
+      "title": "Moon in Pisces",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Translate intuition into one concrete sentence before acting.",
+      "id": "planet_in_sign:mercury:pisces",
+      "keywords": [
+        "intuition",
+        "poetry",
+        "image",
+        "listening"
+      ],
+      "license": "personal-use",
+      "planet": "mercury",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mercury in Pisces thinks in image, tone, and implication. Communication can be empathic and artistic; precision may arrive late after the feeling is clear.",
+      "title": "Mercury in Pisces",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Choose devotion that includes mutual care, not only rescue.",
+      "id": "planet_in_sign:venus:pisces",
+      "keywords": [
+        "devotion",
+        "ideal love",
+        "softness",
+        "art"
+      ],
+      "license": "personal-use",
+      "planet": "venus",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Venus in Pisces loves through compassion, idealism, and artistic merging. Values lean toward kindness and beauty that heals; the risk is idealizing partners or sacrificing self for romance.",
+      "title": "Venus in Pisces",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Start earlier; finish without needing perfect conditions.",
+      "id": "planet_in_sign:mars:taurus",
+      "keywords": [
+        "steadfast drive",
+        "patience",
+        "territory",
+        "endurance"
+      ],
+      "license": "personal-use",
+      "planet": "mars",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mars in Taurus applies force slowly and stubbornly—endurance over sprint. Anger and ambition protect resources, body, and what has been built; once moving, the will is hard to stop.",
+      "title": "Mars in Taurus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Celebrate progress that is good enough to help.",
+      "id": "planet_in_sign:jupiter:virgo",
+      "keywords": [
+        "growth through craft",
+        "service",
+        "detail",
+        "improvement"
+      ],
+      "license": "personal-use",
+      "planet": "jupiter",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Jupiter in Virgo expands via skill, service, and useful improvement. Faith looks like competence and systems that work; excess can become over-analysis or savior-through-fixing.",
+      "title": "Jupiter in Virgo",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near Scorpio, duty may also involve depth, trust, and careful handling of power.",
+      "growth": "Define finite duties so threshold work does not become endless ordeal.",
+      "id": "planet_in_sign:saturn:ophiuchus",
+      "keywords": [
+        "maturity at thresholds",
+        "responsibility",
+        "integration",
+        "pressure"
+      ],
+      "license": "personal-use",
+      "planet": "saturn",
+      "sign": "ophiuchus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Saturn in Ophiuchus builds maturity by taking responsibility at thresholds—integrating hard knowledge, ethical power, and long apprenticeship with liminal material. Authority is earned under pressure, not claimed by title.",
+      "title": "Saturn in Ophiuchus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Invent freer forms of care without abandoning loyalty.",
+      "id": "planet_in_sign:uranus:cancer",
+      "keywords": [
+        "innovation in belonging",
+        "family reform",
+        "emotional freedom"
+      ],
+      "license": "personal-use",
+      "planet": "uranus",
+      "sign": "cancer",
+      "source": "original",
+      "status": "ready",
+      "summary": "Uranus in Cancer innovates around home, family roles, and emotional security. Breakthroughs may free belonging from outdated scripts—or disrupt sanctuary when independence is denied.",
+      "title": "Uranus in Cancer",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Serve one real person or task; release infinite standards.",
+      "id": "planet_in_sign:neptune:virgo",
+      "keywords": [
+        "ideal service",
+        "purity",
+        "craft mysticism",
+        "discernment fog"
+      ],
+      "license": "personal-use",
+      "planet": "neptune",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Neptune in Virgo dreams of pure service, clean method, and healed systems. Idealism targets craft and care; fog appears as perfectionism or vague guilt about never serving enough.",
+      "title": "Neptune in Virgo",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Renew pride through generous creation, not domination of attention.",
+      "id": "planet_in_sign:pluto:leo",
+      "keywords": [
+        "power of presence",
+        "creative will",
+        "pride",
+        "renewal"
+      ],
+      "license": "personal-use",
+      "planet": "pluto",
+      "sign": "leo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Pluto in Leo locates deep change in creative will, recognition, and the heart’s need to matter. Power dynamics involve who is centered on the stage and whose pride is wounded.",
+      "title": "Pluto in Leo",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Practice stating your view and making room for another without collapse.",
+      "id": "planet_in_sign:north_node:libra",
+      "keywords": [
+        "reciprocity",
+        "balance",
+        "relationship stretch"
+      ],
+      "license": "personal-use",
+      "planet": "north_node",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "North Node in Libra points development toward reciprocity, fairness, and the art of meeting an equal other. Growth stretches beyond solo certainty into negotiated perspective.",
+      "title": "North Node in Libra",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near Taurus, familiar patterns may also include stubborn material self-reliance.",
+      "growth": "Keep initiative; add invitation.",
+      "id": "planet_in_sign:south_node:aries",
+      "keywords": [
+        "familiar self-start",
+        "courage habit",
+        "independence"
+      ],
+      "license": "personal-use",
+      "planet": "south_node",
+      "sign": "aries",
+      "source": "original",
+      "status": "ready",
+      "summary": "South Node in Aries suggests familiar strengths in self-starting, direct courage, and going it alone. Those gifts remain usable; growth asks for Libra-style partnership rather than only solo charge.",
+      "title": "South Node in Aries",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Practice transparency in closeness without control.",
+      "house": 8,
+      "id": "planet_in_house:sun:8",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "source": "original",
+      "status": "ready",
+      "summary": "Identity draws vitality from shared resources, intimacy, trust, and transformative bonds. Purpose may involve depth work with others’ power or assets.",
+      "title": "Sun in House 8",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Separate healthy intimacy from fusion.",
+      "house": 8,
+      "id": "planet_in_house:moon:8",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "source": "original",
+      "status": "ready",
+      "summary": "Emotional security links to deep bonding, shared vulnerability, and regenerative cycles. Mood may track trust and entanglement.",
+      "title": "Moon in House 8",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Test big ideas against lived detail.",
+      "house": 9,
+      "id": "planet_in_house:mercury:9",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "mercury",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind orients to big frameworks, travel of ideas, teaching, and belief. Thinking seeks meaning beyond the local.",
+      "title": "Mercury in House 9",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Keep mutual consent around intensity and money.",
+      "house": 8,
+      "id": "planet_in_house:venus:8",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "venus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Love and values deepen through loyalty, shared resources, and transformative attraction. Relating can be all-in.",
+      "title": "Venus in House 8",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Aim ambition; avoid fighting every workplace windmill.",
+      "house": 10,
+      "id": "planet_in_house:mars:10",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "mars",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive aims at career, reputation, and public action—words and versatility as professional force.",
+      "title": "Mars in House 10",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Expand wealth of craft, not only appetite.",
+      "house": 2,
+      "id": "planet_in_house:jupiter:2",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "jupiter",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth expands resources, skills, and a sense of enough. Generosity and value-building go together.",
+      "title": "Jupiter in House 2",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Build sanctuary with limits; duty need not erase softness.",
+      "house": 4,
+      "id": "planet_in_house:saturn:4",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "saturn",
+      "source": "original",
+      "status": "ready",
+      "summary": "Responsibility forms around home, roots, and private foundation. Maturity may involve becoming the sturdy base.",
+      "title": "Saturn in House 4",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Protect alone time for insight; bring one insight back into daylight.",
+      "house": 12,
+      "id": "planet_in_house:uranus:12",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "uranus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Innovation works in the unseen—solitude, unconscious pattern-break, private freedom. Breakthroughs may arrive in retreat.",
+      "title": "Uranus in House 12",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Clarify communications before assuming shared meaning.",
+      "house": 3,
+      "id": "planet_in_house:neptune:3",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "neptune",
+      "source": "original",
+      "status": "ready",
+      "summary": "Imagination colors local mind, siblings/peers, and everyday speech. Messages can be poetic or foggy.",
+      "title": "Neptune in House 3",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Own impact without weaponizing it.",
+      "house": 1,
+      "id": "planet_in_house:pluto:1",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "pluto",
+      "source": "original",
+      "status": "ready",
+      "summary": "Deep change is written into self-presentation and the body of approach. Presence can feel catalytic or intense to others.",
+      "title": "Pluto in House 1",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Invest weekly in the foundation that holds public life.",
+      "house": 4,
+      "id": "planet_in_house:north_node:4",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "north_node",
+      "source": "original",
+      "status": "ready",
+      "summary": "Stretch toward home, roots, and private belonging—not only outer performance. Developmental growth asks that public competence rest on a real sanctuary and emotional base.",
+      "title": "North Node in House 4",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Retire the need to always be on professionally.",
+      "house": 10,
+      "id": "planet_in_house:south_node:10",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "south_node",
+      "source": "original",
+      "status": "ready",
+      "summary": "Familiar skill lives in public role and achievement. Growth asks those gifts to serve a truer private base.",
+      "title": "South Node in House 10",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 1,
+      "id": "sign_on_house:leo:1",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "leo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Approach and self-presentation carry Leo warmth, pride, and creative visibility. Symbolic arena language, not fate.",
+      "title": "Leo on House 1",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 8,
+      "id": "sign_on_house:pisces:8",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Shared bonds and transformative spaces are colored by Pisces permeability, empathy, and imaginative merging. Symbolic arena language, not fate.",
+      "title": "Pisces on House 8",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 9,
+      "id": "sign_on_house:aries:9",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "aries",
+      "source": "original",
+      "status": "ready",
+      "summary": "Belief and higher learning are approached with Aries initiative—direct quests for meaning. Symbolic arena language, not fate.",
+      "title": "Aries on House 9",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 10,
+      "id": "sign_on_house:taurus:10",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public path emphasizes Taurus steadiness and durable contribution when vocation/Mars themes land here. Symbolic arena language, not fate.",
+      "title": "Taurus on House 10",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 4,
+      "id": "sign_on_house:libra:4",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "Home and roots seek Libra balance, beauty, and relational fairness in the private base. Symbolic arena language, not fate.",
+      "title": "Libra on House 4",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "sun",
+      "body_b": "venus",
+      "growth": "Let kindness include self-respect, not only pleasing.",
+      "id": "aspect:sun:conjunction:venus",
+      "keywords": [
+        "conjunction"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun conjunct Venus in Pisces softens and beautifies identity—selfhood colored by devotion, aesthetic feeling, and a wish to harmonize. Charm and care fuse with purpose.",
+      "title": "Sun Conjunction Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "sun",
+      "growth": "Do one concrete act that matches who you say you are.",
+      "id": "aspect:mars:sextile:sun",
+      "keywords": [
+        "sextile"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mars sextile Sun joins drive with purpose so action can support identity. Read the signs for color—steady Taurus effort with Pisces heart builds practical compassion; other sign pairs change the flavor of how will serves selfhood.",
+      "title": "Mars Sextile Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 5
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "venus",
+      "growth": "Show love through consistent follow-through.",
+      "id": "aspect:mars:sextile:venus",
+      "keywords": [
+        "sextile"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive and affection cooperate: desire can be patient, sensual, and constructive. Attraction thrives when effort is reliable.",
+      "title": "Mars Sextile Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "asc",
+      "body_b": "mercury",
+      "growth": "Speak simply so poetry still lands.",
+      "id": "aspect:asc:trine:mercury",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Rising style and mind support each other—Leo presence with Pisces speech can feel warm, imaginative, and approachable. Communication eases first contact.",
+      "title": "Ascendant Trine Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "asc",
+      "body_b": "sun",
+      "growth": "Let the face you show match the values you live—adjust pride or perfectionism so both serve care.",
+      "id": "aspect:asc:trine:sun",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Ascendant trine Sun links outer manner with core identity so first impressions and will tend to cooperate. Sign color comes from the chart: Leo rising with Pisces Sun warms empathy into visible heart; Virgo rising with Taurus Sun steadies loyal presence into useful competence. Either way, the self can look like who it is when ego serves rather than performs.",
+      "title": "Ascendant Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 5
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "moon",
+      "body_b": "north_node",
+      "growth": "Use mood as data for relationship repair, not only withdrawal.",
+      "id": "aspect:moon:trine:north_node",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Emotional habit supports the Libra-node stretch toward reciprocity. Feeling can guide fairer relating.",
+      "title": "Moon Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "jupiter",
+      "body_b": "moon",
+      "growth": "Alternate fixing with simply feeling.",
+      "id": "aspect:jupiter:opposition:moon",
+      "keywords": [
+        "opposition"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Expansion and emotional need polarize: Virgo growth-through-craft versus Pisces feeling. The dialogue is between improvement and receptivity.",
+      "title": "Jupiter Opposition Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "uranus",
+      "body_b": "venus",
+      "growth": "Welcome freshness without discarding loyalty.",
+      "id": "aspect:uranus:trine:venus",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Affection and values innovate with relative ease—unexpected beauty, freer relating, creative reform of taste.",
+      "title": "Uranus Trine Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mercury",
+      "body_b": "saturn",
+      "growth": "Write it down; finish the thought.",
+      "id": "aspect:mercury:trine:saturn",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind and discipline support careful, responsible speech—threshold seriousness with Pisces imagination needs structure to be credible.",
+      "title": "Saturn Trine Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "saturn",
+      "growth": "Negotiate pace: push, then consolidate.",
+      "id": "aspect:mars:opposition:saturn",
+      "keywords": [
+        "opposition"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive and limit face off: Taurus effort versus Ophiuchus-threshold duty. Frustration can forge mastery if neither pole freezes the other.",
+      "title": "Mars Opposition Saturn",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "north_node",
+      "growth": "Practice being center and partner in the same conversation.",
+      "id": "aspect:asc:square:north_node",
+      "keywords": [
+        "square"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Personal style (Leo rising) frictions with developmental pull toward Libra reciprocity. Life may ask the self-presentation to grow more collaborative without losing warmth.",
+      "title": "Ascendant Square North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mc",
+      "body_b": "uranus",
+      "growth": "Design a public role that allows emotional independence.",
+      "id": "aspect:mc:square:uranus",
+      "keywords": [
+        "square"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Vocation and breakthrough tension: Aries public initiative meets Cancer-Uranus reform of belonging. Career path may zig through unconventional needs for freedom and home.",
+      "title": "Midheaven Square Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mc",
+      "body_b": "neptune",
+      "growth": "Define one measurable contribution; keep wonder.",
+      "id": "aspect:mc:opposition:neptune",
+      "keywords": [
+        "opposition"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public direction and ideal or fog polarize. Ambition meets Virgo-Neptune themes of pure service or unclear goals—clarifying vocation is part of the spiritual work.",
+      "title": "Midheaven Opposition Neptune",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "neptune",
+      "body_b": "uranus",
+      "growth": "Pilot changes; refuse both chaos and pure fantasy.",
+      "id": "aspect:neptune:square:uranus",
+      "keywords": [
+        "square"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Neptune square Uranus (often generational, personal by house and angle contact) sets vision and disruption in tension. Idealism and freedom clash until experiment is ethical and grounded. Chart houses show where the fog-versus-breakthrough theme plays out.",
+      "title": "Neptune Square Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 5
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "saturn",
+      "body_b": "sun",
+      "growth": "Commit to a craft of care that has real limits and real mastery.",
+      "id": "aspect:saturn:trine:sun",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Identity and long discipline support each other: Pisces heart gains backbone from Ophiuchus Saturn’s threshold responsibility.",
+      "title": "Saturn Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "sun",
+      "body_b": "uranus",
+      "growth": "Allow change that increases honesty and kindness together.",
+      "id": "aspect:sun:trine:uranus",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Core self and innovative freedom flow—Pisces identity can reinvent belonging and feeling-life with less internal war.",
+      "title": "Sun Trine Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "angle": "asc",
+      "growth": "Let others see warmth as well as competence; perfection is not the only welcome.",
+      "id": "angle_in_sign:asc:virgo",
+      "keywords": [
+        "discernment",
+        "care",
+        "competence",
+        "modesty"
+      ],
+      "license": "personal-use",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Virgo rising meets life with careful observation, helpful competence, and a preference for being useful over being loud. First impressions may be precise, modest, and quietly assessing what needs improvement.",
+      "title": "Ascendant in Virgo",
+      "type": "angle_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "angle": "mc",
+      "growth": "Specialize enough to be trusted; stay curious enough to stay alive.",
+      "id": "angle_in_sign:mc:gemini",
+      "keywords": [
+        "communication",
+        "versatility",
+        "public mind",
+        "exchange"
+      ],
+      "license": "personal-use",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Gemini Midheaven points vocation toward communication, teaching, media of ideas, and versatile public contribution. Reputation may form around curiosity and connective speech.",
+      "title": "Midheaven in Gemini",
+      "type": "angle_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Change when values require it; otherwise deepen what already works.",
+      "id": "planet_in_sign:sun:taurus",
+      "keywords": [
+        "steadiness",
+        "embodiment",
+        "value",
+        "loyalty"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Taurus organizes identity around loyalty, sensory presence, and building what lasts. Purpose prefers patient cultivation of value—material, aesthetic, or relational—over constant reinvention.",
+      "title": "Sun in Taurus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Name your preference before smoothing the room.",
+      "id": "planet_in_sign:moon:libra",
+      "keywords": [
+        "harmony",
+        "relating",
+        "fairness",
+        "aesthetics"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Libra finds security in partnership, beauty, and balanced atmosphere. Emotional weather tracks fairness and connection; conflict may feel physically uncomfortable until mediated.",
+      "title": "Moon in Libra",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Allow extra time for decisions; then stand by them.",
+      "id": "planet_in_sign:mercury:taurus",
+      "keywords": [
+        "deliberate mind",
+        "practical thought",
+        "slow clarity"
+      ],
+      "license": "personal-use",
+      "planet": "mercury",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mercury in Taurus thinks carefully and remembers through the body. Ideas prefer concrete proof; speech can be calm, stubborn, and persuasive when unhurried.",
+      "title": "Mercury in Taurus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Deepen one bond with attentive listening, not only clever talk.",
+      "id": "planet_in_sign:venus:gemini",
+      "keywords": [
+        "curious affection",
+        "wit",
+        "variety",
+        "dialogue"
+      ],
+      "license": "personal-use",
+      "planet": "venus",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Venus in Gemini loves through conversation, play of ideas, and lively variety. Attraction thrives on mental sparkle and friendly exchange.",
+      "title": "Venus in Gemini",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Pick one argument or project and finish the sentence.",
+      "id": "planet_in_sign:mars:gemini",
+      "keywords": [
+        "verbal drive",
+        "multiplicity",
+        "debate",
+        "motion"
+      ],
+      "license": "personal-use",
+      "planet": "mars",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mars in Gemini acts through words, options, and quick mental movement. Assertion can be debate, multitasking, or restless curiosity; scattered force is the risk.",
+      "title": "Mars in Gemini",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "blend_note": "Near a boundary, include the adjacent sign as a second lens.",
+      "growth": "Build trust slowly; do not confuse control with safety.",
+      "id": "planet_in_sign:saturn:scorpio",
+      "keywords": [
+        "deep duty",
+        "trust",
+        "endurance",
+        "power ethics"
+      ],
+      "license": "personal-use",
+      "planet": "saturn",
+      "sign": "scorpio",
+      "source": "original",
+      "status": "ready",
+      "summary": "Saturn in Scorpio matures through tests of trust, loyalty, and ethical power. Responsibility may involve holding secrets, shared resources, or emotional gravity with integrity.",
+      "title": "Saturn in Scorpio",
+      "type": "planet_in_sign",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Live one belief as a practice, not only a slogan.",
+      "house": 9,
+      "id": "planet_in_house:sun:9",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "source": "original",
+      "status": "ready",
+      "summary": "Identity thrives in meaning, teaching, travel of mind, and wide horizons. Purpose seeks a larger map of life.",
+      "title": "Sun in House 9",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Build worth through skill and fair relating, not only accumulation.",
+      "house": 2,
+      "id": "planet_in_house:moon:2",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "source": "original",
+      "status": "ready",
+      "summary": "Emotional security tracks resources, self-worth, and tangible stability. Mood may rise and fall with sufficiency.",
+      "title": "Moon in House 2",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Ask permission before digging in others’ stories.",
+      "house": 8,
+      "id": "planet_in_house:mercury:8",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "mercury",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind dives into taboo, shared assets, psychology, and transformative research. Speech can excavate.",
+      "title": "Mercury in House 8",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Share beliefs as invitations, not litmus tests.",
+      "house": 9,
+      "id": "planet_in_house:venus:9",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "venus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Love and beauty seek adventure, learning, and cross-cultural or philosophical connection.",
+      "title": "Venus in House 9",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Protect quiet; bring one insight into communal use.",
+      "house": 12,
+      "id": "planet_in_house:jupiter:12",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "jupiter",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth expands in solitude, spiritual retreat, and unseen support. Faith may be private.",
+      "title": "Jupiter in House 12",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Define enough; refuse endless scarcity stories.",
+      "house": 2,
+      "id": "planet_in_house:saturn:2",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "saturn",
+      "source": "original",
+      "status": "ready",
+      "summary": "Duty builds around money, skills, and self-worth structures. Maturity is fiscal and craft discipline.",
+      "title": "Saturn in House 2",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Plan for change so freedom has a container.",
+      "house": 10,
+      "id": "planet_in_house:uranus:10",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "uranus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public path innovates—unconventional career, sudden turns, or reforming institutions of care and status.",
+      "title": "Uranus in House 10",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Clarify identity kindly when fog serves avoidance.",
+      "house": 1,
+      "id": "planet_in_house:neptune:1",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "neptune",
+      "source": "original",
+      "status": "ready",
+      "summary": "Self-presentation carries permeability, glamour, or elusive edges. Others project onto the approach.",
+      "title": "Neptune in House 1",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Choose alliances that regenerate, not consume.",
+      "house": 11,
+      "id": "planet_in_house:pluto:11",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "pluto",
+      "source": "original",
+      "status": "ready",
+      "summary": "Deep change works through groups, friends, and collective aims. Power dynamics appear in communities.",
+      "title": "Pluto in House 11",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Make one balanced agreement about money or care.",
+      "house": 2,
+      "id": "planet_in_house:north_node:2",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "north_node",
+      "source": "original",
+      "status": "ready",
+      "summary": "Stretch toward embodied value, fair resources, and steady worth—Libra-style reciprocity in the material realm.",
+      "title": "North Node in House 2",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "growth": "Trade emergency intimacy for steady mutual support.",
+      "house": 8,
+      "id": "planet_in_house:south_node:8",
+      "keywords": [
+        "arena"
+      ],
+      "license": "personal-use",
+      "planet": "south_node",
+      "source": "original",
+      "status": "ready",
+      "summary": "Familiar intensity lives in shared power, crisis bonding, and deep entanglement. Growth asks simpler, fairer second-house security.",
+      "title": "South Node in House 8",
+      "type": "planet_in_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 1,
+      "id": "sign_on_house:virgo:1",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Self-presentation is framed by Virgo care, analysis, and useful competence. Symbolic only.",
+      "title": "Virgo on House 1",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 2,
+      "id": "sign_on_house:libra:2",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "Resources and worth seek Libra balance, beauty, and fair exchange. Symbolic only.",
+      "title": "Libra on House 2",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 9,
+      "id": "sign_on_house:taurus:9",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Belief and higher learning prefer Taurus embodiment—truth you can live and touch. Symbolic only.",
+      "title": "Taurus on House 9",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "house": 10,
+      "id": "sign_on_house:gemini:10",
+      "keywords": [
+        "cusp"
+      ],
+      "license": "personal-use",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Vocation is colored by Gemini exchange, speech, and versatile public mind. Symbolic only.",
+      "title": "Gemini on House 10",
+      "type": "sign_on_house",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mc",
+      "body_b": "moon",
+      "growth": "Make work relationally intelligent, not only clever.",
+      "id": "aspect:mc:trine:moon",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public path and emotional nature cooperate—Gemini vocation can speak Libra Moon’s need for harmony and fairness into the world.",
+      "title": "Midheaven Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "mars",
+      "body_b": "mc",
+      "growth": "Focus the campaign; reputation follows finished work.",
+      "id": "aspect:mars:conjunction:mc",
+      "keywords": [
+        "conjunction"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive fuses with vocation: ambition is highly visible. Gemini Mars on the Midheaven pushes public action through words, versatility, and quick moves.",
+      "title": "Mars Conjunction Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mars",
+      "body_b": "moon",
+      "growth": "Act on one fair need without over-explaining.",
+      "id": "aspect:mars:trine:moon",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Feeling and will support each other—Libra Moon’s relating needs backed by Gemini Mars’ articulate action.",
+      "title": "Mars Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "mc",
+      "growth": "Translate who you are in person into work others can trust—and let vocation stay human.",
+      "id": "aspect:asc:square:mc",
+      "keywords": [
+        "square"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Ascendant square Midheaven marks productive friction between personal style (how you enter a room) and public vocation (what you are known for building). Sign color matters: Leo rising with Taurus MC negotiates warmth versus durable craft; Virgo rising with Gemini MC negotiates careful competence versus communicative visibility. In every case, integrating private manner with public role is the craft.",
+      "title": "Ascendant Square Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 5
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mercury",
+      "body_b": "moon",
+      "growth": "Write the feeling, then edit for fact.",
+      "id": "aspect:mercury:opposition:moon",
+      "keywords": [
+        "opposition"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Feeling (Libra) and mind (Taurus) polarize: harmony-seeking emotion versus deliberate practical thought. Dialogue between heart-tone and slow reason is the gift.",
+      "title": "Moon Opposition Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "moon",
+      "body_b": "north_node",
+      "growth": "Choose relationships that practice fairness in real time.",
+      "id": "aspect:moon:conjunction:north_node",
+      "keywords": [
+        "conjunction"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Emotional habit and developmental path fuse in Libra—growth through relating is not abstract; it is how safety is learned.",
+      "title": "Moon Conjunction North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mercury",
+      "body_b": "pluto",
+      "growth": "Ask powerful questions without interrogation.",
+      "id": "aspect:mercury:square:pluto",
+      "keywords": [
+        "square"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind meets deep power: Taurus speech versus Leo-Pluto intensity. Words can transform or control; curiosity meets compulsion.",
+      "title": "Mercury Square Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "jupiter",
+      "body_b": "sun",
+      "growth": "Improve what matters; leave intact what already nourishes.",
+      "id": "aspect:jupiter:square:sun",
+      "keywords": [
+        "square"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Expansion and identity friction: Virgo improvement drive versus Taurus solar steadiness. Growth may challenge comfort; comfort may resist endless fixing.",
+      "title": "Jupiter Square Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "moon",
+      "growth": "Say yes to helpful support; decline savior roles.",
+      "id": "aspect:jupiter:sextile:moon",
+      "keywords": [
+        "sextile"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Emotional life and growth opportunity cooperate—support, teaching, and modest expansion of care.",
+      "title": "Jupiter Sextile Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "neptune",
+      "body_b": "venus",
+      "growth": "Keep creativity; check projections on partners.",
+      "id": "aspect:neptune:trine:venus",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Affection and idealization flow—Gemini Venus with Virgo Neptune can romanticize ideas and serve beauty with soft edges.",
+      "title": "Neptune Trine Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mc",
+      "body_b": "north_node",
+      "growth": "Build public work that requires collaboration, not only solo cleverness.",
+      "id": "aspect:mc:trine:north_node",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Vocation and developmental path support each other: Gemini public mind aligns with Libra-node growth in reciprocity. Career can become a school for fair exchange.",
+      "title": "Midheaven Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "mars",
+      "growth": "Take the useful risk; document the result.",
+      "id": "aspect:jupiter:sextile:mars",
+      "keywords": [
+        "sextile"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth and drive cooperate—opportunity through articulate action and skillful initiative.",
+      "title": "Jupiter Sextile Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "jupiter",
+      "body_b": "mercury",
+      "growth": "Share one skill clearly.",
+      "id": "aspect:jupiter:trine:mercury",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind and expansion flow: practical Taurus thought supported by Virgo Jupiter’s useful optimism and teaching impulse.",
+      "title": "Jupiter Trine Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "mars",
+      "growth": "Act after one breath of discernment.",
+      "id": "aspect:asc:square:mars",
+      "keywords": [
+        "square"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Approach and drive tension: Virgo careful presentation versus Gemini assertive multitasking. Integrating pace and polish is the craft.",
+      "title": "Ascendant Square Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mars",
+      "body_b": "north_node",
+      "growth": "Aim effort at mutual benefit.",
+      "id": "aspect:mars:trine:north_node",
+      "keywords": [
+        "trine"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Will supports the Libra developmental path—action that builds fairer bonds and shared value.",
+      "title": "Mars Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "mercury",
+      "growth": "Decide, then communicate the plan once.",
+      "id": "aspect:mars:sextile:mercury",
+      "keywords": [
+        "sextile"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Speech and action cooperate—Taurus mind with Gemini drive can plan carefully then move in words and options.",
+      "title": "Mars Sextile Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 4
+    }
+  ],
+  "schema_version": 1,
+  "seed_id": "seed_9_parents_deep_v1"
+}

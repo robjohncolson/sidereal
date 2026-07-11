@@ -164,7 +164,7 @@ def test_transit_interpretations_surface_ready_stub_and_missing_in_force_order(
     # then exactness, while keeping transit and natal roles explicit.
     aspects = (
         TransitAspectHit(
-            "uranus", "neptune", "square", 92.0, 5.0, 2.0, 0.60, True
+            "uranus", "neptune", "opposition", 178.0, 6.0, 2.0, 0.60, True
         ),
         TransitAspectHit(
             "uranus", "uranus", "square", 89.7, 5.0, 0.3, 0.70, False
@@ -194,7 +194,7 @@ def test_transit_interpretations_surface_ready_stub_and_missing_in_force_order(
         ("uranus", "neptune", "stub"),
     ]
     assert {(gap.key, gap.kind) for gap in report.gaps} == {
-        ("aspect:neptune:square:uranus", "stub"),
+        ("aspect:neptune:opposition:uranus", "stub"),
         ("aspect:uranus:square:uranus", "stub"),
     }
     markdown = report.to_markdown()

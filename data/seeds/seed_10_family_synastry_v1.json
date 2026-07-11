@@ -1,0 +1,1326 @@
+{
+  "records": [
+    {
+      "aspect_type": "conjunction",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "growth": "Name power dynamics early; do not assume the other handles intensity the same way you do.",
+      "id": "aspect:pluto:conjunction:pluto",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Two charts with Pluto near the same place share a generational depth signature: similar historical climate around power, creative will, and collective shadow. Between people it is less personal chemistry alone than a common era-background that still colors how intensity is normalized in the bond.",
+      "title": "Pluto Conjunction Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "growth": "Agree how much disruption the bond can hold before it needs sanctuary.",
+      "id": "aspect:uranus:conjunction:uranus",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Uranus conjunct Uranus is largely generational: both people carry similar breakthrough and freedom weather. In relationship it can mean shared tolerance for change—or shared restlessness—without guaranteeing personal rapport by itself.",
+      "title": "Uranus Conjunction Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "growth": "Keep ideals; add practical check-ins so shared dreams stay mutual.",
+      "id": "aspect:neptune:conjunction:neptune",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Neptune conjunct Neptune is generational idealism and fog. Together, family lines may share spiritual yearnings, artistic softness, or confusion patterns of their cohort, still lived personally in houses and angles.",
+      "title": "Neptune Conjunction Neptune",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "growth": "Create together; clarify agreements in daylight language.",
+      "id": "aspect:neptune:sextile:neptune",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Neptune sextile Neptune links two charts’ imaginal fields with gentle cooperation. Inspiration and empathy can flow if neither uses fog to avoid accountability in the relationship.",
+      "title": "Neptune Sextile Neptune",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "growth": "Pilot new arrangements as a team experiment.",
+      "id": "aspect:uranus:trine:uranus",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Uranus trine Uranus eases shared innovation and freedom themes across charts. Change can feel mutual rather than threatening when both already speak the language of breakthrough.",
+      "title": "Uranus Trine Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "growth": "Use depth for mutual empowerment, not leverage.",
+      "id": "aspect:pluto:sextile:pluto",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Pluto sextile Pluto offers cooperative access to deep change between charts—intensity can be chosen and paced rather than forced upon either person.",
+      "title": "Pluto Sextile Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "north_node",
+      "body_b": "north_node",
+      "growth": "Practice the shared lesson on each other with patience.",
+      "id": "aspect:north_node:conjunction:north_node",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "North Node conjunct North Node means similar developmental homework: both charts stretch toward related life lessons. Companionship can feel like walking the same curriculum with different house stories.",
+      "title": "North Node Conjunction North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "asc",
+      "body_b": "pluto",
+      "growth": "Consent around intensity; do not test each other to prove depth.",
+      "id": "aspect:asc:conjunction:pluto",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "One person’s rising style meets the other’s Pluto: first impressions carry catalytic intensity. Presence can feel magnetic, exposing, or power-aware—chemistry of impact at the doorway of the relationship.",
+      "title": "Ascendant Conjunction Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "asc",
+      "body_b": "north_node",
+      "growth": "Notice when your manner helps them become more themselves.",
+      "id": "aspect:asc:sextile:north_node",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Personal style supports the other’s developmental path when activated. How one person shows up can make the other’s growth easier without forcing it.",
+      "title": "Ascendant Sextile North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "asc",
+      "body_b": "north_node",
+      "growth": "Offer encouragement without steering their life.",
+      "id": "aspect:asc:trine:north_node",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Approach and growth path flow with ease: one chart’s presence naturally encourages the other’s stretch in a supportive field.",
+      "title": "Ascendant Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "asc",
+      "body_b": "neptune",
+      "growth": "Stay kind and clear; name what is real.",
+      "id": "aspect:asc:sextile:neptune",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Manner and imagination cooperate—softness, glamour, or empathy available in first contact. Idealization is the risk if clarity is skipped.",
+      "title": "Ascendant Sextile Neptune",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mc",
+      "body_b": "north_node",
+      "growth": "Negotiate public ambition with private becoming.",
+      "id": "aspect:mc:opposition:north_node",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public vocation and the other’s growth path polarize: career or status aims may seem at odds with the relational developmental pull until both poles are honored in the family system.",
+      "title": "Midheaven Opposition North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "neptune",
+      "body_b": "pluto",
+      "growth": "Create transformation that does not consume the other.",
+      "id": "aspect:neptune:trine:pluto",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Imagination and deep power support each other across charts—visionary intensity with relative ease. Can feel artistic or fated; ethics keep it clean.",
+      "title": "Neptune Trine Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "neptune",
+      "body_b": "pluto",
+      "growth": "Refuse savior and victim scripts; seek mutual clarity.",
+      "id": "aspect:neptune:conjunction:pluto",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Neptune meets Pluto: dream and underworld fuse. Between charts this can feel like soulful intensity, shared crisis-poetics, or confusion around power. Handle with care and consent.",
+      "title": "Neptune Conjunction Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "pluto",
+      "body_b": "uranus",
+      "growth": "Change systems together; do not use shock as domination.",
+      "id": "aspect:pluto:square:uranus",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Deep power squares breakthrough: reform meets compulsion. Between people this can electrify growth or create control-versus-freedom fights that need explicit agreements.",
+      "title": "Pluto Square Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "sun",
+      "body_b": "uranus",
+      "growth": "Encourage experiments that do not abandon loyalty.",
+      "id": "aspect:sun:trine:uranus",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Identity and freedom support each other—space to be original inside the bond without constant battle.",
+      "title": "Sun Trine Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "jupiter",
+      "body_b": "mercury",
+      "growth": "Share learning both ways.",
+      "id": "aspect:jupiter:trine:mercury",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "See Mercury trine Jupiter above—mind and meaning flow between charts. Read sign colors on each chart for how this plays in practice.",
+      "title": "Jupiter Trine Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "asc",
+      "body_b": "jupiter",
+      "growth": "Offer faith without pressure to perform.",
+      "id": "aspect:asc:trine:jupiter",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "One person’s Jupiter blesses the other’s approach—presence feels larger, luckier, more encouraged in the relationship field without needing a performance.",
+      "title": "Jupiter Trine Ascendant",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mercury",
+      "body_b": "moon",
+      "growth": "Reflect feeling before fixing; ask whether you heard them.",
+      "id": "aspect:mercury:square:moon",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind frictions with feeling: words may miss emotional tone, or mood resists analysis. Productive when both translate instead of escalate.",
+      "title": "Mercury Square Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "moon",
+      "body_b": "venus",
+      "growth": "Name needs and values in the same conversation.",
+      "id": "aspect:moon:opposition:venus",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Emotional need and affection style polarize—care versus pleasing, comfort versus desire. Attraction and tension can coexist until languages match.",
+      "title": "Moon Opposition Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "sun",
+      "growth": "Aim force at problems, not persons.",
+      "id": "aspect:mars:opposition:sun",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive opposes identity across charts—assertion meets ego; heat can motivate or clash.",
+      "title": "Mars Opposition Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mars",
+      "body_b": "mars",
+      "growth": "Pick constructive battles together.",
+      "id": "aspect:mars:trine:mars",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive styles cooperate: effort and timing can sync. Easy to work or advocate on the same side when aims are clear.",
+      "title": "Mars Trine Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "sun",
+      "body_b": "sun",
+      "growth": "Appreciate difference inside the harmony.",
+      "id": "aspect:sun:trine:sun",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Core identities support each other with ease—vitality styles harmonize and recognition can feel natural across the bond.",
+      "title": "Sun Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "sun",
+      "body_b": "venus",
+      "growth": "Express liking specifically, not only generally.",
+      "id": "aspect:sun:trine:venus",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Affection supports identity—liking and goodwill that help the other feel valued in ordinary days.",
+      "title": "Venus Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "moon",
+      "body_b": "uranus",
+      "growth": "Check in after changes; freedom needs reassurance.",
+      "id": "aspect:moon:sextile:uranus",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Feeling and freedom can cooperate—emotional life allows innovation and space when both choose it.",
+      "title": "Moon Sextile Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mc",
+      "body_b": "moon",
+      "growth": "Support each other’s work without absorbing all feeling labor.",
+      "id": "aspect:mc:sextile:moon",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public path and emotional nature offer opportunity—career and care can help each other when activated kindly.",
+      "title": "Midheaven Sextile Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "mc",
+      "growth": "Separate who we are at home from what the world needs from us.",
+      "id": "aspect:asc:square:mc",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "One’s vocation style frictions with the other’s personal manner—public role versus private face in family life.",
+      "title": "Midheaven Square Ascendant",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mc",
+      "body_b": "saturn",
+      "growth": "Share load; do not only judge outcomes.",
+      "id": "aspect:mc:opposition:saturn",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public path faces the other’s duty or limit—career seriousness can weigh or stabilize.",
+      "title": "Midheaven Opposition Saturn",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "north_node",
+      "body_b": "saturn",
+      "growth": "Mentor without controlling.",
+      "id": "aspect:north_node:opposition:saturn",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth faces duty—becoming versus fear or mastery from the other. Read sign colors on each chart for how this plays in practice.",
+      "title": "North Node Opposition Saturn",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "venus",
+      "growth": "Turn heat into honest wants, not scorekeeping.",
+      "id": "aspect:mars:opposition:venus",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Desire and drive oppose affection style—magnetic tension, push-pull attraction, or conflict about love languages.",
+      "title": "Mars Opposition Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "uranus",
+      "growth": "Agree on how to handle change before the crisis.",
+      "id": "aspect:mars:opposition:uranus",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Breakthrough faces drive—sudden moves versus force. Exciting and volatile until pace is negotiated.",
+      "title": "Uranus Opposition Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "jupiter",
+      "body_b": "neptune",
+      "growth": "Ground big hopes in small shared practices.",
+      "id": "aspect:jupiter:square:neptune",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Vision squares expansion—idealism can inflate, or faith can fog. Shared dreams need reality tests between people.",
+      "title": "Neptune Square Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "jupiter",
+      "body_b": "mercury",
+      "growth": "Define terms; prefer curiosity over being right.",
+      "id": "aspect:jupiter:square:mercury",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind squares expansion: ideas debate beliefs. Lively teaching tension—or talking past each other at different scales.",
+      "title": "Mercury Square Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "moon",
+      "body_b": "venus",
+      "growth": "Ask what being cared for means to each person.",
+      "id": "aspect:moon:square:venus",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Feeling frictions with love and values—comfort needs versus affection style. Care can feel mismatched until translated.",
+      "title": "Moon Square Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mc",
+      "body_b": "venus",
+      "growth": "Schedule both beauty and work; refuse false either-or.",
+      "id": "aspect:mc:square:venus",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Affection and values tension with public path—love and vocation compete for time or style in the family field.",
+      "title": "Venus Square Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mars",
+      "body_b": "venus",
+      "growth": "Slow the tempo when words get sharp.",
+      "id": "aspect:mars:square:venus",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Love and drive square—attraction with friction, desire with debate. Chemistry that needs skill and pacing.",
+      "title": "Venus Square Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "jupiter",
+      "body_b": "sun",
+      "growth": "Cheer their path without rewriting it.",
+      "id": "aspect:jupiter:opposition:sun",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Expansion faces identity—encouragement can feel like pressure, or growth challenges the ego. Classic parent–child belief-versus-selfhood theme.",
+      "title": "Jupiter Opposition Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "asc",
+      "body_b": "jupiter",
+      "growth": "Activate it with real invitations, not vague promises.",
+      "id": "aspect:asc:sextile:jupiter",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth opportunity meets presence—easy goodwill and confidence available in the bond when activated.",
+      "title": "Jupiter Sextile Ascendant",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "mercury",
+      "growth": "Repeat back what you heard before answering.",
+      "id": "aspect:asc:square:mercury",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Manner frictions with mind—style of approach versus how the other thinks and speaks. Misreads are common until paced.",
+      "title": "Ascendant Square Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "saturn",
+      "body_b": "uranus",
+      "growth": "Change one rule with consent.",
+      "id": "aspect:saturn:conjunction:uranus",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Structure meets freedom—rules rewrite under pressure. Intense reform field between charts.",
+      "title": "Saturn Conjunction Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mc",
+      "body_b": "moon",
+      "growth": "Protect emotional check-ins when work peaks.",
+      "id": "aspect:mc:opposition:moon",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Public path opposes the other’s feelings—career versus care polarity. Classic family load-balancing theme under stress.",
+      "title": "Midheaven Opposition Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "asc",
+      "body_b": "venus",
+      "growth": "Match charm with consistent care.",
+      "id": "aspect:asc:conjunction:venus",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Love and values meet the other’s rising style—attraction to how they show up; sweetness at contact that lasts if real.",
+      "title": "Venus Conjunction Ascendant",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "moon",
+      "body_b": "moon",
+      "growth": "Keep soothing rituals.",
+      "id": "aspect:moon:trine:moon",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Already covered—emotional natures support. Read sign colors on each chart for how this plays in practice.",
+      "title": "Moon Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "uranus",
+      "body_b": "venus",
+      "growth": "Innovate rituals of care, not only independence.",
+      "id": "aspect:uranus:trine:venus",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Freedom supports affection—space and liking can coexist with freshness in relating.",
+      "title": "Uranus Trine Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "jupiter",
+      "body_b": "moon",
+      "growth": "Alternate fixing with holding.",
+      "id": "aspect:jupiter:opposition:moon",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Expansion opposes feeling—belief or improvement drive versus emotional need. Care can be overdone or underfelt.",
+      "title": "Jupiter Opposition Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "asc",
+      "body_b": "mercury",
+      "growth": "Assume good intent; clarify tone.",
+      "id": "aspect:asc:opposition:mercury",
+      "keywords": [
+        "opposition",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Manner faces mind across the axis—how one appears versus how the other thinks. Dialogue is the bridge.",
+      "title": "Ascendant Opposition Mercury",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mc",
+      "body_b": "moon",
+      "growth": "Let success include emotional safety at home.",
+      "id": "aspect:mc:trine:moon",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Vocation supports the other’s emotional life—or the reverse—so public path and feeling can ally.",
+      "title": "Midheaven Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mercury",
+      "body_b": "sun",
+      "growth": "Ask open questions.",
+      "id": "aspect:mercury:sextile:sun",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind supports identity—easy talk about who each person is becoming. Read sign colors on each chart for how this plays in practice.",
+      "title": "Mercury Sextile Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "asc",
+      "body_b": "sun",
+      "growth": "Activate with genuine attention.",
+      "id": "aspect:asc:sextile:sun",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Core self supports the other’s presence—encouragement available in how each shows up day to day.",
+      "title": "Sun Sextile Ascendant",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "venus",
+      "body_b": "venus",
+      "growth": "Translate care into the other’s dialect.",
+      "id": "aspect:venus:square:venus",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Love languages and values friction—different aesthetics, money styles, or affection needs with attraction that needs negotiation.",
+      "title": "Venus Square Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mars",
+      "body_b": "moon",
+      "growth": "Act on one real need today.",
+      "id": "aspect:mars:trine:moon",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive supports feeling—action that cares; protective or helpful heat between charts.",
+      "title": "Mars Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "saturn",
+      "body_b": "sun",
+      "growth": "Be reliable more than impressive.",
+      "id": "aspect:saturn:trine:sun",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Duty supports identity—steady respect and backbone available. Read sign colors on each chart for how this plays in practice.",
+      "title": "Saturn Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "asc",
+      "body_b": "north_node",
+      "growth": "Stretch without shaming style.",
+      "id": "aspect:asc:square:north_node",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth path frictions with the other’s manner—becoming challenges how someone shows up in the family.",
+      "title": "North Node Square Ascendant",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "moon",
+      "body_b": "north_node",
+      "growth": "Treat feelings as curriculum, not inconvenience.",
+      "id": "aspect:moon:conjunction:north_node",
+      "keywords": [
+        "conjunction",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Feeling fused with developmental path—emotional bond is part of the lesson plan between charts.",
+      "title": "Moon Conjunction North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "neptune",
+      "body_b": "pluto",
+      "growth": "Create; do not conspire in fog.",
+      "id": "aspect:neptune:sextile:pluto",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Vision and deep change cooperate when chosen—shared capacity for imaginal intensity with ethics.",
+      "title": "Neptune Sextile Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "mars",
+      "growth": "Start small; finish loudly.",
+      "id": "aspect:jupiter:sextile:mars",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Expansion and drive cooperate—easier joint action and optimistic effort. Read sign colors on each chart for how this plays in practice.",
+      "title": "Jupiter Sextile Mars",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mercury",
+      "body_b": "pluto",
+      "growth": "Powerful questions without interrogation.",
+      "id": "aspect:mercury:square:pluto",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Words meet power—conversations can transform or escalate. Depth talk needs care and consent.",
+      "title": "Mercury Square Pluto",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "uranus",
+      "growth": "Channel spark into a planned experiment.",
+      "id": "aspect:mars:sextile:uranus",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Drive and freedom offer opportunity—quick activation of change when both consent.",
+      "title": "Mars Sextile Uranus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "mc",
+      "growth": "Ask before helping; respect their lead.",
+      "id": "aspect:mars:sextile:mc",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Effort supports the other’s public path—help with ambition when activated. Read sign colors on each chart for how this plays in practice.",
+      "title": "Mars Sextile Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mc",
+      "body_b": "north_node",
+      "growth": "Build collaboration into the career story.",
+      "id": "aspect:mc:trine:north_node",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Vocation supports developmental path—public work can serve growth themes in the bond.",
+      "title": "Midheaven Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "north_node",
+      "growth": "Offer resources, not scripts.",
+      "id": "aspect:jupiter:sextile:north_node",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth opportunity supports developmental stretch—encouragement toward the lesson.",
+      "title": "Jupiter Sextile North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "jupiter",
+      "body_b": "mc",
+      "growth": "Celebrate wins without inflation.",
+      "id": "aspect:jupiter:trine:mc",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Growth supports vocation—public path can feel blessed or enlarged by the other. Read sign colors on each chart for how this plays in practice.",
+      "title": "Jupiter Trine Midheaven",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "moon",
+      "body_b": "sun",
+      "growth": "Honor both mood and purpose.",
+      "id": "aspect:moon:square:sun",
+      "keywords": [
+        "square",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Feeling frictions with identity—care needs versus will. Classic vitality-versus-comfort tension across charts.",
+      "title": "Moon Square Sun",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "moon",
+      "body_b": "north_node",
+      "growth": "Use comfort to fuel courage, not avoidance.",
+      "id": "aspect:moon:trine:north_node",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Feeling supports growth path—emotional ease around the developmental stretch. Read sign colors on each chart for how this plays in practice.",
+      "title": "Moon Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mercury",
+      "body_b": "north_node",
+      "growth": "Talk about the future without pressure.",
+      "id": "aspect:mercury:sextile:north_node",
+      "keywords": [
+        "sextile",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mind supports growth—conversation can advance the lesson when used kindly. Read sign colors on each chart for how this plays in practice.",
+      "title": "Mercury Sextile North Node",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "neptune",
+      "body_b": "venus",
+      "growth": "Keep romance; keep reality checks.",
+      "id": "aspect:neptune:trine:venus",
+      "keywords": [
+        "trine",
+        "synastry",
+        "family"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "Imagination supports affection—soft artistic goodwill; watch idealization. Read sign colors on each chart for how this plays in practice.",
+      "title": "Neptune Trine Venus",
+      "type": "aspect",
+      "updated": "2026-07-11",
+      "version": 6
+    }
+  ],
+  "schema_version": 1,
+  "seed_id": "seed_10_family_synastry_v1"
+}

@@ -2,10 +2,13 @@
 
 const state = {
   charts: [],
+  synastries: [],
   selectedChartId: null,
   selectedSavedChart: null,
+  selectedSynastryId: null,
   lastChartPayload: null,
   lastChartReport: null,
+  lastSynastryReport: null,
   toastTimer: null,
 };
 
@@ -116,6 +119,7 @@ function init() {
   });
   void checkHealth();
   void loadLibrary();
+  void loadSynastryLibrary();
 }
 
 function bindNavigation() {
@@ -136,6 +140,10 @@ function bindForms() {
   byId("library-transit-button").addEventListener("click", openSelectedTransit);
   byId("transit-form").addEventListener("submit", handleTransitSubmit);
   byId("synastry-form").addEventListener("submit", handleSynastrySubmit);
+  byId("refresh-synastry-library-button").addEventListener("click", () => {
+    void loadSynastryLibrary({ announce: true });
+  });
+  byId("refresh-synastry-button").addEventListener("click", handleSynastryRefresh);
 }
 
 function setFormDefaults() {
@@ -445,12 +453,15 @@ async function handleSynastrySubmit(event) {
   const submit = form.querySelector('button[type="submit"]');
   const root = byId("synastry-report");
   const empty = byId("synastry-empty");
+  const selection = byId("synastry-selection");
   clearStatus("synastry-form-status");
+  clearStatus("synastry-library-status");
 
   try {
     if (!form.reportValidity()) return;
     const payload = synastryPayloadFromForm(form);
     setBusy(submit, true, "Comparing…");
+    selection.hidden = true;
     showLoading(
       root,
       empty,
@@ -458,13 +469,137 @@ async function handleSynastrySubmit(event) {
       "The local engine is matching both chart moments in their common J2000 frame.",
     );
     const report = await api("/api/synastry", { method: "POST", body: payload });
+    state.lastSynastryReport = report;
     renderSynastryReport(report, root);
-    setStatus("synastry-form-status", "Two-natal study calculated locally.", "success");
+    const saved = report.saved_synastry;
+    if (saved && saved.id) {
+      state.selectedSynastryId = saved.id;
+      selection.hidden = false;
+      byId("selected-synastry-title").textContent = saved.label || "Saved synastry";
+      setStatus(
+        "synastry-form-status",
+        `Two-natal study calculated and saved as “${saved.label || saved.id}”.`,
+        "success",
+      );
+      void loadSynastryLibrary();
+    } else {
+      state.selectedSynastryId = null;
+      setStatus("synastry-form-status", "Two-natal study calculated locally.", "success");
+    }
   } catch (error) {
     showError(root, empty, "Synastry study could not be calculated", errorMessage(error));
     setStatus("synastry-form-status", errorMessage(error), "error");
   } finally {
     setBusy(submit, false);
+  }
+}
+
+async function loadSynastryLibrary({ announce = false } = {}) {
+  const list = byId("synastry-library-list");
+  const summary = byId("synastry-library-summary");
+  try {
+    const payload = await api("/api/synastries");
+    state.synastries = asArray(payload.synastries);
+    renderSynastryLibraryList();
+    summary.textContent =
+      state.synastries.length === 0
+        ? "No saved synastries yet. Compare two charts with “Save to synastry library” checked."
+        : `${state.synastries.length} saved ${state.synastries.length === 1 ? "study" : "studies"}.`;
+    if (announce) showToast("Synastry library refreshed.");
+  } catch (error) {
+    list.replaceChildren(element("p", "library-empty-list", errorMessage(error)));
+    summary.textContent = "Could not load synastry library.";
+  }
+}
+
+function renderSynastryLibraryList() {
+  const list = byId("synastry-library-list");
+  list.replaceChildren();
+  if (!state.synastries.length) {
+    list.append(
+      element(
+        "p",
+        "library-empty-list",
+        "Snapshots appear here after you save a two-chart comparison.",
+      ),
+    );
+    return;
+  }
+  for (const item of state.synastries) {
+    const button = element("button", "library-item", "");
+    button.type = "button";
+    if (item.id === state.selectedSynastryId) button.classList.add("is-selected");
+    button.append(element("strong", "library-item-title", item.label || item.id));
+    button.append(
+      element(
+        "span",
+        "library-item-meta",
+        [
+          `${item.chart_a_label || "A"} ↔ ${item.chart_b_label || "B"}`,
+          item.relationship_count != null ? `${item.relationship_count} aspects` : null,
+          item.saved_at ? friendlyMoment(item.saved_at) : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      ),
+    );
+    button.addEventListener("click", () => {
+      void openSavedSynastry(item.id);
+    });
+    list.append(button);
+  }
+}
+
+async function openSavedSynastry(snapshotId) {
+  const root = byId("synastry-report");
+  const empty = byId("synastry-empty");
+  const selection = byId("synastry-selection");
+  clearStatus("synastry-library-status");
+  try {
+    showLoading(root, empty, "Opening saved synastry", "Loading the local snapshot…");
+    const payload = await api(`/api/synastries/${encodeURIComponent(snapshotId)}`);
+    const report = payload.report || payload;
+    state.selectedSynastryId = payload.id || snapshotId;
+    state.lastSynastryReport = report;
+    selection.hidden = false;
+    byId("selected-synastry-title").textContent = payload.label || snapshotId;
+    renderSynastryReport(report, root);
+    renderSynastryLibraryList();
+    setStatus("synastry-library-status", "Loaded saved snapshot. Refresh re-runs from natal charts + current DB.", "success");
+  } catch (error) {
+    showError(root, empty, "Could not open synastry snapshot", errorMessage(error));
+    setStatus("synastry-library-status", errorMessage(error), "error");
+  }
+}
+
+async function handleSynastryRefresh() {
+  if (!state.selectedSynastryId) {
+    showToast("Open a saved synastry first.", true);
+    return;
+  }
+  const button = byId("refresh-synastry-button");
+  const root = byId("synastry-report");
+  const empty = byId("synastry-empty");
+  try {
+    setBusy(button, true, "Refreshing…");
+    showLoading(root, empty, "Refreshing synastry", "Re-running from linked natal charts and the current interpretation database…");
+    const payload = await api(
+      `/api/synastries/${encodeURIComponent(state.selectedSynastryId)}/refresh`,
+      { method: "POST", body: {} },
+    );
+    const report = payload.report || payload;
+    state.lastSynastryReport = report;
+    byId("selected-synastry-title").textContent =
+      (payload.saved_synastry && payload.saved_synastry.label) || payload.label || state.selectedSynastryId;
+    renderSynastryReport(report, root);
+    void loadSynastryLibrary();
+    setStatus("synastry-library-status", "Snapshot refreshed with current DB interpretations.", "success");
+    showToast("Synastry snapshot refreshed.");
+  } catch (error) {
+    showError(root, empty, "Could not refresh synastry", errorMessage(error));
+    setStatus("synastry-library-status", errorMessage(error), "error");
+  } finally {
+    setBusy(button, false);
   }
 }
 
@@ -493,7 +628,15 @@ function synastryPayloadFromForm(form) {
   const aId = fieldValue(form, "a_id").trim();
   const bId = fieldValue(form, "b_id").trim();
   if (!aId || !bId) throw new Error("Choose both saved charts.");
-  return { a_id: aId, b_id: bId, options: {} };
+  const save = Boolean(form.elements.namedItem("save_synastry")?.checked);
+  const label = fieldValue(form, "label").trim();
+  return {
+    a_id: aId,
+    b_id: bId,
+    save,
+    label: label || undefined,
+    options: { save },
+  };
 }
 
 function momentFromForm(form, { timeRequired }) {
@@ -1746,6 +1889,9 @@ function makeInlineError(text) {
 }
 
 function activateView(name, { updateHash = true } = {}) {
+  if (name === "synastry") {
+    void loadSynastryLibrary();
+  }
   const valid = ["chart", "library", "transit", "synastry"].includes(name)
     ? name
     : "chart";
