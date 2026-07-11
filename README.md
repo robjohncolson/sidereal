@@ -82,8 +82,11 @@ Shipped seeds:
 | `seed_0_inventory_v1.json` | Full 912-key inventory as stubs |
 | `seed_1_core_v1.json` | 76 ready primers (signs, houses, planets, Sun/Moon×sign, Asc×sign) |
 | `seed_2_personal_aspects_v1.json` | 105 ready major aspects among Sun–Saturn |
+| `seed_3_placements_v1.json` | 256 ready personal-planet×house, sign×house, Midheaven×sign, and pattern readings |
 
-After import: **181 ready**, **731 stubs**, **0 missing**. `gaps` audits the
+After import: **437 ready**, **475 stubs**, **0 missing**. Seed 3 covers every
+sign—including Ophiuchus—on every house cusp, plus all twelve houses for Sun
+through Saturn. `gaps` audits the
 complete inventory. `SIDEREAL_DB_PATH` changes the default `data/sidereal.db`
 path. A chart still calculates if that database does not exist; its report
 lists the interpretation keys as missing.
@@ -124,6 +127,50 @@ user-supplied birth time.
 If both `--out` and `--md` are omitted, the full JSON report is printed to
 stdout. Output parent directories are created when needed. Use `--no-houses`
 to suppress houses even if time and coordinates are supplied.
+
+### Compare Midpoint and tropical labels
+
+Midpoint remains the primary system. Add `--compare tropical` (equivalently,
+`--compare midpoint,tropical`) to place a geometry-only comparison in JSON and
+Markdown:
+
+```bash
+python -m sidereal chart \
+  --date 2000-01-01 --time 12:00 --tz UTC --lat 0 --lon 0 \
+  --compare tropical \
+  --db data/sidereal.db \
+  --out /tmp/comparison.json --md /tmp/comparison.md
+```
+
+The tropical side uses twelve equal 30° signs from 0° Aries on tropical
+ecliptic longitude of date. Midpoint uses the unequal J2000 boundary table.
+The report flags differing sign labels without treating either reference frame
+as uniquely true. Houses, aspects, and the moment are not recomputed, and only
+the primary Midpoint placements are joined to interpretation records.
+
+## Save charts locally
+
+The chart library stores one strict JSON file per chart under gitignored
+`charts/`. These files contain birth date, time, timezone, coordinates, and
+full geometry; treat them as sensitive personal data and back them up or share
+them only deliberately.
+
+```bash
+python -m sidereal save \
+  --label "Me" --date 2000-12-12 --time 12:00 --tz UTC \
+  --lat 0 --lon 0 --compare tropical
+python -m sidereal list
+python -m sidereal show "Me"
+python -m sidereal show "Me" --md /tmp/me-geometry.md --out /tmp/me-saved.json
+python -m sidereal interpret "Me" --db data/sidereal.db \
+  --md /tmp/me-current.md --out /tmp/me-current.json
+```
+
+`show` reads the saved geometry snapshot; `interpret` joins that snapshot to
+the current SQLite content, so seed updates do not require saving the chart
+again. `--charts-dir PATH` or `SIDEREAL_CHARTS_DIR` selects another local
+library. Repeated labels are allowed; use the id printed by `list` when a label
+is ambiguous.
 
 IANA daylight-saving transitions can repeat a local wall time. Sidereal rejects
 that ambiguity unless it is resolved explicitly: add `--fold 0` for the first
@@ -171,6 +218,12 @@ start. Boundary geometry takes precedence over a conventional date label.
   used to mark applying/separating.
 - Interpretation: stored in SQLite/JSON seeds, never hard-coded into the
   geometry engine. Stubs and absent records are visible gaps.
+- Comparison: tropical labels map each stored `lon_date`; Midpoint labels stay
+  on the primary J2000 geometry. Comparison never triggers a second DB reading.
+- Saved charts: JSON snapshots under `charts/`, with calculation input/config
+  and complete geometry for offline re-interpretation. Permissions are made
+  owner-private on platforms that support POSIX modes; the user remains
+  responsible for protecting the directory elsewhere.
 
 ## Validate the installation
 
@@ -184,7 +237,8 @@ python -m sidereal chart \
 Tests cover boundary invariants and wraparound, representative Midpoint
 placements, time conversion, a real Swiss Ephemeris sanity value, equal
 houses, aspect dynamics, unknown-time omission rules, inventory counts,
-report gaps, CLI behavior, and installed-data discovery.
+report gaps, tropical comparison frames, saved-chart round trips, CLI behavior,
+and installed-data discovery.
 
 ## Attribution and licensing
 

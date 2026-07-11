@@ -5,7 +5,8 @@ Local 13-sign Midpoint chart calculator and symbolic interpretation database.
 ## Authority and scope
 
 1. `SPEC.md` is the product, calculation, content, and acceptance contract.
-2. `CODEX_PROMPT.md` defines the required Phase 1 + Phase 2 delivery.
+2. `CODEX_PROMPT.md` defines Phase 1 + Phase 2; `CODEX_PROMPT_PHASE3.md`
+   defines the additive usability delivery. `SPEC.md` wins on conflicts.
 3. Keep astronomy/geometry reproducible and interpretations explicitly
    symbolic. Never move interpretive prose into the calculation engine.
 
@@ -27,6 +28,11 @@ do not start concurrent analyzers.
 - Boundary blend: 3°; aspects: modern majors.
 - Geometry is valid without an interpretation database; missing/stub meanings
   must appear as report gaps.
+- Comparison never replaces the primary Midpoint chart: tropical labels use
+  `lon_date`, Midpoint labels use `lon_j2000`, and interpretations remain
+  primary-only.
+- Saved birth data stays in local, gitignored `charts/` JSON. Treat it as
+  sensitive and keep saved geometry separate from the interpretation DB.
 
 ## Local workflow
 
@@ -47,11 +53,17 @@ python -m sidereal db init --db data/sidereal.db
 python -m sidereal db import --db data/sidereal.db
 python -m sidereal chart \
   --date 2000-01-01 --time 12:00 --tz UTC --lat 0 --lon 0 \
+  --compare tropical \
   --out /tmp/sidereal.json --md /tmp/sidereal.md
+python -m sidereal save \
+  --label "Smoke" --date 2000-12-12 --time 12:00 --tz UTC \
+  --lat 0 --lon 0
+python -m sidereal list
 ```
 
 Seeds: `seed_0` inventory stubs · `seed_1` core primers (76) · `seed_2`
-personal-planet major aspects (105). Regenerate with
+personal-planet major aspects (105) · `seed_3` placements/house cusps/MC/patterns
+(256). Import result: 437 ready / 475 stub / 0 missing. Regenerate with
 `python -m sidereal.interpret.generate_seeds`.
 
 Use `2000-12-12 12:00 UTC` for the central Ophiuchus Sun fixture. Under the
@@ -65,6 +77,9 @@ window for that epoch. Geometry beats marketing date labels.
   thin geometry services.
 - `chart.py`: orchestration only.
 - `interpret/`: SQLite schema/store, inventory/seeds, and report composition.
+- `comparison.py` + `zodiac/tropical.py`: label-only comparison over existing
+  geometry; do not recalculate aspects or duplicate interpretation lookups.
+- `library.py`: strict local saved-chart JSON and frozen geometry restoration.
 - `cli.py`: argument validation and adapters; keep heavyweight imports local.
 - Root `data/boundaries/` and `data/seeds/` are installed under
   `share/sidereal/`; runtime resolvers must work outside the repository cwd.

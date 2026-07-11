@@ -132,10 +132,13 @@ def test_composer_renders_stubs_and_lists_them_as_gaps(tmp_path: Path) -> None:
         "planet_in_sign:sun:sagittarius",
     ]
     assert all(reading["status"] == "ready" for reading in sun_readings[:3])
-    assert sun_readings[3]["status"] == "stub"
+    assert sun_readings[3]["status"] == "ready"
     assert {gap.kind for gap in report.gaps} == {"stub"}
-    assert "planet_in_house:sun:1" in {gap.key for gap in report.gaps}
-    assert "pattern:t_square" in {gap.key for gap in report.gaps}
+    gap_keys = {gap.key for gap in report.gaps}
+    assert "planet_in_house:sun:1" not in gap_keys
+    assert "pattern:t_square" not in gap_keys
+    assert "aspect:mc:trine:sun" in gap_keys
+    assert "aspect:moon:opposition:pluto" in gap_keys
     ordered_pairs = [
         (item["aspect"]["body_a"], item["aspect"]["body_b"])
         for item in data["interpretation"]["relationships"]

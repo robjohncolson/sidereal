@@ -25,3 +25,17 @@ that changes from Gemini to Cancer when transformed correctly.
 
 Revalidate this path when upgrading Swiss Ephemeris by running
 `tests/test_ephemeris.py` and the full chart golden suite.
+
+## Tropical comparison frame
+
+Comparison mode deliberately computes the primary Midpoint chart only once.
+Its existing sign fields come from J2000 longitude and the unequal Midpoint
+table. The tropical mapper instead reads each point or cusp's already-computed
+`lon_date` and applies twelve half-open 30° slices beginning at 0° Aries.
+
+This keeps the civil moment, equal-house geometry, house assignments, aspects,
+and patterns identical between the displayed columns. Only sign labels and
+degrees within those signs change. The comparison is attached to the report as
+geometry and never generates a second set of interpretation lookups or gaps.
+Saved charts retain both longitude frames, so the same comparison can be
+reconstructed from a local geometry snapshot without another ephemeris call.

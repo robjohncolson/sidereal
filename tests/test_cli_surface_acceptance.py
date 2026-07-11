@@ -153,12 +153,12 @@ def test_db_cli_imports_and_audits_the_complete_seed_inventory(
     assert main(["db", "gaps", "--db", str(database)]) == 0
     audit = json.loads(capsys.readouterr().out)
     assert audit["expected"] == 912
-    assert audit["ready"] == 181  # Seed 1 (76) + Seed 2 personal aspects (105)
-    assert audit["stub"] == 731
+    assert audit["ready"] == 437  # Seeds 1–3: 76 + 105 + 256
+    assert audit["stub"] == 475
     assert audit["missing"] == 0
     assert audit["missing_ids"] == []
-    assert len(audit["ready_ids"]) == 181
-    assert len(audit["stub_ids"]) == 731
+    assert len(audit["ready_ids"]) == 437
+    assert len(audit["stub_ids"]) == 475
 
     assert (
         main(

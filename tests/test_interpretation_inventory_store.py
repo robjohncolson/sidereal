@@ -13,6 +13,7 @@ from sidereal.interpret.schema import (
     SEED1_READY_COUNT,
     SEED2_PERSONAL_PLANETS,
     SEED2_READY_COUNT,
+    SEED3_READY_COUNT,
     TOTAL_INVENTORY_COUNT,
     ASPECT_TYPES,
     aspect_key,
@@ -122,7 +123,7 @@ def test_seed_files_are_checked_in_deterministically() -> None:
 
 def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None:
     db_path = tmp_path / "interpretations.db"
-    ready_total = SEED1_READY_COUNT + SEED2_READY_COUNT
+    ready_total = SEED1_READY_COUNT + SEED2_READY_COUNT + SEED3_READY_COUNT
     with InterpretationStore(db_path) as store:
         store.initialize()
         first = store.import_path(SEED_DIRECTORY)
@@ -130,7 +131,7 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         sun_ophiuchus = store.get("planet_in_sign:sun:ophiuchus")
         moon_sun_square = store.get("aspect:moon:square:sun")
 
-        assert first.files == 3
+        assert first.files == 4
         assert first.records == TOTAL_INVENTORY_COUNT + ready_total
         assert first.inserted == TOTAL_INVENTORY_COUNT
         assert first.updated == ready_total

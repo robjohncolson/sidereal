@@ -103,6 +103,12 @@ SEED2_PERSONAL_PLANETS: tuple[str, ...] = (
     "saturn",
 )
 SEED2_READY_COUNT = 105
+# Phase 3 keeps the same practical personal-planet scope for house readings.
+# The remaining outer-planet and node house records stay visible as inventory
+# stubs until a later content pass can give them comparable editorial care.
+SEED3_PERSONAL_PLANETS: tuple[str, ...] = SEED2_PERSONAL_PLANETS
+# 7 planets x 12 houses + 13 signs x 12 houses + 13 MC signs + 3 patterns.
+SEED3_READY_COUNT = 256
 
 _SLUG_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
@@ -417,6 +423,61 @@ HOUSE_CONTENT: dict[int, dict[str, Any]] = {
 }
 
 
+# Seed 3 combines these authored arena descriptions with the existing planet
+# and sign frames.  Keeping the axes separate makes every generated record
+# deterministic while still giving each pairing content from both selectors.
+HOUSE_FRAMES: dict[int, dict[str, str]] = {
+    1: {
+        "arena": "self-presentation, embodied approach, and the way beginnings are entered",
+        "practice": "noticing how deliberate beginnings turn an inner principle into visible action",
+    },
+    2: {
+        "arena": "resources, values, skills, and a workable sense of sufficiency",
+        "practice": "cultivating resources in ways that reflect stated values rather than accumulation alone",
+    },
+    3: {
+        "arena": "everyday learning, communication, peers, and movement through the local world",
+        "practice": "asking clear questions and making everyday exchanges more accountable",
+    },
+    4: {
+        "arena": "home, roots, memory, and the private foundation beneath public life",
+        "practice": "building continuity that can be revised without treating familiarity as the only form of safety",
+    },
+    5: {
+        "arena": "creativity, play, romance, and personally chosen forms of expression",
+        "practice": "making room for play and authorship while tending the responsibilities that expression creates",
+    },
+    6: {
+        "arena": "routines, craft, service, and the maintenance that supports daily life",
+        "practice": "shaping sustainable routines without turning maintenance into self-judgment",
+    },
+    7: {
+        "arena": "partnership, agreement, open disagreement, and significant one-to-one encounters",
+        "practice": "stating needs and agreements directly while making room for an equal other",
+    },
+    8: {
+        "arena": "shared resources, trust, obligations, and consequential transitions",
+        "practice": "handling shared commitments with explicit consent, trust, and accountability",
+    },
+    9: {
+        "arena": "worldview, sustained study, distance, and encounters with unfamiliar frameworks",
+        "practice": "testing larger convictions against study, experience, and unfamiliar perspectives",
+    },
+    10: {
+        "arena": "vocation, reputation, public contribution, and visible responsibility",
+        "practice": "connecting visible responsibility with useful contribution rather than status alone",
+    },
+    11: {
+        "arena": "community, alliance, audiences, and aims extending beyond private concerns",
+        "practice": "participating in shared aims without giving away individual accountability",
+    },
+    12: {
+        "arena": "retreat, solitude, unseen patterns, and processes of release or closure",
+        "practice": "using reflection and retreat consciously while staying connected to ordinary life",
+    },
+}
+
+
 PLANET_CONTENT: dict[str, dict[str, Any]] = {
     "sun": {"keywords": ("identity", "purpose", "vital expression"), "summary": "The Sun symbolizes coherent identity, purpose, and the wish to express a central organizing principle. It is traditionally read as a direction of conscious development, not proof of a fixed personality."},
     "moon": {"keywords": ("needs", "memory", "adaptation"), "summary": "The Moon symbolizes changing needs, memory, habit, and instinctive adaptation to an environment. Its placement is traditionally used to reflect on familiar emotional rhythms rather than to predict behavior."},
@@ -498,6 +559,37 @@ ASPECT_FRAMES: dict[str, dict[str, str]] = {
 ANGLE_KEYWORDS: dict[str, tuple[str, ...]] = {
     "asc": ("approach", "self-presentation"),
     "mc": ("public direction", "vocation"),
+}
+
+
+PATTERN_CONTENT: dict[str, dict[str, Any]] = {
+    "stellium": {
+        "keywords": ("concentration", "emphasis", "coordination"),
+        "summary": (
+            "A stellium is a structural concentration of three or more chart points in one "
+            "sign. Symbolically, it marks repeated emphasis whose different functions may "
+            "need coordination; it does not guarantee that one theme controls a life."
+        ),
+        "growth": "Name the separate roles inside the concentration instead of treating them as one undifferentiated force.",
+    },
+    "t_square": {
+        "keywords": ("polarity", "friction", "apex"),
+        "summary": (
+            "A T-square is a structural pattern in which two opposing chart points each form "
+            "a square to a third, or apex, point. Its symbolism emphasizes a recurring field "
+            "of negotiation and action, not an inescapable conflict or forecast."
+        ),
+        "growth": "Use the apex as a place to practice a specific response while continuing to hear both ends of the polarity.",
+    },
+    "grand_trine": {
+        "keywords": ("flow", "reinforcement", "circulation"),
+        "summary": (
+            "A grand trine is a structural circuit of three chart points joined pairwise by "
+            "trines. It is traditionally read as mutually reinforcing flow that becomes most "
+            "useful through deliberate practice, not as proof of effortless talent or luck."
+        ),
+        "growth": "Give the easy circulation a concrete task so familiarity develops into a practiced capacity.",
+    },
 }
 
 
@@ -825,6 +917,127 @@ def generate_seed2_entries() -> tuple[InterpretationEntry, ...]:
         raise AssertionError("Seed 2 must not contain stubs")
     if len({entry.id for entry in records}) != len(records):
         raise AssertionError("Seed 2 generator produced duplicate ids")
+    return tuple(records)
+
+
+def generate_seed3_entries() -> tuple[InterpretationEntry, ...]:
+    """Generate the required original placement and pattern readings for Seed 3."""
+
+    records: list[InterpretationEntry] = []
+
+    for planet in SEED3_PERSONAL_PLANETS:
+        focus = PLANET_FOCUS[planet]
+        for house in range(1, 13):
+            house_frame = HOUSE_FRAMES[house]
+            title = f"{_display(planet)} in House {house}"
+            summary = (
+                f"{title} symbolically brings {focus} into the arena of "
+                f"{house_frame['arena']}. Houses are life-arena metaphors, not predictions; "
+                "this pairing is a reflective prompt about where the planetary theme may "
+                "receive attention, practice, or expression rather than a forecast of events."
+            )
+            records.append(
+                _ready_entry(
+                    entry_id=f"planet_in_house:{planet}:{house}",
+                    entry_type="planet_in_house",
+                    title=title,
+                    keywords=(
+                        PLANET_CONTENT[planet]["keywords"][:2]
+                        + HOUSE_CONTENT[house]["keywords"]
+                    ),
+                    summary=summary,
+                    growth=(
+                        f"Practice {house_frame['practice']} while keeping {focus} in "
+                        "proportion with the rest of the chart."
+                    ),
+                    planet=planet,
+                    house=house,
+                )
+            )
+
+    for sign in SIGNS:
+        sign_content = SIGN_CONTENT[sign]
+        for house in range(1, 13):
+            house_frame = HOUSE_FRAMES[house]
+            title = f"{_display(sign)} on House {house}"
+            summary = (
+                f"{title} is a symbolic cusp reading that colors {house_frame['arena']} "
+                f"with {sign_content['expression']}. House cusps are life-arena metaphors "
+                "rather than predictions; this pairing invites reflection on how that area "
+                "may be approached, organized, and revised."
+            )
+            records.append(
+                _ready_entry(
+                    entry_id=f"sign_on_house:{sign}:{house}",
+                    entry_type="sign_on_house",
+                    title=title,
+                    keywords=(
+                        sign_content["keywords"] + HOUSE_CONTENT[house]["keywords"]
+                    ),
+                    summary=summary,
+                    growth=(
+                        f"Within this arena, {sign_content['invitation']}; also practice "
+                        f"{house_frame['practice']}."
+                    ),
+                    sign=sign,
+                    house=house,
+                )
+            )
+
+    for sign in SIGNS:
+        sign_content = SIGN_CONTENT[sign]
+        title = f"Midheaven in {_display(sign)}"
+        summary = (
+            f"{_display(sign)} on the Midheaven is traditionally read as a public-direction "
+            f"and vocation tone shaped by {sign_content['expression']}. It can describe a "
+            f"style of visible contribution that seeks to {sign_content['invitation']}, "
+            "while remaining a symbolic lens rather than a promise about career, status, "
+            "or destiny."
+        )
+        records.append(
+            _ready_entry(
+                entry_id=f"angle_in_sign:mc:{sign}",
+                entry_type="angle_in_sign",
+                title=title,
+                keywords=ANGLE_KEYWORDS["mc"] + sign_content["keywords"],
+                summary=summary,
+                growth=(
+                    f"Ask how public choices can {sign_content['invitation']} while staying "
+                    "answerable to real circumstances and other people."
+                ),
+                blend_note=(
+                    "Near a sign boundary, include the adjacent Midheaven reading and state "
+                    "the measured distance to the boundary."
+                ),
+                angle="mc",
+                sign=sign,
+            )
+        )
+
+    for pattern_type in PATTERN_TYPES:
+        content = PATTERN_CONTENT[pattern_type]
+        records.append(
+            _ready_entry(
+                entry_id=f"pattern:{pattern_type}",
+                entry_type="pattern",
+                title=_display(pattern_type),
+                keywords=content["keywords"],
+                summary=content["summary"],
+                growth=content["growth"],
+                pattern_type=pattern_type,
+            )
+        )
+
+    if len(records) != SEED3_READY_COUNT:
+        raise AssertionError(
+            f"Seed 3 bug: expected {SEED3_READY_COUNT}, generated {len(records)}"
+        )
+    if any(entry.status != "ready" or entry.source != "original" for entry in records):
+        raise AssertionError("Seed 3 must contain only original ready records")
+    if any(entry.version <= 1 for entry in records):
+        raise AssertionError("Seed 3 records must upgrade the v1 inventory stubs")
+    if len({entry.id for entry in records}) != len(records):
+        raise AssertionError("Seed 3 generator produced duplicate ids")
     return tuple(records)
 
 

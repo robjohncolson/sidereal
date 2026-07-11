@@ -167,7 +167,8 @@ class SwissEphemeris:
         if self.require_swiss_ephemeris and backend != "swisseph":
             raise EphemerisError(
                 "Swiss .se1 ephemeris files were required but unavailable; "
-                f"binding returned backend {backend!r}"
+                "install the required files under data/ephe or select their directory "
+                f"with --ephe-path (binding returned backend {backend!r})"
             )
 
         north = next(item for item in raw if item.id == "north_node")

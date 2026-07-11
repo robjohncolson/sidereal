@@ -45,9 +45,10 @@ class InterpretationReport:
     relationships: tuple[Mapping[str, Any], ...]
     patterns: tuple[Mapping[str, Any], ...]
     gaps: tuple[ReportGap, ...]
+    comparison: Mapping[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        result = {
             "report_version": 1,
             "epistemic_note": EPISTEMIC_NOTE,
             "chart": dict(self.chart),
@@ -60,6 +61,9 @@ class InterpretationReport:
             },
             "gaps": [gap.to_dict() for gap in self.gaps],
         }
+        if self.comparison is not None:
+            result["comparison"] = _json_value(self.comparison)
+        return result
 
     def to_json(self, *, indent: int | None = 2) -> str:
         return json.dumps(
@@ -126,6 +130,9 @@ class InterpretationReport:
                 )
         else:
             lines.append("Houses were not calculated; no cusp signs have been inferred.")
+
+        if self.comparison is not None:
+            _append_comparison(lines, self.comparison)
 
         lines.extend(("", "## Placement readings", ""))
         if self.planet_readings:
@@ -267,7 +274,12 @@ class _Resolver:
         )
 
 
-def compose_report(chart: Any, store: EntryLookup | None = None) -> InterpretationReport:
+def compose_report(
+    chart: Any,
+    store: EntryLookup | None = None,
+    *,
+    comparison: Mapping[str, Any] | None = None,
+) -> InterpretationReport:
     """Compose one chart without mutating or embellishing its geometry.
 
     A present stub is rendered and also reported as a ``stub`` gap. An absent
@@ -385,6 +397,7 @@ def compose_report(chart: Any, store: EntryLookup | None = None) -> Interpretati
         relationships=tuple(relationships),
         patterns=tuple(patterns),
         gaps=resolver.gaps(),
+        comparison=comparison,
     )
 
 
@@ -465,6 +478,66 @@ def _relationship_sort_key(aspect: Any) -> tuple[Any, ...]:
     exactness = float(getattr(aspect, "exactness", 0.0))
     a, b = sorted((body_a, body_b))
     return group, subgroup, exactness, a, b, aspect_rank
+
+
+def _append_comparison(lines: list[str], comparison: Mapping[str, Any]) -> None:
+    systems = comparison.get("systems", ())
+    if not isinstance(systems, (list, tuple)) or not systems:
+        raise ValueError("comparison systems must be a non-empty array")
+    system_ids = tuple(str(system) for system in systems)
+    note = str(comparison.get("note") or "")
+    lines.extend(("", "## Comparison", ""))
+    if note:
+        lines.extend((note, ""))
+    points = comparison.get("points", ())
+    if not isinstance(points, (list, tuple)):
+        raise ValueError("comparison points must be an array")
+    for point in points:
+        if not isinstance(point, Mapping):
+            raise ValueError("each comparison point must be an object")
+        labels = point.get("systems", {})
+        if not isinstance(labels, Mapping):
+            raise ValueError("comparison point systems must be an object")
+        rendered: list[str] = []
+        for system in system_ids:
+            placement = labels.get(system)
+            if not isinstance(placement, Mapping):
+                raise ValueError(f"comparison point is missing system {system!r}")
+            rendered.append(
+                f"{_display(system)}: {_display(str(placement.get('sign', 'unknown')))} "
+                f"{_format_number(placement.get('degree_in_sign'), 4)}°"
+            )
+        difference = " — labels differ" if point.get("labels_differ") else ""
+        lines.append(
+            f"- {_display(str(point.get('id', 'unknown')))}: "
+            + " · ".join(rendered)
+            + difference
+        )
+
+    cusps = comparison.get("cusps", ())
+    if isinstance(cusps, (list, tuple)) and cusps:
+        lines.extend(("", "### House cusp labels", ""))
+        for cusp in cusps:
+            if not isinstance(cusp, Mapping):
+                raise ValueError("each comparison cusp must be an object")
+            labels = cusp.get("systems", {})
+            if not isinstance(labels, Mapping):
+                raise ValueError("comparison cusp systems must be an object")
+            rendered = []
+            for system in system_ids:
+                placement = labels.get(system)
+                if not isinstance(placement, Mapping):
+                    raise ValueError(f"comparison cusp is missing system {system!r}")
+                rendered.append(
+                    f"{_display(system)}: {_display(str(placement.get('sign', 'unknown')))} "
+                    f"{_format_number(placement.get('degree_in_sign'), 4)}°"
+                )
+            difference = " — labels differ" if cusp.get("labels_differ") else ""
+            lines.append(
+                f"- House {cusp.get('number', 'unknown')}: "
+                + " · ".join(rendered)
+                + difference
+            )
 
 
 def _append_readings(lines: list[str], readings: Any) -> None:
