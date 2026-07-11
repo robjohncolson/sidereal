@@ -56,3 +56,61 @@ Swiss Ephemeris `FLG_J2000` longitudinal speed while the natal point remains a
 fixed reference. Older saved snapshots that predate the additive J2000-speed
 field remain loadable and fall back to their stored date-frame speed; newly
 calculated and saved charts retain both speed frames.
+
+## Same-body aspect inventory and database migration
+
+Cross-time comparisons can legitimately contain the same planetary principle
+on each side, such as moving Jupiter sextile natal Jupiter. The interpretation
+inventory therefore contains five major-aspect keys for each body that can
+appear on both sides: Sun through Pluto plus North Node. Equal bodies remain
+invalid for every other interpretation type and for Ascendant, Midheaven, and
+South Node aspect keys.
+
+Seed JSON keeps schema version 1. The SQLite interpretation database is version
+2 because its original table constraint required `body_a < body_b`. Opening a
+version 1 database for import rebuilds the entries table transactionally with
+the narrow same-body allowlist, copies every existing column and user record,
+recreates indexes and metadata, and rolls back the whole migration on failure.
+Compatible user-created indexes and triggers are replayed in the same
+transaction; an incompatible extension aborts instead of being silently lost.
+Newer unknown database versions are rejected rather than guessed at.
+
+## Two-fixed-chart synastry geometry
+
+Two-natal synastry reuses the cross-chart major-aspect matcher and compares the
+stored `lon_j2000` values for chart A and chart B. Roles are never canonicalized
+away: JSON retains `a_point` and `b_point`, while the interpretation lookup alone
+uses the existing canonical aspect key. Ascendant and Midheaven participate
+only for a side whose time and location are known. Derived Descendant, IC, and
+South Node remain excluded to avoid duplicate geometry.
+
+Both source charts are fixed snapshots, so applying/separating has no temporal
+direction and is serialized as `null`. The report describes symbolic
+relationship themes without compatibility scores, destiny language, or
+predictions. Composite/Davison charts and cross-house overlays are intentionally
+outside Phase 5.
+
+## Midpoint SVG wheel
+
+`sidereal.wheel.render_svg` is a deterministic renderer over a computed chart;
+it never calls Swiss Ephemeris or remaps a sign. It draws the thirteen canonical
+J2000 Midpoint arcs directly from consecutive boundary starts, places a known
+Ascendant at 9 o'clock, and omits house lines for unknown-time charts. Nearby
+point labels use deterministic radial lanes. An optional already-computed
+moving chart is drawn in a distinct outer lane for transit reports.
+
+The CLI writes a standalone SVG and links it from Markdown. The web API returns
+the same SVG with explicit media/kind metadata, and the browser displays it as
+an inert data-URI image rather than injecting its markup into the document.
+The renderer rejects malformed/non-Midpoint input and emits no scripts,
+external references, event attributes, embedded images, or `foreignObject`.
+
+## Starlette TestClient transport
+
+Starlette 1.x prefers `httpx2` for `TestClient` and warns when falling back to
+the deprecated plain-`httpx` transport. The optional `web` extra therefore adds
+`httpx2>=2,<3`; it also retains `httpx>=0.27,<1` for the older FastAPI/Starlette
+versions allowed by the project's compatibility range. Current Starlette picks
+`httpx2`, so the web/API suite can be exercised with
+`StarletteDeprecationWarning` promoted to an error so a future dependency change
+cannot silently restore the fallback.

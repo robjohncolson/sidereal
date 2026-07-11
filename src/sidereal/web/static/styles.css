@@ -269,6 +269,7 @@ footer {
 
 .view-tabs {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
   margin-top: 24px;
@@ -1425,7 +1426,7 @@ footer p {
   }
 
   .view-tab {
-    flex: 1;
+    flex: 1 1 calc(50% - 0.35rem);
     padding-inline: 0.55rem;
   }
 
@@ -1593,7 +1594,8 @@ footer p {
 }
 
 .tz-option:hover,
-.tz-option:focus {
+.tz-option:focus,
+.tz-option.is-active {
   background: rgba(184, 167, 222, 0.1);
 }
 
@@ -1629,13 +1631,47 @@ footer p {
   border-top: 1px solid var(--line);
 }
 
-.character-placement > h5 {
+.character-placement > h5,
+.character-placement > h6 {
   margin: 0 0 0.45rem;
   color: var(--lavender);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.relationship-group-title {
+  margin: 1rem 0 0.65rem;
+  color: var(--lavender);
+  font-size: 0.78rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.wheel-frame {
+  display: grid;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #f7f3ea;
+  place-items: center;
+}
+
+.wheel-frame > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wheel-caption {
+  padding: 0.55rem 0.75rem 0.7rem;
+  color: #44545b;
+  font-size: 0.72rem;
+  text-align: center;
 }
 
 .house-number-cell {

@@ -88,9 +88,13 @@ STATUSES: tuple[str, ...] = ("stub", "ready", "user")
 SOURCES: tuple[str, ...] = ("original", "user", "generated_draft")
 
 SEED_DATE = "2026-07-10"
-SCHEMA_VERSION = 1
-CORE_INVENTORY_COUNT = 909
-TOTAL_INVENTORY_COUNT = 912  # Normative core plus all implemented pattern keys.
+# Seed JSON remains v1 even though Phase 5 migrates the SQLite store to schema
+# v2.  Keep SCHEMA_VERSION as a compatibility alias for callers that imported
+# the original seed-format constant.
+SEED_SCHEMA_VERSION = 1
+SCHEMA_VERSION = SEED_SCHEMA_VERSION
+CORE_INVENTORY_COUNT = 964
+TOTAL_INVENTORY_COUNT = 967  # Normative core plus all implemented pattern keys.
 SEED1_READY_COUNT = 76
 # Personal-planet major aspects: C(7, 2) pairs × 5 aspect types.
 SEED2_PERSONAL_PLANETS: tuple[str, ...] = (
@@ -135,6 +139,26 @@ SEED5_OUTER_NODE_BODIES: tuple[str, ...] = (
 SEED5_ANGLES: tuple[str, ...] = ANGLES
 # 7 personal bodies x (4 outer/node bodies + 2 angles) x 5 major aspects.
 SEED5_READY_COUNT = 210
+# Cross-chart work can put the same moving/fixed body on both sides of an
+# aspect.  Angles and the South Node cannot occupy both roles in the supported
+# transit model, so equality is valid only for this explicit set.
+SELF_ASPECT_BODIES: tuple[str, ...] = (
+    "sun",
+    "moon",
+    "mercury",
+    "venus",
+    "mars",
+    "jupiter",
+    "saturn",
+    "uranus",
+    "neptune",
+    "pluto",
+    "north_node",
+)
+# Seed 6 authors the seven highest-value self-aspect families.  The four
+# remaining bodies retain explicit Seed 0 stubs, never missing records.
+SEED6_READY_BODIES: tuple[str, ...] = SEED2_PERSONAL_PLANETS
+SEED6_READY_COUNT = 35
 # Seed 7 completes Midpoint sign character for every remaining planet/node so
 # aspect composition can always attach zodiac-colored placement notes.
 SEED7_SIGN_BODIES: tuple[str, ...] = (
@@ -299,8 +323,10 @@ def _canonical_entry_id(entry: InterpretationEntry) -> str:
     if entry.type == "aspect":
         if entry.body_a not in ASPECT_BODIES or entry.body_b not in ASPECT_BODIES:
             raise ValueError("invalid aspect bodies")
-        if entry.body_a >= entry.body_b:
-            raise ValueError("aspect bodies must be distinct and alphabetically sorted")
+        if entry.body_a > entry.body_b:
+            raise ValueError("aspect bodies must be alphabetically sorted")
+        if entry.body_a == entry.body_b and entry.body_a not in SELF_ASPECT_BODIES:
+            raise ValueError("same-body aspects are unsupported for this body")
         if entry.aspect_type not in ASPECT_TYPES:
             raise ValueError(f"invalid v1 aspect type: {entry.aspect_type!r}")
         return f"aspect:{entry.body_a}:{entry.aspect_type}:{entry.body_b}"
@@ -349,13 +375,17 @@ def _is_house_number(value: object) -> bool:
 
 
 def aspect_key(body_a: str, aspect_type: str, body_b: str) -> str:
-    """Return the unordered, alphabetically canonical v1 aspect key."""
+    """Return the unordered, alphabetically canonical aspect key.
+
+    Equality is reserved for the explicit cross-chart self-aspect body set;
+    angle and South Node self-keys remain invalid.
+    """
 
     a, b = sorted((body_a, body_b))
-    if a == b:
-        raise ValueError("an aspect interpretation requires two distinct bodies")
     if a not in ASPECT_BODIES or b not in ASPECT_BODIES:
         raise ValueError(f"unsupported v1 aspect bodies: {a!r}, {b!r}")
+    if a == b and a not in SELF_ASPECT_BODIES:
+        raise ValueError(f"unsupported same-body aspect: {a!r}")
     if aspect_type not in ASPECT_TYPES:
         raise ValueError(f"unsupported v1 aspect type: {aspect_type!r}")
     return f"aspect:{a}:{aspect_type}:{b}"
@@ -933,6 +963,23 @@ def generate_seed0_entries() -> tuple[InterpretationEntry, ...]:
                     aspect_type=aspect_type,
                 )
             )
+    for body in SELF_ASPECT_BODIES:
+        for aspect_type in ASPECT_TYPES:
+            title = f"{_display(body)} {aspect_type.title()} {_display(body)}"
+            records.append(
+                _stub_entry(
+                    entry_id=f"aspect:{body}:{aspect_type}:{body}",
+                    entry_type="aspect",
+                    title=title,
+                    keywords=(
+                        PLANET_CONTENT[body]["keywords"][:1]
+                        + ASPECT_KEYWORDS[aspect_type]
+                    ),
+                    body_a=body,
+                    body_b=body,
+                    aspect_type=aspect_type,
+                )
+            )
     for angle in ANGLES:
         for sign in SIGNS:
             title = f"{_display(angle)} in {_display(sign)}"
@@ -1407,6 +1454,79 @@ def generate_seed5_entries() -> tuple[InterpretationEntry, ...]:
     return tuple(records)
 
 
+SELF_ASPECT_FRAMES: dict[str, dict[str, str]] = {
+    "conjunction": {
+        "dynamic": "is emphasized, renewed, or brought into a concentrated phase",
+        "practice": "Name what is being renewed and give the emphasis a deliberate proportion rather than assuming intensity supplies direction.",
+    },
+    "opposition": {
+        "dynamic": "is encountered across a polarity that calls for rebalancing",
+        "practice": "Hold both ends of the polarity in view before choosing which expression of the principle needs attention now.",
+    },
+    "trine": {
+        "dynamic": "finds a cooperative echo between an established pattern and the present timing",
+        "practice": "Use the easier circulation intentionally so familiarity becomes a practiced capacity rather than an unnoticed default.",
+    },
+    "square": {
+        "dynamic": "meets friction within the same planetary principle across time",
+        "practice": "Translate the friction into one concrete boundary, skill, or adjustment that can be tested without treating tension as failure.",
+    },
+    "sextile": {
+        "dynamic": "finds an opening between an established expression and a timely alternative",
+        "practice": "Activate the opening through one modest experiment; opportunity here is symbolic context, not a promised event.",
+    },
+}
+
+
+def generate_seed6_entries() -> tuple[InterpretationEntry, ...]:
+    """Generate ready cross-chart self-aspect readings for Sun through Saturn."""
+
+    records: list[InterpretationEntry] = []
+    for body in SEED6_READY_BODIES:
+        focus = PLANET_FOCUS[body]
+        for aspect_type in ASPECT_TYPES:
+            frame = SELF_ASPECT_FRAMES[aspect_type]
+            title = f"{_display(body)} {aspect_type.title()} {_display(body)}"
+            summary = (
+                f"{title} compares the same planetary principle across two chart moments: "
+                f"the principle expressed through {focus} {frame['dynamic']}. In a transit "
+                "this describes timing around an "
+                "existing natal theme; between two fixed charts it describes a symbolic "
+                "relationship between expressions of that theme. It is a reflective study "
+                "note, not a prediction of events, compatibility, or character."
+            )
+            records.append(
+                _ready_entry(
+                    entry_id=f"aspect:{body}:{aspect_type}:{body}",
+                    entry_type="aspect",
+                    title=title,
+                    keywords=(
+                        PLANET_CONTENT[body]["keywords"][:2]
+                        + ASPECT_KEYWORDS[aspect_type]
+                    ),
+                    summary=summary,
+                    growth=frame["practice"],
+                    body_a=body,
+                    body_b=body,
+                    aspect_type=aspect_type,
+                )
+            )
+
+    if len(records) != SEED6_READY_COUNT:
+        raise AssertionError(
+            f"Seed 6 bug: expected {SEED6_READY_COUNT}, generated {len(records)}"
+        )
+    if any(entry.status != "ready" or entry.source != "original" for entry in records):
+        raise AssertionError("Seed 6 must contain only original ready records")
+    if any(entry.version <= 1 for entry in records):
+        raise AssertionError("Seed 6 records must upgrade the inventory stubs")
+    if any(len(entry.summary) < 100 for entry in records):
+        raise AssertionError("Seed 6 summaries must be substantive")
+    if len({entry.id for entry in records}) != len(records):
+        raise AssertionError("Seed 6 generator produced duplicate ids")
+    return tuple(records)
+
+
 def generate_seed7_entries() -> tuple[InterpretationEntry, ...]:
     """Complete planet/node × Midpoint-sign character for remaining bodies."""
 
@@ -1478,7 +1598,7 @@ def expected_entry_ids(*, include_patterns: bool = True) -> tuple[str, ...]:
 
 def seed_payload(seed_id: str, entries: Iterable[InterpretationEntry]) -> dict[str, Any]:
     return {
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": SEED_SCHEMA_VERSION,
         "seed_id": seed_id,
         "records": [entry.to_dict() for entry in entries],
     }

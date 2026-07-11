@@ -47,6 +47,8 @@ def test_optional_web_stack_and_static_assets_are_packaged() -> None:
     web_dependencies = config["project"]["optional-dependencies"]["web"]
 
     assert any(item.startswith("fastapi") for item in web_dependencies)
+    assert any(item.startswith("httpx>=") for item in web_dependencies)
+    assert any(item.startswith("httpx2") for item in web_dependencies)
     assert any(item.startswith("uvicorn") for item in web_dependencies)
     assert config["tool"]["setuptools"]["package-data"]["sidereal.web"] == [
         "static/*.html",

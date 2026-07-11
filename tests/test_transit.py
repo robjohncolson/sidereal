@@ -140,12 +140,13 @@ def test_transit_report_is_strict_and_marks_source_moon_and_blends(
     ] is True
 
     markdown = report.to_markdown()
-    assert "# Transit study: Ophiuchus natal" in markdown
+    assert "# Sky ↔ Natal transit study: Ophiuchus natal" in markdown
+    assert "Moving sky at" in markdown
     assert TRANSIT_EPISTEMIC_NOTE in markdown
     assert TRANSIT_MOON_WARNING in markdown
     assert "not predictions" in markdown
     assert "↔ Gemini" in markdown
-    assert "No configured major transit–natal aspects were found." in markdown
+    assert "No configured major sky–natal transit aspects were found." in markdown
 
     invalid = replace(
         report,
@@ -164,6 +165,9 @@ def test_transit_interpretations_surface_ready_stub_and_missing_in_force_order(
     aspects = (
         TransitAspectHit(
             "uranus", "neptune", "square", 92.0, 5.0, 2.0, 0.60, True
+        ),
+        TransitAspectHit(
+            "uranus", "uranus", "square", 89.7, 5.0, 0.3, 0.70, False
         ),
         TransitAspectHit("sun", "asc", "trine", 120.5, 9.0, 0.5, 0.80, False),
         TransitAspectHit("sun", "sun", "conjunction", 0.1, 9.0, 0.1, 0.95, True),
@@ -184,28 +188,32 @@ def test_transit_interpretations_surface_ready_stub_and_missing_in_force_order(
         for item in report.relationships
     ]
     assert ordered == [
-        ("sun", "sun", "missing"),
+        ("sun", "sun", "ready"),
         ("sun", "asc", "ready"),
+        ("uranus", "uranus", "stub"),
         ("uranus", "neptune", "stub"),
     ]
     assert {(gap.key, gap.kind) for gap in report.gaps} == {
-        ("aspect:sun:conjunction:sun", "missing"),
         ("aspect:neptune:square:uranus", "stub"),
+        ("aspect:uranus:square:uranus", "stub"),
     }
     markdown = report.to_markdown()
     # Titles include Midpoint sign character when placements are known.
     sun_self = next(
         line
         for line in markdown.splitlines()
-        if line.startswith("### Transit Sun") and "conjunction natal Sun" in line
+        if line.startswith("#### Transit Sun") and "conjunction natal Sun" in line
     )
     sun_asc = next(
         line
         for line in markdown.splitlines()
-        if line.startswith("### Transit Sun") and "trine natal Ascendant" in line
+        if line.startswith("#### Transit Sun") and "trine natal Ascendant" in line
     )
     assert markdown.index(sun_self) < markdown.index(sun_asc)
-    assert "interpretation record missing" in markdown
+    assert "### Same-body sky–natal contacts" in markdown
+    assert "### Other sky–natal contacts" in markdown
+    assert "same planetary principle across two chart moments" in markdown
+    assert "interpretation record missing" not in markdown
     assert "_(stub)_" in markdown
     # Sign-colored synthesis is attached when both sides have signs.
     assert "Midpoint" in markdown or "sign character" in markdown.lower()

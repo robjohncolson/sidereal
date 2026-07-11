@@ -107,7 +107,7 @@ def test_web_library_interpret_and_transit_round_trip(web_client: TestClient) ->
     scoped = web_client.get("/api/db/gaps", params={"chart_id": saved["id"]})
     assert scoped.status_code == 200
     assert scoped.json()["missing"] == 0
-    assert scoped.json()["expected"] < 912
+    assert scoped.json()["expected"] < 967
     entry = web_client.get("/api/db/entry/planet:sun")
     assert entry.status_code == 200
     assert entry.json()["status"] == "ready"

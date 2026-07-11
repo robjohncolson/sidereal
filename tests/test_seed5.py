@@ -28,7 +28,6 @@ from sidereal.interpret.store import InterpretationStore
 
 SEED_DIRECTORY = Path(__file__).resolve().parents[1] / "data" / "seeds"
 PRIOR_SEED_SHA256 = {
-    "seed_0_inventory_v1.json": "c8f116cb63247a7fe0d94f0f5480e7cf0fe692821b3951a5191e3351be6ee386",
     "seed_1_core_v1.json": "e62ec89035d1ee00a0ee46325bbc67ea31b7a1346177bd70a6d3752936bcd328",
     "seed_2_personal_aspects_v1.json": "d5ac256182e823072fd3c920472c2729aced6d605b142c7a14339de3af2f1d8b",
     "seed_3_placements_v1.json": "27c9b76853a6f7f49cd5b8b68da1f8a7da1a0329b5db079cf214d8f4ea608dc8",
@@ -151,7 +150,7 @@ def test_seed5_store_import_upgrades_only_its_stubs_and_is_idempotent(
         assert first.records == TOTAL_INVENTORY_COUNT + SEED5_READY_COUNT
         assert first.inserted == TOTAL_INVENTORY_COUNT
         assert first.updated == SEED5_READY_COUNT
-        assert (audit.ready, audit.stub, audit.missing) == (210, 702, 0)
+        assert (audit.ready, audit.stub, audit.missing) == (210, 757, 0)
         assert store.get("aspect:mercury:square:uranus").status == "ready"  # type: ignore[union-attr]
         assert store.get("aspect:asc:trine:sun").status == "ready"  # type: ignore[union-attr]
 
@@ -167,6 +166,7 @@ def test_all_required_content_seeds_reach_the_phase4_inventory_target(
     seed_directory = tmp_path / "all-seeds"
     write_seed_files(seed_directory)
     from sidereal.interpret.schema import SEED7_READY_COUNT
+    from sidereal.interpret.schema import SEED6_READY_COUNT
 
     ready_total = (
         SEED1_READY_COUNT
@@ -174,6 +174,7 @@ def test_all_required_content_seeds_reach_the_phase4_inventory_target(
         + SEED3_READY_COUNT
         + SEED4_READY_COUNT
         + SEED5_READY_COUNT
+        + SEED6_READY_COUNT
         + SEED7_READY_COUNT
     )
 
@@ -182,9 +183,9 @@ def test_all_required_content_seeds_reach_the_phase4_inventory_target(
         first = store.import_path(seed_directory)
         audit = store.audit()
 
-        assert ready_total == 837
-        assert first.files == 7
+        assert ready_total == 872
+        assert first.files == 8
         assert first.records == TOTAL_INVENTORY_COUNT + ready_total
         assert first.inserted == TOTAL_INVENTORY_COUNT
         assert first.updated == ready_total
-        assert (audit.ready, audit.stub, audit.missing) == (837, 75, 0)
+        assert (audit.ready, audit.stub, audit.missing) == (872, 95, 0)

@@ -86,23 +86,31 @@ Shipped seeds:
 
 | File | Role |
 |------|------|
-| `seed_0_inventory_v1.json` | Full 912-key inventory as stubs |
+| `seed_0_inventory_v1.json` | Full 967-key inventory as stubs |
 | `seed_1_core_v1.json` | 76 ready primers (signs, houses, planets, Sun/Moon×sign, Asc×sign) |
 | `seed_2_personal_aspects_v1.json` | 105 ready major aspects among Sun–Saturn |
 | `seed_3_placements_v1.json` | 256 ready personal-planet×house, sign×house, Midheaven×sign, and pattern readings |
 | `seed_4_placements_v1.json` | 99 ready Mercury/Venus/Mars×sign and Uranus/Neptune/Pluto/lunar-node×house readings |
 | `seed_5_relationships_v1.json` | 210 ready personal↔outer/North Node and personal↔Ascendant/Midheaven major-aspect readings |
+| `seed_6_self_aspects_v1.json` | 35 ready same-body transit aspects for Sun–Saturn |
 | `seed_7_sign_character_v1.json` | 91 ready Jupiter–Pluto + lunar nodes × all 13 Midpoint signs (zodiac character) |
 
-After import: **837 ready**, **75 stubs**, **0 missing**. Seed 7 completes
-planet/node × Midpoint-sign character so aspect reports can attach zodiac color
-(not only planet-to-planet lore). Seeds 3–4 cover every sign—including
-Ophiuchus—on every house cusp, Mercury/Venus/Mars in every sign, all twelve
-houses for Sun through Pluto, and both calculated lunar nodes in every house.
-Seed 5 fills the highest-value remaining relationship language.
+After import: **872 ready**, **95 stubs**, **0 missing**. Seed 6 expands the
+inventory with all five major same-body aspect keys for the planets and North
+Node that can occur on both sides of a transit. Its 35 Sun–Saturn readings are
+ready; the 20 outer-planet/North-Node self-aspects remain honest stubs. Seed 7
+completes planet/node × Midpoint-sign character so aspect reports can attach
+zodiac color (not only planet-to-planet lore). Seeds 3–4 cover every
+sign—including Ophiuchus—on every house cusp, Mercury/Venus/Mars in every sign,
+all twelve houses for Sun through Pluto, and both calculated lunar nodes in
+every house. Seed 5 fills the highest-value remaining relationship language.
 `gaps` audits the complete inventory. `SIDEREAL_DB_PATH` changes the default
 `data/sidereal.db` path. A chart still calculates if that database does not
 exist; its report lists the interpretation keys as missing.
+
+The interpretation database schema is version 2. Opening an existing version
+1 database for `db import` performs a transactional, data-preserving migration
+that permits the new same-body aspect rows. Seed JSON remains version 1.
 
 Scope the gap audit to the interpretations actually used by a report or saved
 chart when deciding what to author next:
@@ -131,7 +139,8 @@ python -m sidereal chart \
   --lat 0 --lon 0 \
   --label "Example" \
   --out /tmp/example.json \
-  --md /tmp/example.md
+  --md /tmp/example.md \
+  --svg /tmp/example.svg
 ```
 
 Without a known time:
@@ -152,9 +161,16 @@ house assignments, and aspects to angles remain absent; fast-moving bodies,
 especially the Moon, remain time-uncertain. Sidereal never presents noon as a
 user-supplied birth time.
 
-If both `--out` and `--md` are omitted, the full JSON report is printed to
-stdout. Output parent directories are created when needed. Use `--no-houses`
-to suppress houses even if time and coordinates are supplied.
+If `--out`, `--md`, and `--svg` are all omitted, the full JSON report is
+printed to stdout. Output parent directories are created when needed. Use
+`--no-houses` to suppress houses even if time and coordinates are supplied.
+
+`--svg` writes a deterministic, standalone 13-sign Midpoint wheel. If it is
+omitted while `--out` or `--md` is present, Sidereal derives an `.svg` path
+beside the JSON (preferred) or Markdown report and links it from Markdown.
+The unequal canonical sign arcs include Ophiuchus; house cusps appear only for
+known-time charts, with the Ascendant oriented at 9 o'clock. Rendering consumes
+the chart's existing J2000 geometry and performs no second calculation.
 
 ### Compare Midpoint and tropical labels
 
@@ -222,7 +238,8 @@ python -m sidereal transit \
   --natal "Me" --charts-dir charts \
   --date 2026-07-11 --time 12:00 --tz UTC \
   --db data/sidereal.db \
-  --out reports/me-transit.json --md reports/me-transit.md
+  --out reports/me-transit.json --md reports/me-transit.md \
+  --svg reports/me-transit.svg
 ```
 
 Or supply the natal moment inline without saving it:
@@ -257,6 +274,42 @@ placements receive no natal-house overlay. Transit reports describe geometric
 correlations for symbolic study, not predictions, and do not declare one
 zodiac uniquely true.
 
+Same-body contacts such as moving Jupiter to natal Jupiter have their own
+report subsection. The transit wheel uses separate natal and moving-sky lanes,
+while retaining the natal Ascendant orientation and house cusps.
+
+## Transit vs two-person synastry
+
+A **transit** compares the moving sky at one date with one fixed natal chart.
+**Two-natal synastry** compares two fixed birth or event charts. They are
+separate studies: neither mode produces compatibility scores, destiny claims,
+or event predictions.
+
+Compare two saved charts while preserving their A/B roles:
+
+```bash
+python -m sidereal synastry \
+  --a "Me" --b "Partner" --charts-dir charts \
+  --db data/sidereal.db \
+  --out reports/me-partner.json --md reports/me-partner.md
+```
+
+Inline moments are also supported. Each side may independently omit its time;
+that side then contributes planets but no Ascendant or Midheaven:
+
+```bash
+python -m sidereal synastry \
+  --a-date 2000-12-12 --a-time 12:00 --a-tz UTC --a-lat 0 --a-lon 0 \
+  --a-label "Chart A" \
+  --b-date 1990-06-15 --b-tz UTC --b-label "Chart B" \
+  --db data/sidereal.db \
+  --out /tmp/synastry.json --md /tmp/synastry.md
+```
+
+Cross-chart aspects use the same configured major orbs and common J2000 frame
+as transits. Applying/separating is intentionally unset because both charts are
+fixed snapshots.
+
 ## Local web desk
 
 The optional web interface is a same-origin shell over the existing Python
@@ -285,15 +338,20 @@ headers; if you deliberately browse through a local DNS name, add that exact
 name with repeatable `--trusted-host NAME`. Wildcards are refused so the Host
 guard continues to block DNS-rebinding origins.
 
-The browser provides chart calculation and readable reports, saved-chart
-library actions, current-DB reinterpretation, and transits to a selected saved
-natal. Its JSON API uses the same validation and calculation paths as the CLI:
+The browser provides chart calculation and readable reports, a searchable
+timezone/place picker, saved-chart library actions, current-DB
+reinterpretation, transits to a selected saved natal, and two-saved-chart
+synastry. Chart reports retain their planets-in-houses tables and by-house
+readings; transit reports retain their moving-planet-by-natal-house view.
+Natal and transit results show the Python-rendered wheel above the placement
+tables. Its JSON API uses the same validation and calculation paths as the CLI:
 
 | Method | Route | Purpose |
 |--------|-------|---------|
 | `GET` | `/api/health` | Version, ephemeris probe, DB availability, and saved-chart count |
 | `POST` | `/api/chart` | Calculate and compose a full chart report |
 | `POST` | `/api/transit` | Run a saved-natal or inline-natal transit report |
+| `POST` | `/api/synastry` | Compare two saved and/or inline fixed charts |
 | `GET` | `/api/charts` | List saved charts |
 | `GET` | `/api/charts/{id}` | Read one frozen saved geometry record |
 | `POST` | `/api/charts` | Calculate and save a chart locally |
@@ -348,9 +406,13 @@ start. Boundary geometry takes precedence over a conventional date label.
 - Transits: one current chart calculated by the primary engine against frozen
   natal geometry; natal-house overlays and natal-angle aspects exist only when
   natal time is known.
+- Synastry: two fixed charts compared role-preservingly in their common J2000
+  frame; applying/separating is not assigned and no compatibility score exists.
+- Wheel: a pure SVG rendering of stored J2000 geometry, with unequal Midpoint
+  arcs, Ophiuchus, optional houses, and an optional moving-sky overlay.
 - Web: optional FastAPI adapter and static same-origin UI. It delegates to the
-  chart, transit, library, and interpretation modules and binds to loopback by
-  default.
+  chart, transit, synastry, wheel, library, and interpretation modules and
+  binds to loopback by default.
 
 ## Validate the installation
 
@@ -361,14 +423,22 @@ python -m sidereal db import --db data/sidereal.db
 python -m sidereal db gaps --db data/sidereal.db
 python -m sidereal chart \
   --date 2000-01-01 --time 12:00 --tz UTC --lat 0 --lon 0 \
-  --md /tmp/sidereal-smoke.md --out /tmp/sidereal-smoke.json
+  --md /tmp/sidereal-smoke.md --out /tmp/sidereal-smoke.json \
+  --svg /tmp/sidereal-smoke.svg
 python -m sidereal save \
   --label "Smoke" --date 2000-12-12 --time 12:00 --tz UTC \
   --lat 0 --lon 0
 python -m sidereal db gaps --db data/sidereal.db --chart-id "Smoke"
 python -m sidereal transit \
   --natal "Smoke" --date 2026-07-11 --time 12:00 --tz UTC \
-  --md /tmp/sidereal-transit.md --out /tmp/sidereal-transit.json
+  --md /tmp/sidereal-transit.md --out /tmp/sidereal-transit.json \
+  --svg /tmp/sidereal-transit.svg
+python -m sidereal save \
+  --label "Smoke Partner" --date 1990-06-15 --time 12:00 --tz UTC \
+  --lat 0 --lon 0
+python -m sidereal synastry --a "Smoke" --b "Smoke Partner" \
+  --db data/sidereal.db \
+  --md /tmp/sidereal-synastry.md --out /tmp/sidereal-synastry.json
 # With .[web] installed, in another terminal:
 python -m sidereal serve
 # curl http://127.0.0.1:8742/api/health
@@ -378,12 +448,13 @@ Tests cover boundary invariants and wraparound, representative Midpoint
 placements, time conversion, a real Swiss Ephemeris sanity value, equal
 houses, aspect dynamics, unknown-time omission rules, inventory counts,
 report gaps, tropical comparison frames, saved-chart round trips, CLI behavior,
-scoped gap audits, transit role/orb and unknown-time rules, the local API,
-loopback binding safety, and installed-data discovery.
+scoped gap audits, same-body transit keys, transit role/orb and unknown-time
+rules, two-natal J2000 synastry, deterministic SVG wheels, the local API and
+browser UX contract, loopback binding safety, and installed-data discovery.
 
-The repeatable CLI + test smoke is also available as
-`bash scripts/smoke_phase4.sh`; set `SIDEREAL_SMOKE_DIR` to choose its local
-artifact directory.
+The repeatable Phase 5 CLI + test smoke is available as
+`bash scripts/smoke_phase5.sh`; set `SIDEREAL_SMOKE_DIR` to choose the parent
+for its fresh, per-run local artifact directory.
 
 ## Attribution and licensing
 

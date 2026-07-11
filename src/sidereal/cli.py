@@ -90,6 +90,11 @@ def build_parser() -> argparse.ArgumentParser:
     chart.add_argument("--out", type=Path, help="write the full JSON report")
     chart.add_argument("--md", type=Path, help="write the Markdown report")
     chart.add_argument(
+        "--svg",
+        type=Path,
+        help="write a standalone 13-sign wheel (default: beside --out)",
+    )
+    chart.add_argument(
         "--no-houses",
         action="store_true",
         help="suppress houses and angles even when time/location are supplied",
@@ -211,6 +216,11 @@ def build_parser() -> argparse.ArgumentParser:
     transit.add_argument("--out", type=Path, help="write the transit JSON report")
     transit.add_argument("--md", type=Path, help="write the transit Markdown report")
     transit.add_argument(
+        "--svg",
+        type=Path,
+        help="write a natal wheel with moving-sky overlay (default: beside --out)",
+    )
+    transit.add_argument(
         "--boundary-path",
         type=Path,
         help="override the packaged Midpoint boundary JSON",
@@ -228,6 +238,47 @@ def build_parser() -> argparse.ArgumentParser:
     _add_db_argument(transit)
     _add_charts_argument(transit)
     transit.set_defaults(handler=_run_transit)
+
+    synastry = commands.add_parser(
+        "synastry",
+        help="compare two fixed saved or inline natal/event charts",
+    )
+    source_a = synastry.add_mutually_exclusive_group(required=True)
+    source_a.add_argument("--a", help="saved chart A id or label")
+    source_a.add_argument("--a-date", type=_date_value, help="inline chart A date")
+    source_b = synastry.add_mutually_exclusive_group(required=True)
+    source_b.add_argument("--b", help="saved chart B id or label")
+    source_b.add_argument("--b-date", type=_date_value, help="inline chart B date")
+    for prefix, label in (("a", "chart A"), ("b", "chart B")):
+        synastry.add_argument(f"--{prefix}-time", type=_time_value)
+        synastry.add_argument(
+            f"--{prefix}-tz",
+            help=f"inline {label} IANA timezone or UTC offset",
+        )
+        synastry.add_argument(f"--{prefix}-fold", choices=(0, 1), type=int)
+        synastry.add_argument(f"--{prefix}-lat", type=float)
+        synastry.add_argument(f"--{prefix}-lon", type=float)
+        synastry.add_argument(f"--{prefix}-label")
+    synastry.add_argument("--out", type=Path, help="write the synastry JSON report")
+    synastry.add_argument("--md", type=Path, help="write the synastry Markdown report")
+    synastry.add_argument(
+        "--boundary-path",
+        type=Path,
+        help="override the packaged Midpoint boundary JSON for inline charts",
+    )
+    synastry.add_argument(
+        "--ephe-path",
+        type=Path,
+        help="directory containing Swiss Ephemeris .se1 files",
+    )
+    synastry.add_argument(
+        "--require-swiss-ephemeris",
+        action="store_true",
+        help="fail instead of accepting Swiss Ephemeris' Moshier fallback",
+    )
+    _add_db_argument(synastry)
+    _add_charts_argument(synastry)
+    synastry.set_defaults(handler=_run_synastry)
 
     db = commands.add_parser("db", help="manage interpretation records")
     db_commands = db.add_subparsers(dest="db_command", metavar="DB_COMMAND")
@@ -355,8 +406,11 @@ def _validate_coordinate_pair(
 
 def _run_chart(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     _validate_location(parser, args)
-    if args.out is not None and args.md is not None and _same_output_path(args.out, args.md):
-        parser.error("--out and --md must refer to different files")
+    svg_path = _resolved_svg_path(args.svg, args.out, args.md)
+    _validate_output_paths(
+        parser,
+        (("--out", args.out), ("--md", args.md), ("--svg", svg_path)),
+    )
 
     # Imports stay local so `python -m sidereal --help` and DB maintenance do
     # not initialize Swiss Ephemeris or require ephemeris files.
@@ -366,6 +420,7 @@ def _run_chart(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
     from .interpret.compose import compose_report
     from .interpret.store import InterpretationStore
     from .types import MomentInput
+    from .wheel import render_svg
 
     moment = MomentInput(
         local_date=args.local_date,
@@ -398,12 +453,22 @@ def _run_chart(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
 
     json_text = report.to_json(indent=2)
     markdown_text = report.to_markdown()
+    if args.md is not None and svg_path is not None:
+        markdown_text = _markdown_with_wheel(
+            markdown_text,
+            svg_path=svg_path,
+            markdown_path=args.md,
+            title="13-sign Midpoint wheel",
+        )
     wrote_output = False
     if args.out is not None:
         _write_text(args.out, json_text)
         wrote_output = True
     if args.md is not None:
         _write_text(args.md, markdown_text)
+        wrote_output = True
+    if svg_path is not None:
+        _write_text(svg_path, render_svg(chart))
         wrote_output = True
     if not wrote_output:
         print(json_text)
@@ -549,15 +614,19 @@ def _run_transit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
         args.natal_lon,
         prefix="natal-",
     )
-    if args.out is not None and args.md is not None and _same_output_path(args.out, args.md):
-        parser.error("--out and --md must refer to different files")
+    svg_path = _resolved_svg_path(args.svg, args.out, args.md)
+    _validate_output_paths(
+        parser,
+        (("--out", args.out), ("--md", args.md), ("--svg", svg_path)),
+    )
 
     from .chart import compute
     from .config import ChartConfig
     from .interpret.store import InterpretationStore
-    from .interpret.transit import calculate_transit_report
+    from .interpret.transit import calculate_transit_study
     from .library import load_chart
     from .types import MomentInput
+    from .wheel import render_svg
 
     natal_id: str | None = None
     natal_source = "inline"
@@ -607,6 +676,7 @@ def _run_transit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
             saved_source_path,
             args.out,
             args.md,
+            svg_path,
         )
     transit_config = replace(
         base_config,
@@ -636,7 +706,7 @@ def _run_transit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
     db_path = args.db.expanduser()
     if db_path.is_file():
         with InterpretationStore(db_path) as store:
-            report = calculate_transit_report(
+            report, geometry = calculate_transit_study(
                 natal,
                 transit_moment,
                 transit_config,
@@ -645,13 +715,154 @@ def _run_transit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
                 natal_id=natal_id,
             )
     else:
-        report = calculate_transit_report(
+        report, geometry = calculate_transit_study(
             natal,
             transit_moment,
             transit_config,
             None,
             natal_source=natal_source,
             natal_id=natal_id,
+        )
+
+    json_text = report.to_json(indent=2)
+    markdown_text = report.to_markdown()
+    if args.md is not None and svg_path is not None:
+        markdown_text = _markdown_with_wheel(
+            markdown_text,
+            svg_path=svg_path,
+            markdown_path=args.md,
+            title="Natal wheel with moving-sky overlay",
+        )
+    wrote_output = False
+    if args.out is not None:
+        _write_text(args.out, json_text)
+        wrote_output = True
+    if args.md is not None:
+        _write_text(args.md, markdown_text)
+        wrote_output = True
+    if svg_path is not None:
+        _write_text(
+            svg_path,
+            render_svg(geometry.natal, overlay_chart=geometry.transit),
+        )
+        wrote_output = True
+    if not wrote_output:
+        print(json_text)
+    return 0
+
+
+def _run_synastry(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    for prefix in ("a", "b"):
+        _validate_coordinate_pair(
+            parser,
+            getattr(args, f"{prefix}_lat"),
+            getattr(args, f"{prefix}_lon"),
+            prefix=f"{prefix}-",
+        )
+        if getattr(args, prefix) is None:
+            if not getattr(args, f"{prefix}_tz"):
+                parser.error(f"--{prefix}-tz is required with --{prefix}-date")
+            if (
+                getattr(args, f"{prefix}_fold") is not None
+                and getattr(args, f"{prefix}_time") is None
+            ):
+                parser.error(f"--{prefix}-fold requires --{prefix}-time")
+    if args.out is not None and args.md is not None and _same_output_path(args.out, args.md):
+        parser.error("--out and --md must refer to different files")
+
+    from .chart import compute
+    from .config import ChartConfig
+    from .interpret.store import InterpretationStore
+    from .interpret.synastry import calculate_synastry_report
+    from .library import load_chart
+    from .types import MomentInput
+
+    records: dict[str, Any] = {}
+    charts: dict[str, Any] = {}
+    sources = {"a": "inline", "b": "inline"}
+    ids: dict[str, str | None] = {"a": None, "b": None}
+    source_paths: list[Path] = []
+
+    for prefix in ("a", "b"):
+        saved_identifier = getattr(args, prefix)
+        if saved_identifier is None:
+            continue
+        inline_values = tuple(
+            getattr(args, f"{prefix}_{name}")
+            for name in ("time", "tz", "fold", "lat", "lon", "label")
+        )
+        if any(value is not None for value in inline_values):
+            parser.error(
+                f"--{prefix} cannot be combined with inline --{prefix}-* options"
+            )
+        record = load_chart(saved_identifier, args.charts_dir.expanduser())
+        records[prefix] = record
+        charts[prefix] = record.chart_object()
+        sources[prefix] = "saved"
+        ids[prefix] = record.id
+        source_paths.append(record.source_path)
+
+    base_record = records.get("a") or records.get("b")
+    base_config = base_record.chart_config() if base_record is not None else ChartConfig()
+    config = replace(
+        base_config,
+        boundary_path=(
+            args.boundary_path
+            if args.boundary_path is not None
+            else base_config.boundary_path
+        ),
+        ephe_path=(args.ephe_path if args.ephe_path is not None else base_config.ephe_path),
+        require_swiss_ephemeris=(
+            args.require_swiss_ephemeris or base_config.require_swiss_ephemeris
+        ),
+        include_houses=True,
+        include_patterns=False,
+    )
+
+    for prefix, fallback_label in (("a", "Chart A"), ("b", "Chart B")):
+        if prefix in charts:
+            continue
+        tz = getattr(args, f"{prefix}_tz")
+        local_time = getattr(args, f"{prefix}_time")
+        fold = getattr(args, f"{prefix}_fold")
+        label = (getattr(args, f"{prefix}_label") or fallback_label).strip()
+        moment = MomentInput(
+            local_date=getattr(args, f"{prefix}_date"),
+            local_time=local_time,
+            tz=tz,
+            lat=getattr(args, f"{prefix}_lat"),
+            lon=getattr(args, f"{prefix}_lon"),
+            label=label,
+            fold=fold,
+        )
+        charts[prefix] = compute(moment, config)
+
+    for source_path in source_paths:
+        _reject_saved_chart_overwrite(parser, source_path, args.out, args.md)
+
+    db_path = args.db.expanduser()
+    if db_path.is_file():
+        with InterpretationStore(db_path) as store:
+            report = calculate_synastry_report(
+                charts["a"],
+                charts["b"],
+                config,
+                store,
+                source_a=sources["a"],
+                id_a=ids["a"],
+                source_b=sources["b"],
+                id_b=ids["b"],
+            )
+    else:
+        report = calculate_synastry_report(
+            charts["a"],
+            charts["b"],
+            config,
+            None,
+            source_a=sources["a"],
+            id_a=ids["a"],
+            source_b=sources["b"],
+            id_b=ids["b"],
         )
 
     json_text = report.to_json(indent=2)
@@ -832,6 +1043,49 @@ def _same_output_path(left: Path, right: Path) -> bool:
     except OSError:
         pass
     return left_path.resolve(strict=False) == right_path.resolve(strict=False)
+
+
+def _resolved_svg_path(
+    explicit: Path | None,
+    json_path: Path | None,
+    markdown_path: Path | None,
+) -> Path | None:
+    if explicit is not None:
+        return explicit
+    source = json_path if json_path is not None else markdown_path
+    return source.with_suffix(".svg") if source is not None else None
+
+
+def _validate_output_paths(
+    parser: argparse.ArgumentParser,
+    outputs: tuple[tuple[str, Path | None], ...],
+) -> None:
+    active = tuple((name, path) for name, path in outputs if path is not None)
+    for index, (left_name, left_path) in enumerate(active):
+        for right_name, right_path in active[index + 1 :]:
+            if _same_output_path(left_path, right_path):
+                parser.error(f"{left_name} and {right_name} must refer to different files")
+
+
+def _markdown_with_wheel(
+    markdown: str,
+    *,
+    svg_path: Path,
+    markdown_path: Path,
+    title: str,
+) -> str:
+    expanded_svg = svg_path.expanduser().resolve(strict=False)
+    expanded_markdown = markdown_path.expanduser().resolve(strict=False)
+    try:
+        reference = Path(
+            os.path.relpath(expanded_svg, start=expanded_markdown.parent)
+        ).as_posix()
+    except ValueError:
+        reference = expanded_svg.as_posix()
+    return (
+        markdown.rstrip()
+        + f"\n\n## {title}\n\n![{title}](<{reference}>)\n"
+    )
 
 
 def _single_line(value: object) -> str:

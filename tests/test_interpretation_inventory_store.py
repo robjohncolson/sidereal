@@ -16,6 +16,7 @@ from sidereal.interpret.schema import (
     SEED3_READY_COUNT,
     SEED4_READY_COUNT,
     SEED5_READY_COUNT,
+    SEED6_READY_COUNT,
     SEED7_READY_COUNT,
     TOTAL_INVENTORY_COUNT,
     ASPECT_TYPES,
@@ -46,7 +47,7 @@ def test_interpretation_inventory_has_exact_v1_counts() -> None:
         "planet_in_sign": 156,
         "planet_in_house": 144,
         "sign_on_house": 156,
-        "aspect": 390,
+        "aspect": 445,
         "angle_in_sign": 26,
         "pattern": 3,
     }
@@ -132,6 +133,7 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         + SEED3_READY_COUNT
         + SEED4_READY_COUNT
         + SEED5_READY_COUNT
+        + SEED6_READY_COUNT
         + SEED7_READY_COUNT
     )
     with InterpretationStore(db_path) as store:
@@ -142,7 +144,7 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         moon_sun_square = store.get("aspect:moon:square:sun")
         jupiter_aries = store.get("planet_in_sign:jupiter:aries")
 
-        assert first.files == 7
+        assert first.files == 8
         assert first.records == TOTAL_INVENTORY_COUNT + ready_total
         assert first.inserted == TOTAL_INVENTORY_COUNT
         assert first.updated == ready_total
@@ -161,19 +163,22 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
 def test_aspect_key_is_unordered_and_alphabetical() -> None:
     assert aspect_key("sun", "square", "moon") == "aspect:moon:square:sun"
     assert aspect_key("moon", "square", "sun") == "aspect:moon:square:sun"
+    assert aspect_key("jupiter", "sextile", "jupiter") == (
+        "aspect:jupiter:sextile:jupiter"
+    )
 
 
 def test_init_refuses_to_relabel_an_unsupported_future_schema(tmp_path: Path) -> None:
     database = tmp_path / "future.db"
     with sqlite3.connect(database) as connection:
-        connection.execute("PRAGMA user_version = 2")
+        connection.execute("PRAGMA user_version = 3")
 
     with InterpretationStore(database) as store:
         with pytest.raises(StoreNotInitializedError, match="refusing to overwrite"):
             store.initialize()
 
     with sqlite3.connect(database) as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
 
 
 def test_init_refuses_version_metadata_disagreement(tmp_path: Path) -> None:
@@ -195,7 +200,7 @@ def test_reads_reject_a_version_marker_on_an_incomplete_schema(tmp_path: Path) -
     database = tmp_path / "corrupt.db"
     with sqlite3.connect(database) as connection:
         connection.execute("CREATE TABLE interpretation_entries(id TEXT PRIMARY KEY)")
-        connection.execute("PRAGMA user_version = 1")
+        connection.execute("PRAGMA user_version = 2")
 
     with InterpretationStore(database) as store:
         with pytest.raises(StoreNotInitializedError, match="required tables are missing"):

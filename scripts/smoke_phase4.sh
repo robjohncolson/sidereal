@@ -3,17 +3,18 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PYTHON_BIN="${PYTHON:-python}"
-SMOKE_DIR="${SIDEREAL_SMOKE_DIR:-/tmp/sidereal-phase4-smoke}"
+SMOKE_PARENT="${SIDEREAL_SMOKE_DIR:-/tmp/sidereal-phase4-smoke}"
+mkdir -p "${SMOKE_PARENT}"
+SMOKE_DIR="$(mktemp -d "${SMOKE_PARENT%/}/run.XXXXXX")"
 DB_PATH="${SMOKE_DIR}/sidereal.db"
 CHARTS_DIR="${SMOKE_DIR}/charts"
 
 cd "${ROOT_DIR}"
-mkdir -p "${SMOKE_DIR}"
 
 "${PYTHON_BIN}" -m sidereal db init --db "${DB_PATH}"
 "${PYTHON_BIN}" -m sidereal db import --db "${DB_PATH}"
 "${PYTHON_BIN}" -m sidereal db gaps --db "${DB_PATH}" |
-  "${PYTHON_BIN}" -c 'import json, sys; p=json.load(sys.stdin); assert (p["ready"], p["stub"], p["missing"]) == (837, 75, 0); print("inventory: 837 ready / 75 stub / 0 missing")'
+  "${PYTHON_BIN}" -c 'import json, sys; p=json.load(sys.stdin); assert (p["ready"], p["stub"], p["missing"]) == (872, 95, 0); print("inventory: 872 ready / 95 stub / 0 missing")'
 
 "${PYTHON_BIN}" -m sidereal chart \
   --date 2000-12-12 --time 12:00 --tz UTC --lat 0 --lon 0 \

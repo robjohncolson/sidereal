@@ -17072,6 +17072,1050 @@
       "version": 1
     },
     {
+      "aspect_type": "conjunction",
+      "body_a": "sun",
+      "body_b": "sun",
+      "id": "aspect:sun:conjunction:sun",
+      "keywords": [
+        "identity",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Sun Conjunction Sun is not yet authored; use these keywords only as working notes.",
+      "title": "Sun Conjunction Sun",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "sun",
+      "body_b": "sun",
+      "id": "aspect:sun:opposition:sun",
+      "keywords": [
+        "identity",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Sun Opposition Sun is not yet authored; use these keywords only as working notes.",
+      "title": "Sun Opposition Sun",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "sun",
+      "body_b": "sun",
+      "id": "aspect:sun:trine:sun",
+      "keywords": [
+        "identity",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Sun Trine Sun is not yet authored; use these keywords only as working notes.",
+      "title": "Sun Trine Sun",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "sun",
+      "body_b": "sun",
+      "id": "aspect:sun:square:sun",
+      "keywords": [
+        "identity",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Sun Square Sun is not yet authored; use these keywords only as working notes.",
+      "title": "Sun Square Sun",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "sun",
+      "body_b": "sun",
+      "id": "aspect:sun:sextile:sun",
+      "keywords": [
+        "identity",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Sun Sextile Sun is not yet authored; use these keywords only as working notes.",
+      "title": "Sun Sextile Sun",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "moon",
+      "body_b": "moon",
+      "id": "aspect:moon:conjunction:moon",
+      "keywords": [
+        "needs",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Moon Conjunction Moon is not yet authored; use these keywords only as working notes.",
+      "title": "Moon Conjunction Moon",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "moon",
+      "body_b": "moon",
+      "id": "aspect:moon:opposition:moon",
+      "keywords": [
+        "needs",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Moon Opposition Moon is not yet authored; use these keywords only as working notes.",
+      "title": "Moon Opposition Moon",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "moon",
+      "body_b": "moon",
+      "id": "aspect:moon:trine:moon",
+      "keywords": [
+        "needs",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Moon Trine Moon is not yet authored; use these keywords only as working notes.",
+      "title": "Moon Trine Moon",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "moon",
+      "body_b": "moon",
+      "id": "aspect:moon:square:moon",
+      "keywords": [
+        "needs",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Moon Square Moon is not yet authored; use these keywords only as working notes.",
+      "title": "Moon Square Moon",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "moon",
+      "body_b": "moon",
+      "id": "aspect:moon:sextile:moon",
+      "keywords": [
+        "needs",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Moon Sextile Moon is not yet authored; use these keywords only as working notes.",
+      "title": "Moon Sextile Moon",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "mercury",
+      "body_b": "mercury",
+      "id": "aspect:mercury:conjunction:mercury",
+      "keywords": [
+        "perception",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mercury Conjunction Mercury is not yet authored; use these keywords only as working notes.",
+      "title": "Mercury Conjunction Mercury",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mercury",
+      "body_b": "mercury",
+      "id": "aspect:mercury:opposition:mercury",
+      "keywords": [
+        "perception",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mercury Opposition Mercury is not yet authored; use these keywords only as working notes.",
+      "title": "Mercury Opposition Mercury",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mercury",
+      "body_b": "mercury",
+      "id": "aspect:mercury:trine:mercury",
+      "keywords": [
+        "perception",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mercury Trine Mercury is not yet authored; use these keywords only as working notes.",
+      "title": "Mercury Trine Mercury",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mercury",
+      "body_b": "mercury",
+      "id": "aspect:mercury:square:mercury",
+      "keywords": [
+        "perception",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mercury Square Mercury is not yet authored; use these keywords only as working notes.",
+      "title": "Mercury Square Mercury",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mercury",
+      "body_b": "mercury",
+      "id": "aspect:mercury:sextile:mercury",
+      "keywords": [
+        "perception",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mercury Sextile Mercury is not yet authored; use these keywords only as working notes.",
+      "title": "Mercury Sextile Mercury",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "venus",
+      "body_b": "venus",
+      "id": "aspect:venus:conjunction:venus",
+      "keywords": [
+        "attraction",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Venus Conjunction Venus is not yet authored; use these keywords only as working notes.",
+      "title": "Venus Conjunction Venus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "venus",
+      "body_b": "venus",
+      "id": "aspect:venus:opposition:venus",
+      "keywords": [
+        "attraction",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Venus Opposition Venus is not yet authored; use these keywords only as working notes.",
+      "title": "Venus Opposition Venus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "venus",
+      "body_b": "venus",
+      "id": "aspect:venus:trine:venus",
+      "keywords": [
+        "attraction",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Venus Trine Venus is not yet authored; use these keywords only as working notes.",
+      "title": "Venus Trine Venus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "venus",
+      "body_b": "venus",
+      "id": "aspect:venus:square:venus",
+      "keywords": [
+        "attraction",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Venus Square Venus is not yet authored; use these keywords only as working notes.",
+      "title": "Venus Square Venus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "venus",
+      "body_b": "venus",
+      "id": "aspect:venus:sextile:venus",
+      "keywords": [
+        "attraction",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Venus Sextile Venus is not yet authored; use these keywords only as working notes.",
+      "title": "Venus Sextile Venus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "mars",
+      "body_b": "mars",
+      "id": "aspect:mars:conjunction:mars",
+      "keywords": [
+        "agency",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mars Conjunction Mars is not yet authored; use these keywords only as working notes.",
+      "title": "Mars Conjunction Mars",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "mars",
+      "body_b": "mars",
+      "id": "aspect:mars:opposition:mars",
+      "keywords": [
+        "agency",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mars Opposition Mars is not yet authored; use these keywords only as working notes.",
+      "title": "Mars Opposition Mars",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "mars",
+      "body_b": "mars",
+      "id": "aspect:mars:trine:mars",
+      "keywords": [
+        "agency",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mars Trine Mars is not yet authored; use these keywords only as working notes.",
+      "title": "Mars Trine Mars",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "mars",
+      "body_b": "mars",
+      "id": "aspect:mars:square:mars",
+      "keywords": [
+        "agency",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mars Square Mars is not yet authored; use these keywords only as working notes.",
+      "title": "Mars Square Mars",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "mars",
+      "body_b": "mars",
+      "id": "aspect:mars:sextile:mars",
+      "keywords": [
+        "agency",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Mars Sextile Mars is not yet authored; use these keywords only as working notes.",
+      "title": "Mars Sextile Mars",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "jupiter",
+      "body_b": "jupiter",
+      "id": "aspect:jupiter:conjunction:jupiter",
+      "keywords": [
+        "expansion",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Jupiter Conjunction Jupiter is not yet authored; use these keywords only as working notes.",
+      "title": "Jupiter Conjunction Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "jupiter",
+      "body_b": "jupiter",
+      "id": "aspect:jupiter:opposition:jupiter",
+      "keywords": [
+        "expansion",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Jupiter Opposition Jupiter is not yet authored; use these keywords only as working notes.",
+      "title": "Jupiter Opposition Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "jupiter",
+      "body_b": "jupiter",
+      "id": "aspect:jupiter:trine:jupiter",
+      "keywords": [
+        "expansion",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Jupiter Trine Jupiter is not yet authored; use these keywords only as working notes.",
+      "title": "Jupiter Trine Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "jupiter",
+      "body_b": "jupiter",
+      "id": "aspect:jupiter:square:jupiter",
+      "keywords": [
+        "expansion",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Jupiter Square Jupiter is not yet authored; use these keywords only as working notes.",
+      "title": "Jupiter Square Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "jupiter",
+      "body_b": "jupiter",
+      "id": "aspect:jupiter:sextile:jupiter",
+      "keywords": [
+        "expansion",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Jupiter Sextile Jupiter is not yet authored; use these keywords only as working notes.",
+      "title": "Jupiter Sextile Jupiter",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "saturn",
+      "body_b": "saturn",
+      "id": "aspect:saturn:conjunction:saturn",
+      "keywords": [
+        "limits",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Saturn Conjunction Saturn is not yet authored; use these keywords only as working notes.",
+      "title": "Saturn Conjunction Saturn",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "saturn",
+      "body_b": "saturn",
+      "id": "aspect:saturn:opposition:saturn",
+      "keywords": [
+        "limits",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Saturn Opposition Saturn is not yet authored; use these keywords only as working notes.",
+      "title": "Saturn Opposition Saturn",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "saturn",
+      "body_b": "saturn",
+      "id": "aspect:saturn:trine:saturn",
+      "keywords": [
+        "limits",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Saturn Trine Saturn is not yet authored; use these keywords only as working notes.",
+      "title": "Saturn Trine Saturn",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "saturn",
+      "body_b": "saturn",
+      "id": "aspect:saturn:square:saturn",
+      "keywords": [
+        "limits",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Saturn Square Saturn is not yet authored; use these keywords only as working notes.",
+      "title": "Saturn Square Saturn",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "saturn",
+      "body_b": "saturn",
+      "id": "aspect:saturn:sextile:saturn",
+      "keywords": [
+        "limits",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Saturn Sextile Saturn is not yet authored; use these keywords only as working notes.",
+      "title": "Saturn Sextile Saturn",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "id": "aspect:uranus:conjunction:uranus",
+      "keywords": [
+        "disruption",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Uranus Conjunction Uranus is not yet authored; use these keywords only as working notes.",
+      "title": "Uranus Conjunction Uranus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "id": "aspect:uranus:opposition:uranus",
+      "keywords": [
+        "disruption",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Uranus Opposition Uranus is not yet authored; use these keywords only as working notes.",
+      "title": "Uranus Opposition Uranus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "id": "aspect:uranus:trine:uranus",
+      "keywords": [
+        "disruption",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Uranus Trine Uranus is not yet authored; use these keywords only as working notes.",
+      "title": "Uranus Trine Uranus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "id": "aspect:uranus:square:uranus",
+      "keywords": [
+        "disruption",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Uranus Square Uranus is not yet authored; use these keywords only as working notes.",
+      "title": "Uranus Square Uranus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "uranus",
+      "body_b": "uranus",
+      "id": "aspect:uranus:sextile:uranus",
+      "keywords": [
+        "disruption",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Uranus Sextile Uranus is not yet authored; use these keywords only as working notes.",
+      "title": "Uranus Sextile Uranus",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "id": "aspect:neptune:conjunction:neptune",
+      "keywords": [
+        "imagination",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Neptune Conjunction Neptune is not yet authored; use these keywords only as working notes.",
+      "title": "Neptune Conjunction Neptune",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "id": "aspect:neptune:opposition:neptune",
+      "keywords": [
+        "imagination",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Neptune Opposition Neptune is not yet authored; use these keywords only as working notes.",
+      "title": "Neptune Opposition Neptune",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "id": "aspect:neptune:trine:neptune",
+      "keywords": [
+        "imagination",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Neptune Trine Neptune is not yet authored; use these keywords only as working notes.",
+      "title": "Neptune Trine Neptune",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "id": "aspect:neptune:square:neptune",
+      "keywords": [
+        "imagination",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Neptune Square Neptune is not yet authored; use these keywords only as working notes.",
+      "title": "Neptune Square Neptune",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "neptune",
+      "body_b": "neptune",
+      "id": "aspect:neptune:sextile:neptune",
+      "keywords": [
+        "imagination",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Neptune Sextile Neptune is not yet authored; use these keywords only as working notes.",
+      "title": "Neptune Sextile Neptune",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "id": "aspect:pluto:conjunction:pluto",
+      "keywords": [
+        "power",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Pluto Conjunction Pluto is not yet authored; use these keywords only as working notes.",
+      "title": "Pluto Conjunction Pluto",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "id": "aspect:pluto:opposition:pluto",
+      "keywords": [
+        "power",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Pluto Opposition Pluto is not yet authored; use these keywords only as working notes.",
+      "title": "Pluto Opposition Pluto",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "id": "aspect:pluto:trine:pluto",
+      "keywords": [
+        "power",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Pluto Trine Pluto is not yet authored; use these keywords only as working notes.",
+      "title": "Pluto Trine Pluto",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "id": "aspect:pluto:square:pluto",
+      "keywords": [
+        "power",
+        "friction",
+        "development"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Pluto Square Pluto is not yet authored; use these keywords only as working notes.",
+      "title": "Pluto Square Pluto",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "pluto",
+      "body_b": "pluto",
+      "id": "aspect:pluto:sextile:pluto",
+      "keywords": [
+        "power",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for Pluto Sextile Pluto is not yet authored; use these keywords only as working notes.",
+      "title": "Pluto Sextile Pluto",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "conjunction",
+      "body_a": "north_node",
+      "body_b": "north_node",
+      "id": "aspect:north_node:conjunction:north_node",
+      "keywords": [
+        "development",
+        "concentration",
+        "fusion"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for North Node Conjunction North Node is not yet authored; use these keywords only as working notes.",
+      "title": "North Node Conjunction North Node",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "opposition",
+      "body_a": "north_node",
+      "body_b": "north_node",
+      "id": "aspect:north_node:opposition:north_node",
+      "keywords": [
+        "development",
+        "polarity",
+        "negotiation"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for North Node Opposition North Node is not yet authored; use these keywords only as working notes.",
+      "title": "North Node Opposition North Node",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "trine",
+      "body_a": "north_node",
+      "body_b": "north_node",
+      "id": "aspect:north_node:trine:north_node",
+      "keywords": [
+        "development",
+        "flow",
+        "reinforcement"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for North Node Trine North Node is not yet authored; use these keywords only as working notes.",
+      "title": "North Node Trine North Node",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "square",
+      "body_a": "north_node",
+      "body_b": "north_node",
+      "id": "aspect:north_node:square:north_node",
+      "keywords": [
+        "development",
+        "friction"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for North Node Square North Node is not yet authored; use these keywords only as working notes.",
+      "title": "North Node Square North Node",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
+      "aspect_type": "sextile",
+      "body_a": "north_node",
+      "body_b": "north_node",
+      "id": "aspect:north_node:sextile:north_node",
+      "keywords": [
+        "development",
+        "cooperation",
+        "opportunity"
+      ],
+      "license": "personal-use",
+      "source": "generated_draft",
+      "status": "stub",
+      "summary": "A fuller symbolic reading for North Node Sextile North Node is not yet authored; use these keywords only as working notes.",
+      "title": "North Node Sextile North Node",
+      "type": "aspect",
+      "updated": "2026-07-10",
+      "version": 1
+    },
+    {
       "angle": "asc",
       "id": "angle_in_sign:asc:aries",
       "keywords": [

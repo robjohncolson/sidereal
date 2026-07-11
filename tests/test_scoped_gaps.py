@@ -141,7 +141,7 @@ def test_db_gaps_can_scope_to_saved_chart_label(
         ]
     ) == 0
     audit = json.loads(capsys.readouterr().out)
-    assert 0 < audit["expected"] < 912
+    assert 0 < audit["expected"] < 967
     assert audit["ready"] + audit["stub"] == audit["expected"]
     assert audit["missing"] == 0
     assert audit["stub"] > 0

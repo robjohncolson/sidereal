@@ -25,6 +25,8 @@ const DISPLAY_NAMES = {
 
 const TRANSIT_NOTE_FALLBACK =
   "Transit relationships are geometric correlations between a moving sky and a fixed natal chart. Interpretations are symbolic study notes, not predictions or scientific claims.";
+const SYNASTRY_NOTE_FALLBACK =
+  "Two-natal synastry compares two fixed chart moments. Interpretations are symbolic relationship study notes, not compatibility scores, destiny claims, or predictions.";
 const CHART_NOTE_FALLBACK =
   "Positions, houses, and angular relationships are astronomical geometry. Interpretations are symbolic cultural study notes, not scientific claims about personality, fate, health, or outcomes.";
 
@@ -133,6 +135,7 @@ function bindForms() {
   byId("reinterpret-button").addEventListener("click", handleReinterpret);
   byId("library-transit-button").addEventListener("click", openSelectedTransit);
   byId("transit-form").addEventListener("submit", handleTransitSubmit);
+  byId("synastry-form").addEventListener("submit", handleSynastrySubmit);
 }
 
 function setFormDefaults() {
@@ -318,6 +321,43 @@ function renderNatalOptions() {
     select.append(option);
   }
   if (state.charts.some((chart) => chart.id === current)) select.value = current;
+  renderSynastryOptions();
+}
+
+function renderSynastryOptions() {
+  const selectA = byId("synastry-a");
+  const selectB = byId("synastry-b");
+  const currentA = selectA.value || state.selectedChartId || "";
+  const currentB = selectB.value || "";
+  for (const [select, promptText] of [
+    [selectA, "Choose chart A…"],
+    [selectB, "Choose chart B…"],
+  ]) {
+    select.replaceChildren();
+    const prompt = element(
+      "option",
+      "",
+      state.charts.length ? promptText : "No saved charts available",
+    );
+    prompt.value = "";
+    select.append(prompt);
+    for (const chart of state.charts) {
+      const option = element(
+        "option",
+        "",
+        `${chart.label || "Untitled"} · ${friendlyMoment(chart.local_datetime)}`,
+      );
+      option.value = stringValue(chart.id);
+      select.append(option);
+    }
+  }
+  if (state.charts.some((chart) => chart.id === currentA)) selectA.value = currentA;
+  if (state.charts.some((chart) => chart.id === currentB)) {
+    selectB.value = currentB;
+  } else {
+    const alternate = state.charts.find((chart) => chart.id !== selectA.value);
+    if (alternate) selectB.value = alternate.id;
+  }
 }
 
 async function selectSavedChart(chartId) {
@@ -399,6 +439,35 @@ async function handleTransitSubmit(event) {
   }
 }
 
+async function handleSynastrySubmit(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const submit = form.querySelector('button[type="submit"]');
+  const root = byId("synastry-report");
+  const empty = byId("synastry-empty");
+  clearStatus("synastry-form-status");
+
+  try {
+    if (!form.reportValidity()) return;
+    const payload = synastryPayloadFromForm(form);
+    setBusy(submit, true, "Comparing…");
+    showLoading(
+      root,
+      empty,
+      "Comparing two fixed charts",
+      "The local engine is matching both chart moments in their common J2000 frame.",
+    );
+    const report = await api("/api/synastry", { method: "POST", body: payload });
+    renderSynastryReport(report, root);
+    setStatus("synastry-form-status", "Two-natal study calculated locally.", "success");
+  } catch (error) {
+    showError(root, empty, "Synastry study could not be calculated", errorMessage(error));
+    setStatus("synastry-form-status", errorMessage(error), "error");
+  } finally {
+    setBusy(submit, false);
+  }
+}
+
 function chartPayloadFromForm(form) {
   const moment = momentFromForm(form, { timeRequired: false });
   return {
@@ -418,6 +487,13 @@ function transitPayloadFromForm(form) {
     transit: momentFromForm(form, { timeRequired: true }),
     options: {},
   };
+}
+
+function synastryPayloadFromForm(form) {
+  const aId = fieldValue(form, "a_id").trim();
+  const bId = fieldValue(form, "b_id").trim();
+  if (!aId || !bId) throw new Error("Choose both saved charts.");
+  return { a_id: aId, b_id: bId, options: {} };
 }
 
 function momentFromForm(form, { timeRequired }) {
@@ -483,6 +559,7 @@ function renderChartReport(report, root, { saved = false } = {}) {
   const houses = interpretedHouses.length
     ? interpretedHouses
     : asArray(chart.cusps).map((cusp) => ({ cusp, readings: [] }));
+  const housesCalculated = asArray(chart.cusps).length > 0;
 
   root.replaceChildren();
   root.hidden = false;
@@ -495,7 +572,7 @@ function renderChartReport(report, root, { saved = false } = {}) {
         .join(" · "),
       meta: [
         ["Zodiac", displayName(meta.zodiac_system)],
-        ["Houses", asArray(chart.cusps).length ? displayName(meta.house_system) : "Not calculated"],
+        ["Houses", housesCalculated ? displayName(meta.house_system) : "Not calculated"],
         ["Aspect profile", displayName(meta.aspect_profile)],
         ["Ephemeris", meta.ephemeris_backend || "Unknown"],
         ["Julian day UT", numberText(meta.jd_ut, 6)],
@@ -505,13 +582,23 @@ function renderChartReport(report, root, { saved = false } = {}) {
   );
   root.append(makeEpistemic(report.epistemic_note || CHART_NOTE_FALLBACK));
 
+  if (report.wheel) {
+    root.append(makeWheelSection(report.wheel, "13-sign Midpoint wheel"));
+  }
+
   const warnings = [...asArray(meta.warnings)];
   if (meta.calculation_time_assumption) warnings.unshift(meta.calculation_time_assumption);
   if (warnings.length) root.append(makeWarningsSection(warnings, "Calculation notes"));
 
   root.append(makePointSection("Angles", angles, "No angles were calculated for this chart.", { showReadings: true }));
   root.append(makePointSection("Planets", planets, "No planetary positions are available."));
-  root.append(makePlanetsInHousesSection(planets, asArray(chart.cusps).length > 0));
+  root.append(
+    makePlanetsInHousesSection(
+      planets,
+      housesCalculated,
+      housesCalculated ? "" : houseOmissionReason(meta),
+    ),
+  );
   root.append(makeHouseSection(houses));
   root.append(makePlacementSection(planets, interpretedPlanets.length > 0));
   root.append(
@@ -533,6 +620,7 @@ function renderSavedGeometry(saved, root) {
   const chart = asObject(saved.chart);
   const report = {
     chart,
+    wheel: saved.wheel || null,
     epistemic_note: CHART_NOTE_FALLBACK,
     interpretation: {},
     gaps: [],
@@ -558,18 +646,16 @@ function renderTransitReport(report, root) {
   root.hidden = false;
   root.append(
     makeReportHeader({
-      chip: "Transit study",
-      title: `${natal.label || "Untitled natal"} · transits`,
-      subtitle: `Moving sky ${friendlyMoment(transit.local_datetime)} · fixed natal ${friendlyMoment(natal.local_datetime)}`,
+      chip: "Sky ↔ Natal transit",
+      title: `${natal.label || "Untitled natal"} · moving sky`,
+      subtitle: `Moving sky at ${friendlyMoment(transit.local_datetime)} relative to natal ${natal.label || "chart"} · ${friendlyMoment(natal.local_datetime)}`,
       meta: [
         ["Natal timezone", natal.tz || "Unknown"],
         ["Transit timezone", transit.tz || "Unknown"],
         ["Zodiac", displayName(transit.zodiac_system)],
         [
           "Natal houses",
-          natal.time_known && natal.location_known
-            ? displayName(natal.house_system)
-            : "Not calculated",
+          natalHouseLabel(natal),
         ],
         ["Ephemeris", transit.ephemeris_backend || "Unknown"],
         ["Natal source", natal.source || "Inline"],
@@ -577,10 +663,41 @@ function renderTransitReport(report, root) {
     }),
   );
   root.append(makeEpistemic(report.epistemic_note || TRANSIT_NOTE_FALLBACK));
+  if (report.wheel) {
+    root.append(makeWheelSection(report.wheel, "Natal wheel · moving-sky overlay"));
+  }
   const warnings = asArray(report.warnings);
   if (warnings.length) root.append(makeWarningsSection(warnings, "Timing notes"));
   root.append(makeTransitPlacementsSection(placements));
-  root.append(makeRelationshipsSection(relationships, { transit: true }));
+  root.append(makeRoleRelationshipsSection(relationships, { mode: "transit" }));
+  root.append(makeGapsSection(asArray(report.gaps)));
+}
+
+function renderSynastryReport(report, root) {
+  const chartA = asObject(report.chart_a);
+  const chartB = asObject(report.chart_b);
+  const relationships = asArray(report.relationships);
+  root.replaceChildren();
+  root.hidden = false;
+  root.append(
+    makeReportHeader({
+      chip: "Two fixed charts",
+      title: `${chartA.label || "Chart A"} ↔ ${chartB.label || "Chart B"}`,
+      subtitle: `A · ${friendlyMoment(chartA.local_datetime)} · B · ${friendlyMoment(chartB.local_datetime)}`,
+      meta: [
+        ["Chart A timezone", chartA.tz || "Unknown"],
+        ["Chart B timezone", chartB.tz || "Unknown"],
+        ["Zodiac", displayName(chartA.zodiac_system)],
+        ["Frame", "Common J2000"],
+        ["Chart A source", chartA.source || "Inline"],
+        ["Chart B source", chartB.source || "Inline"],
+      ],
+    }),
+  );
+  root.append(makeEpistemic(report.epistemic_note || SYNASTRY_NOTE_FALLBACK));
+  const warnings = asArray(report.warnings);
+  if (warnings.length) root.append(makeWarningsSection(warnings, "Calculation notes"));
+  root.append(makeRoleRelationshipsSection(relationships, { mode: "synastry" }));
   root.append(makeGapsSection(asArray(report.gaps)));
 }
 
@@ -606,6 +723,25 @@ function makeEpistemic(note) {
   copy.append(element("h3", "", "Epistemic note"), element("p", "", note));
   card.append(copy);
   return card;
+}
+
+function makeWheelSection(wheelValue, title) {
+  const { section, body } = makeSection(title, null, "wheel");
+  const wheel = asObject(wheelValue);
+  const svgText = stringValue(wheel.svg);
+  if (wheel.media_type !== "image/svg+xml" || !svgText.startsWith("<svg")) {
+    throw new Error("The local engine returned an invalid wheel image.");
+  }
+  const frame = element("figure", "wheel-frame");
+  const image = element("img");
+  image.alt = title;
+  image.width = Number(wheel.width) || 640;
+  image.loading = "eager";
+  image.decoding = "async";
+  image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+  frame.append(image, element("figcaption", "wheel-caption", title));
+  body.append(frame);
+  return section;
 }
 
 function makeWarningsSection(warnings, title) {
@@ -658,7 +794,7 @@ function makePointSection(title, entries, emptyText, { showReadings = false } = 
   return section;
 }
 
-function makePlanetsInHousesSection(entries, housesCalculated) {
+function makePlanetsInHousesSection(entries, housesCalculated, omissionReason = "") {
   const housed = entries.filter(
     (entry) => asObject(entry.point).house !== null && asObject(entry.point).house !== undefined,
   );
@@ -669,7 +805,7 @@ function makePlanetsInHousesSection(entries, housesCalculated) {
       "section-note",
       housesCalculated
         ? "Each body is shown in its equal-house arena (1–12). House text is symbolic life-area language, not a prediction."
-        : "Houses were not calculated for this chart (need known civil time and both latitude and longitude).",
+        : omissionReason || "Houses were not calculated for this chart.",
     ),
   );
   if (!housesCalculated || !housed.length) {
@@ -679,7 +815,7 @@ function makePlanetsInHousesSection(entries, housesCalculated) {
         "none-note",
         housesCalculated
           ? "No planetary house assignments are available."
-          : "Enable time + location (and angles/houses) to place planets in houses.",
+          : "House placements are unavailable for this chart.",
       ),
     );
     return section;
@@ -859,6 +995,95 @@ function makePlacementSection(entries, hasInterpretation) {
     stack.append(article);
   }
   body.append(stack);
+  return section;
+}
+
+function makeRoleRelationshipsSection(entries, { mode }) {
+  const transit = mode === "transit";
+  const title = transit ? "Sky–Natal aspects (transits)" : "Two-natal aspects";
+  const { section, body } = makeSection(title, entries.length, `${mode}-relationships`);
+  if (!entries.length) {
+    body.append(element("p", "none-note", "No configured major cross-chart aspects were found."));
+    return section;
+  }
+  body.append(
+    element(
+      "p",
+      "section-note",
+      transit
+        ? "Moving-sky bodies are compared with fixed natal points. Same-body timing contacts are separated below."
+        : "Chart A and Chart B remain distinct fixed roles. This is relationship symbolism, not a compatibility score.",
+    ),
+  );
+  const groups = [
+    [transit ? "Same-body sky–natal contacts" : "Same-body contacts", entries.filter((entry) => entry.same_body)],
+    [transit ? "Other sky–natal contacts" : "Other cross-chart contacts", entries.filter((entry) => !entry.same_body)],
+  ];
+  for (const [groupTitle, groupEntries] of groups) {
+    if (!groupEntries.length) continue;
+    body.append(element("h4", "relationship-group-title", groupTitle));
+    const list = element("div", "relationships-list");
+    for (const entry of groupEntries) {
+      const aspect = asObject(entry.aspect);
+      const reading = entry.reading ? asObject(entry.reading) : null;
+      const character = asObject(entry.character);
+      const bodyA = transit ? aspect.transit_body : aspect.a_point;
+      const bodyB = transit ? aspect.natal_point : aspect.b_point;
+      const roleA = transit ? "Transit" : "A ·";
+      const roleB = transit ? "natal" : "B ·";
+      const fallbackTitle = `${roleA} ${displayName(bodyA)} ${displayName(aspect.aspect_id).toLowerCase()} ${roleB} ${displayName(bodyB)}`;
+      const card = element("article", "relationship-card");
+      const head = element("div", "relationship-head");
+      head.append(element("h5", "relationship-title", character.title || fallbackTitle));
+      if (Number.isFinite(Number(aspect.force))) {
+        const meter = element("progress", "force-meter");
+        meter.max = 1;
+        meter.value = Math.max(0, Math.min(1, Number(aspect.force)));
+        meter.title = `Force ${numberText(aspect.force, 3)}`;
+        head.append(meter);
+      }
+      card.append(head);
+      const geometryBits = [
+        `separation ${numberText(aspect.separation, 4)}°`,
+        `orb ${numberText(aspect.exactness, 4)}°`,
+        transit ? motionState(aspect) : "two fixed chart moments",
+      ];
+      card.append(element("p", "relationship-meta", geometryBits.join(" · ")));
+      if (character.synthesis) {
+        card.append(element("p", "character-synthesis", character.synthesis));
+      }
+      if (reading) card.append(makeReadingCard(reading));
+
+      const placementSides = transit
+        ? [
+            ["transit_placement", "Transit · sign character"],
+            ["natal_placement", "Natal · sign character"],
+          ]
+        : [
+            ["a_placement", "Chart A · sign character"],
+            ["b_placement", "Chart B · sign character"],
+          ];
+      for (const [key, label] of placementSides) {
+        const side = asObject(character[key]);
+        const sideReading = side.reading ? asObject(side.reading) : null;
+        if (!sideReading) continue;
+        const block = element("div", "character-placement");
+        const headingBits = [label];
+        if (side.sign) headingBits.push(displayName(side.sign));
+        if (side.house !== null && side.house !== undefined) {
+          headingBits.push(`House ${side.house}`);
+        }
+        if (side.natal_house !== null && side.natal_house !== undefined) {
+          headingBits.push(`Natal house ${side.natal_house}`);
+        }
+        block.append(element("h6", "", headingBits.join(" · ")));
+        block.append(makeReadingCard(sideReading));
+        card.append(block);
+      }
+      list.append(card);
+    }
+    body.append(list);
+  }
   return section;
 }
 
@@ -1056,11 +1281,7 @@ function makeTransitPlacementsSection(placements) {
   });
   for (const placement of sorted) {
     const row = element("tr");
-    const notes = [];
-    if (placement.time_sensitive) notes.push("time-sensitive");
-    if (placement.blend && placement.secondary_sign) {
-      notes.push(`blend ${displayName(placement.secondary_sign)}`);
-    }
+    const notes = transitPlacementNotes(placement);
     row.append(
       element("td", "", displayName(placement.id)),
       element("td", "", displayName(placement.sign)),
@@ -1105,11 +1326,13 @@ function makeTransitPlacementsSection(placements) {
       );
       const list = element("ul", "house-occupant-list");
       for (const placement of occupants) {
+        const notes = transitPlacementNotes(placement);
+        const noteSuffix = notes.length ? `; ${notes.join(" · ")}` : "";
         list.append(
           element(
             "li",
             "",
-            `Transit ${displayName(placement.id)} in ${displayName(placement.sign)} ${numberText(placement.degree_in_sign, 4)}° (natal house ${placement.natal_house})`,
+            `Transit ${displayName(placement.id)} in ${displayName(placement.sign)} ${numberText(placement.degree_in_sign, 4)}° (natal house ${placement.natal_house}${noteSuffix})`,
           ),
         );
       }
@@ -1140,47 +1363,18 @@ function initTimezonePickers() {
       }
     };
 
-    const defaultTz = state.defaultTimezone || "UTC";
-    setValue(defaultTz);
-    search.value = defaultTz;
-    search.placeholder = "Tokyo, Japan or Asia/Tokyo";
+    const closeResults = () => {
+      results.hidden = true;
+      search.setAttribute("aria-expanded", "false");
+      search.removeAttribute("aria-activedescendant");
+      search.dataset.activeIndex = "-1";
+      for (const option of results.querySelectorAll("[data-tz]")) {
+        option.classList.remove("is-active");
+        option.setAttribute("aria-selected", "false");
+      }
+    };
 
-    let blurTimer = null;
-    search.addEventListener("focus", () => {
-      renderTimezoneResults(root, search.value);
-    });
-    search.addEventListener("input", () => {
-      renderTimezoneResults(root, search.value);
-    });
-    search.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        results.hidden = true;
-        return;
-      }
-      if (event.key === "Enter") {
-        event.preventDefault();
-        const first = results.querySelector("[data-tz]");
-        if (first) first.click();
-      }
-    });
-    search.addEventListener("blur", () => {
-      blurTimer = window.setTimeout(() => {
-        results.hidden = true;
-        // If the user typed a bare IANA id, accept it.
-        const typed = search.value.trim();
-        if (typed && IANA_TIMEZONES.includes(typed)) {
-          setValue(typed);
-        } else if (hidden.value) {
-          search.value = hidden.value;
-        }
-      }, 150);
-    });
-    results.addEventListener("mousedown", (event) => {
-      // Keep focus long enough for the click to register.
-      event.preventDefault();
-    });
-    results.addEventListener("click", (event) => {
-      const option = event.target.closest("[data-tz]");
+    const selectOption = (option) => {
       if (!option) return;
       const tz = option.getAttribute("data-tz");
       const label = option.getAttribute("data-label") || tz;
@@ -1193,9 +1387,101 @@ function initTimezonePickers() {
         lon: lon === "" || lon == null ? null : Number(lon),
       });
       search.value = label.includes("/") ? tz : `${label} · ${tz}`;
-      results.hidden = true;
+      closeResults();
       if (blurTimer) window.clearTimeout(blurTimer);
+    };
+
+    const moveActiveOption = (direction) => {
+      if (results.hidden) renderTimezoneResults(root, search.value);
+      const options = Array.from(results.querySelectorAll("[data-tz]"));
+      if (!options.length) return;
+      const current = Number(search.dataset.activeIndex || -1);
+      const next = current < 0
+        ? (direction > 0 ? 0 : options.length - 1)
+        : (current + direction + options.length) % options.length;
+      options.forEach((option, index) => {
+        const active = index === next;
+        option.classList.toggle("is-active", active);
+        option.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      const active = options[next];
+      search.dataset.activeIndex = String(next);
+      search.setAttribute("aria-activedescendant", active.id);
+      active.scrollIntoView({ block: "nearest" });
+    };
+
+    const defaultTz = state.defaultTimezone || "UTC";
+    setValue(defaultTz);
+    search.value = defaultTz;
+    search.placeholder = "Tokyo, Japan or Asia/Tokyo";
+
+    let blurTimer = null;
+    search.addEventListener("focus", () => {
+      renderTimezoneResults(root, search.value);
     });
+    search.addEventListener("input", () => {
+      // Typing invalidates the prior explicit selection; never submit a stale zone.
+      setValue("");
+      renderTimezoneResults(root, search.value);
+    });
+    search.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        moveActiveOption(event.key === "ArrowDown" ? 1 : -1);
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeResults();
+        return;
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const activeId = search.getAttribute("aria-activedescendant");
+        const active = activeId ? document.getElementById(activeId) : null;
+        const option = active || results.querySelector("[data-tz]");
+        if (option) {
+          selectOption(option);
+          return;
+        }
+        const resolved = resolveTimezoneInput(search.value);
+        if (resolved) {
+          setValue(resolved);
+          search.value = resolved;
+          closeResults();
+        }
+      }
+    });
+    search.addEventListener("blur", () => {
+      // Resolve direct zone input before a following form submit can read the field.
+      const typed = search.value.trim();
+      const resolved = resolveTimezoneInput(typed);
+      if (resolved) {
+        setValue(resolved);
+        search.value = resolved;
+      }
+      blurTimer = window.setTimeout(() => {
+        closeResults();
+      }, 150);
+    });
+    results.addEventListener("mousedown", (event) => {
+      // Keep focus long enough for the click to register.
+      event.preventDefault();
+    });
+    results.addEventListener("click", (event) => {
+      const option = event.target.closest("[data-tz]");
+      if (!option) return;
+      selectOption(option);
+    });
+
+    const latInput = byId(root.getAttribute("data-lat-field"));
+    const lonInput = byId(root.getAttribute("data-lon-field"));
+    const clearCoordinateProvenance = () => {
+      if (latInput) delete latInput.dataset.timezoneAutofill;
+      if (lonInput) delete lonInput.dataset.timezoneAutofill;
+    };
+    if (latInput) latInput.addEventListener("input", clearCoordinateProvenance);
+    if (lonInput) lonInput.addEventListener("input", clearCoordinateProvenance);
   });
 }
 
@@ -1207,11 +1493,31 @@ function maybeFillCoords(pickerRoot, lat, lon) {
   const latInput = byId(latId);
   const lonInput = byId(lonId);
   if (!latInput || !lonInput) return;
-  const latEmpty = !String(latInput.value || "").trim();
-  const lonEmpty = !String(lonInput.value || "").trim();
-  if (latEmpty && lonEmpty) {
-    latInput.value = String(lat);
-    lonInput.value = String(lon);
+  const latValue = String(latInput.value || "").trim();
+  const lonValue = String(lonInput.value || "").trim();
+  const bothEmpty = !latValue && !lonValue;
+  const stillAutofilled =
+    Object.hasOwn(latInput.dataset, "timezoneAutofill")
+    && Object.hasOwn(lonInput.dataset, "timezoneAutofill")
+    && latValue === latInput.dataset.timezoneAutofill
+    && lonValue === lonInput.dataset.timezoneAutofill;
+  if (!bothEmpty && !stillAutofilled) return;
+  latInput.value = String(lat);
+  lonInput.value = String(lon);
+  latInput.dataset.timezoneAutofill = String(lat);
+  lonInput.dataset.timezoneAutofill = String(lon);
+}
+
+function resolveTimezoneInput(value) {
+  const candidate = String(value || "").trim();
+  if (!candidate) return null;
+  if (["UTC", "GMT", "Z"].includes(candidate.toUpperCase())) return "UTC";
+  try {
+    const resolved = new Intl.DateTimeFormat("en-US", { timeZone: candidate })
+      .resolvedOptions().timeZone;
+    return ["Etc/UTC", "Etc/GMT", "GMT"].includes(resolved) ? "UTC" : resolved;
+  } catch (_error) {
+    return null;
   }
 }
 
@@ -1256,7 +1562,7 @@ function searchTimezoneMatches(query, limit = 80) {
 
   for (const place of KNOWN_PLACES) {
     const haystacks = [place.label, place.tz, ...place.aliases].map(normalizeSearchText);
-    const hit = haystacks.some((text) => text.includes(q) || q.includes(text));
+    const hit = haystacks.some((text) => text.includes(q));
     if (!hit) continue;
     const exact = haystacks.some((text) => text === q);
     push({
@@ -1288,17 +1594,25 @@ function searchTimezoneMatches(query, limit = 80) {
 
 function renderTimezoneResults(pickerRoot, query) {
   const results = pickerRoot.querySelector(".tz-results");
+  const search = pickerRoot.querySelector(".tz-search");
   if (!results) return;
   const matches = searchTimezoneMatches(query, 100);
   results.replaceChildren();
+  if (search) {
+    search.dataset.activeIndex = "-1";
+    search.removeAttribute("aria-activedescendant");
+    search.setAttribute("aria-expanded", "true");
+  }
   if (!matches.length) {
     results.append(element("li", "tz-empty", "No matching place or IANA zone."));
     results.hidden = false;
     return;
   }
-  for (const match of matches) {
+  for (const [index, match] of matches.entries()) {
     const item = element("li", "tz-option");
+    item.id = `${results.id}-option-${index}`;
     item.setAttribute("role", "option");
+    item.setAttribute("aria-selected", "false");
     item.setAttribute("data-tz", match.tz);
     item.setAttribute("data-label", match.label);
     item.setAttribute("data-lat", match.lat == null ? "" : String(match.lat));
@@ -1313,6 +1627,33 @@ function renderTimezoneResults(pickerRoot, query) {
     results.append(item);
   }
   results.hidden = false;
+}
+
+function houseOmissionReason(meta) {
+  if (meta.houses_enabled === false) {
+    return "Houses were not calculated because angles and houses were disabled for this chart.";
+  }
+  if (meta.time_known === false) {
+    return "Houses were not calculated because the civil time is unknown.";
+  }
+  if (meta.location_known === false) {
+    return "Houses were not calculated because both latitude and longitude are required.";
+  }
+  return "Houses were not calculated for this chart.";
+}
+
+function natalHouseLabel(natal) {
+  return natal.house_system ? displayName(natal.house_system) : "Not calculated";
+}
+
+function transitPlacementNotes(placement) {
+  const notes = [];
+  if (placement.retro) notes.push("retrograde");
+  if (placement.time_sensitive) notes.push("time-sensitive");
+  if (placement.blend && placement.secondary_sign) {
+    notes.push(`blend ${displayName(placement.secondary_sign)}`);
+  }
+  return notes;
 }
 
 function makeReadingCard(reading) {
@@ -1405,7 +1746,9 @@ function makeInlineError(text) {
 }
 
 function activateView(name, { updateHash = true } = {}) {
-  const valid = ["chart", "library", "transit"].includes(name) ? name : "chart";
+  const valid = ["chart", "library", "transit", "synastry"].includes(name)
+    ? name
+    : "chart";
   document.querySelectorAll("[data-panel]").forEach((panel) => {
     const active = panel.dataset.panel === valid;
     panel.hidden = !active;

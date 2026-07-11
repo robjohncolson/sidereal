@@ -9,10 +9,14 @@ import sqlite3
 from typing import Iterable, Iterator, Sequence
 
 from .schema import (
-    SCHEMA_VERSION,
+    SEED_SCHEMA_VERSION,
+    SELF_ASPECT_BODIES,
     InterpretationEntry,
     expected_entry_ids,
 )
+
+
+DATABASE_SCHEMA_VERSION = 2
 
 
 class InterpretationStoreError(RuntimeError):
@@ -73,8 +77,11 @@ class InventoryAudit:
         }
 
 
-_SCHEMA_SQL = """
-CREATE TABLE IF NOT EXISTS interpretation_entries (
+def _entry_table_sql(table_name: str, *, if_not_exists: bool = False) -> str:
+    create_clause = "IF NOT EXISTS " if if_not_exists else ""
+    same_body_allowlist = ", ".join(f"'{body}'" for body in SELF_ASPECT_BODIES)
+    return f"""
+CREATE TABLE {create_clause}{table_name} (
     id TEXT PRIMARY KEY,
     entry_type TEXT NOT NULL,
     planet TEXT,
@@ -97,17 +104,39 @@ CREATE TABLE IF NOT EXISTS interpretation_entries (
     status TEXT NOT NULL CHECK (status IN ('stub', 'ready', 'user')),
     version INTEGER NOT NULL CHECK (version >= 1),
     updated TEXT NOT NULL,
-    CHECK (body_a IS NULL OR body_b IS NULL OR body_a < body_b)
+    CHECK (
+        body_a IS NULL
+        OR body_b IS NULL
+        OR body_a < body_b
+        OR (
+            entry_type = 'aspect'
+            AND body_a = body_b
+            AND body_a IN ({same_body_allowlist})
+        )
+    )
 );
-CREATE INDEX IF NOT EXISTS interpretation_entries_type_idx
-    ON interpretation_entries(entry_type);
-CREATE INDEX IF NOT EXISTS interpretation_entries_status_idx
-    ON interpretation_entries(status);
+"""
+
+
+_INDEX_SQL_STATEMENTS = (
+    "CREATE INDEX IF NOT EXISTS interpretation_entries_type_idx "
+    "ON interpretation_entries(entry_type)",
+    "CREATE INDEX IF NOT EXISTS interpretation_entries_status_idx "
+    "ON interpretation_entries(status)",
+)
+_META_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS interpretation_meta (
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
 """
+_SCHEMA_SQL = "\n".join(
+    (
+        _entry_table_sql("interpretation_entries", if_not_exists=True),
+        *(statement + ";" for statement in _INDEX_SQL_STATEMENTS),
+        _META_TABLE_SQL,
+    )
+)
 
 _ENTRY_COLUMNS = (
     "id",
@@ -181,17 +210,22 @@ class InterpretationStore:
             )
         }
         owned_tables = {"interpretation_entries", "interpretation_meta"}
-        if current_version not in (0, SCHEMA_VERSION):
+        if current_version not in (0, 1, DATABASE_SCHEMA_VERSION):
             raise StoreNotInitializedError(
                 f"refusing to overwrite interpretation schema version {current_version}; "
-                f"this build supports version {SCHEMA_VERSION}"
+                f"this build supports version {DATABASE_SCHEMA_VERSION}"
             )
         if current_version == 0 and tables & owned_tables:
             raise StoreNotInitializedError(
                 "interpretation tables exist without a supported schema version; "
                 "an explicit migration is required"
             )
-        if current_version == SCHEMA_VERSION:
+        if current_version == 1:
+            self._assert_schema_version(connection, 1)
+            self._migrate_v1_to_v2(connection)
+            self._assert_current_schema(connection)
+            return
+        if current_version == DATABASE_SCHEMA_VERSION:
             self._assert_current_schema(connection)
             # Retain idempotent index creation, but never rewrite a versioned
             # database merely because `db init` was invoked again.
@@ -203,9 +237,9 @@ class InterpretationStore:
             connection.execute(
                 "INSERT INTO interpretation_meta(key, value) VALUES('schema_version', ?) "
                 "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-                (str(SCHEMA_VERSION),),
+                (str(DATABASE_SCHEMA_VERSION),),
             )
-            connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
+            connection.execute(f"PRAGMA user_version = {DATABASE_SCHEMA_VERSION}")
 
     def _require_schema(self) -> sqlite3.Connection:
         connection = self._connect()
@@ -214,10 +248,24 @@ class InterpretationStore:
 
     @staticmethod
     def _assert_current_schema(connection: sqlite3.Connection) -> None:
+        InterpretationStore._assert_schema_version(
+            connection, DATABASE_SCHEMA_VERSION
+        )
+
+    @staticmethod
+    def _assert_schema_version(
+        connection: sqlite3.Connection, expected_version: int
+    ) -> None:
         version = int(connection.execute("PRAGMA user_version").fetchone()[0])
-        if version != SCHEMA_VERSION:
+        if version != expected_version:
+            migration_hint = (
+                "; run 'python -m sidereal db init --db PATH' to migrate"
+                if version == 1 and expected_version == DATABASE_SCHEMA_VERSION
+                else ""
+            )
             raise StoreNotInitializedError(
-                f"unsupported interpretation schema version {version}; expected {SCHEMA_VERSION}"
+                f"unsupported interpretation schema version {version}; "
+                f"expected {expected_version}{migration_hint}"
             )
         tables = {
             str(row[0])
@@ -242,10 +290,59 @@ class InterpretationStore:
         meta = connection.execute(
             "SELECT value FROM interpretation_meta WHERE key = 'schema_version'"
         ).fetchone()
-        if meta is None or str(meta[0]) != str(SCHEMA_VERSION):
+        if meta is None or str(meta[0]) != str(expected_version):
             raise StoreNotInitializedError(
                 "interpretation schema metadata disagrees with PRAGMA user_version"
             )
+
+    @staticmethod
+    def _migrate_v1_to_v2(connection: sqlite3.Connection) -> None:
+        """Transactionally rebuild the entry table with self-aspect support."""
+
+        migration_table = "interpretation_entries_v2_migration"
+        columns = ", ".join(_ENTRY_COLUMNS)
+        built_in_indexes = {
+            "interpretation_entries_type_idx",
+            "interpretation_entries_status_idx",
+        }
+        user_schema_objects = tuple(
+            (str(row[0]), str(row[1]), str(row[2]))
+            for row in connection.execute(
+                "SELECT type, name, sql FROM sqlite_master "
+                "WHERE tbl_name = 'interpretation_entries' "
+                "AND type IN ('index', 'trigger') AND sql IS NOT NULL "
+                "ORDER BY type, name"
+            )
+            if str(row[1]) not in built_in_indexes
+        )
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute(_entry_table_sql(migration_table))
+            connection.execute(
+                f"INSERT INTO {migration_table} ({columns}) "
+                f"SELECT {columns} FROM interpretation_entries"
+            )
+            connection.execute("DROP TABLE interpretation_entries")
+            connection.execute(
+                f"ALTER TABLE {migration_table} RENAME TO interpretation_entries"
+            )
+            for statement in _INDEX_SQL_STATEMENTS:
+                connection.execute(statement)
+            for _object_type, _object_name, statement in user_schema_objects:
+                # Columns are unchanged between v1 and v2. Replaying a custom
+                # object that is nevertheless incompatible fails the enclosing
+                # transaction instead of silently discarding user schema work.
+                connection.execute(statement)
+            connection.execute(
+                "UPDATE interpretation_meta SET value = ? "
+                "WHERE key = 'schema_version'",
+                (str(DATABASE_SCHEMA_VERSION),),
+            )
+            connection.execute(f"PRAGMA user_version = {DATABASE_SCHEMA_VERSION}")
+            connection.commit()
+        except Exception:
+            connection.rollback()
+            raise
 
     @staticmethod
     def _record_values(entry: InterpretationEntry) -> tuple[object, ...]:
@@ -323,11 +420,11 @@ class InterpretationStore:
             raise SeedImportError(f"seed file must contain an object: {path}")
         if (
             type(payload.get("schema_version")) is not int
-            or payload["schema_version"] != SCHEMA_VERSION
+            or payload["schema_version"] != SEED_SCHEMA_VERSION
         ):
             raise SeedImportError(
                 f"seed {path} has schema_version {payload.get('schema_version')!r}; "
-                f"expected {SCHEMA_VERSION}"
+                f"expected {SEED_SCHEMA_VERSION}"
             )
         raw_records = payload.get("records")
         if not isinstance(raw_records, list):

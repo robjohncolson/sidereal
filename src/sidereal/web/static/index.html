@@ -51,7 +51,10 @@
         <span class="tab-count" id="library-count" hidden>0</span>
       </button>
       <button class="view-tab" type="button" data-view="transit" aria-controls="transit-view" aria-selected="false">
-        <span aria-hidden="true">↗</span> Transits
+        <span aria-hidden="true">↗</span> Transits (sky vs birth chart)
+      </button>
+      <button class="view-tab" type="button" data-view="synastry" aria-controls="synastry-view" aria-selected="false">
+        <span aria-hidden="true">↔</span> Synastry (two charts)
       </button>
     </nav>
 
@@ -86,13 +89,13 @@
                 </div>
                 <div class="field timezone-picker" data-timezone-picker data-lat-field="chart-lat" data-lon-field="chart-lon">
                   <label for="chart-tz-search">Timezone or place</label>
-                  <input id="chart-tz-search" class="tz-search" type="search" placeholder="Tokyo, Japan or Asia/Tokyo" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-controls="chart-tz-results">
+                  <input id="chart-tz-search" class="tz-search" type="search" placeholder="Tokyo, Japan or Asia/Tokyo" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="chart-tz-results">
                   <input id="chart-tz" name="tz" type="hidden" required value="">
                   <div class="tz-current" aria-live="polite">
                     <span class="tz-current-label">Selected zone</span>
                     <code class="tz-current-value" id="chart-tz-display">—</code>
                   </div>
-                  <ul id="chart-tz-results" class="tz-results" role="listbox" hidden></ul>
+                  <ul id="chart-tz-results" class="tz-results" role="listbox" aria-label="Timezone and place suggestions" hidden></ul>
                   <p class="field-help">Type a city (e.g. Tokyo, Japan) or scroll/filter IANA zones. Picking a known place also fills lat/lon when those fields are empty.</p>
                 </div>
                 <div class="field compact-field" data-time-fold>
@@ -237,13 +240,13 @@
                 </div>
                 <div class="field timezone-picker" data-timezone-picker data-lat-field="transit-lat" data-lon-field="transit-lon">
                   <label for="transit-tz-search">Timezone or place</label>
-                  <input id="transit-tz-search" class="tz-search" type="search" placeholder="Tokyo, Japan or Asia/Tokyo" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-controls="transit-tz-results">
+                  <input id="transit-tz-search" class="tz-search" type="search" placeholder="Tokyo, Japan or Asia/Tokyo" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="transit-tz-results">
                   <input id="transit-tz" name="tz" type="hidden" required value="">
                   <div class="tz-current" aria-live="polite">
                     <span class="tz-current-label">Selected zone</span>
                     <code class="tz-current-value" id="transit-tz-display">—</code>
                   </div>
-                  <ul id="transit-tz-results" class="tz-results" role="listbox" hidden></ul>
+                  <ul id="transit-tz-results" class="tz-results" role="listbox" aria-label="Timezone and place suggestions" hidden></ul>
                   <p class="field-help">Search a city or IANA zone; scroll the filtered list. Known places can fill empty transit coordinates.</p>
                 </div>
                 <div class="field compact-field">
@@ -287,6 +290,53 @@
               <p>The report will show transit signs, natal-house overlays when available, and moving-body aspects to fixed natal points.</p>
             </div>
             <div class="report-root" id="transit-report" hidden></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view-panel" id="synastry-view" data-panel="synastry" aria-labelledby="synastry-heading" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Two fixed natal or event moments</p>
+            <h2 id="synastry-heading">Study two-natal synastry</h2>
+          </div>
+          <p>This compares two saved charts. For the moving sky against one birth chart, use Transits instead.</p>
+        </div>
+
+        <div class="workspace-grid">
+          <aside class="card form-card">
+            <form id="synastry-form">
+              <fieldset>
+                <legend>Chart A</legend>
+                <div class="field">
+                  <label for="synastry-a">First saved chart</label>
+                  <select id="synastry-a" name="a_id" required>
+                    <option value="">Choose a saved chart…</option>
+                  </select>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Chart B</legend>
+                <div class="field">
+                  <label for="synastry-b">Second saved chart</label>
+                  <select id="synastry-b" name="b_id" required>
+                    <option value="">Choose a saved chart…</option>
+                  </select>
+                  <p class="field-help">Save charts in the New chart workspace. The CLI and API also accept inline moments.</p>
+                </div>
+              </fieldset>
+              <button class="button primary full" type="submit"><span aria-hidden="true">↔</span> Compare fixed charts</button>
+              <p class="form-status" id="synastry-form-status" role="status" aria-live="polite"></p>
+            </form>
+          </aside>
+
+          <section class="report-shell" aria-label="Two-natal synastry report">
+            <div class="empty-state" id="synastry-empty">
+              <div class="empty-orbit" aria-hidden="true"><span></span></div>
+              <h3>Choose two saved charts</h3>
+              <p>The report preserves A/B roles, compares both fixed moments in J2000, and keeps interpretation gaps explicit.</p>
+            </div>
+            <div class="report-root" id="synastry-report" hidden></div>
           </section>
         </div>
       </section>

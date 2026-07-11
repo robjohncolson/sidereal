@@ -118,7 +118,7 @@ def test_seed4_store_import_upgrades_stubs_and_is_idempotent(tmp_path: Path) -> 
         assert first.records == TOTAL_INVENTORY_COUNT + SEED4_READY_COUNT
         assert first.inserted == TOTAL_INVENTORY_COUNT
         assert first.updated == SEED4_READY_COUNT
-        assert (audit.ready, audit.stub, audit.missing) == (99, 813, 0)
+        assert (audit.ready, audit.stub, audit.missing) == (99, 868, 0)
         assert store.get("planet_in_sign:mercury:ophiuchus").status == "ready"  # type: ignore[union-attr]
         assert store.get("planet_in_house:north_node:12").status == "ready"  # type: ignore[union-attr]
 

@@ -67,7 +67,10 @@ class TransitReport:
     def to_markdown(self) -> str:
         natal_label = str(self.natal.get("label") or "Untitled natal")
         lines = [
-            f"# Transit study: {natal_label}",
+            f"# Sky ↔ Natal transit study: {natal_label}",
+            "",
+            f"Moving sky at {self.transit.get('local_datetime', 'unknown')} relative "
+            f"to natal {natal_label}.",
             "",
             f"Natal moment: {self.natal.get('local_datetime', 'unknown')} "
             f"({self.natal.get('tz', 'unknown timezone')})",
@@ -88,7 +91,7 @@ class TransitReport:
         lines.extend(
             (
                 "",
-                "## Transit placements",
+                "## Moving sky placements",
                 "",
                 "| Transit body | Midpoint placement | Natal house |",
                 "|---|---|---:|",
@@ -108,47 +111,67 @@ class TransitReport:
                 f"{house} |"
             )
 
-        lines.extend(("", "## Transit–natal aspects", ""))
+        lines.extend(("", "## Sky–Natal aspects (transits)", ""))
         if self.relationships:
-            for item in self.relationships:
-                aspect = item["aspect"]
-                reading = item["reading"]
-                character = item.get("character") if isinstance(item.get("character"), Mapping) else {}
-                state = _motion_state(aspect.get("applying"), aspect.get("exactness"))
-                title = str(
-                    character.get("title")
-                    or (
-                        f"Transit {_display(str(aspect['transit_body']))} "
-                        f"{str(aspect['aspect_id']).replace('_', ' ')} natal "
-                        f"{_display(str(aspect['natal_point']))}"
+            groups = (
+                (
+                    "Same-body sky–natal contacts",
+                    tuple(item for item in self.relationships if item.get("same_body")),
+                ),
+                (
+                    "Other sky–natal contacts",
+                    tuple(item for item in self.relationships if not item.get("same_body")),
+                ),
+            )
+            for group_title, group_items in groups:
+                if not group_items:
+                    continue
+                lines.extend((f"### {group_title}", ""))
+                for item in group_items:
+                    aspect = item["aspect"]
+                    reading = item["reading"]
+                    character = (
+                        item.get("character")
+                        if isinstance(item.get("character"), Mapping)
+                        else {}
                     )
-                )
-                lines.extend(
-                    (
-                        f"### {title}",
-                        "",
-                        f"Geometry: separation {float(aspect['separation']):.4f}°, "
-                        f"orb {float(aspect['exactness']):.4f}°, {state}.",
-                        "",
+                    state = _motion_state(
+                        aspect.get("applying"), aspect.get("exactness")
                     )
-                )
-                synthesis = str(character.get("synthesis") or "").strip()
-                if synthesis:
-                    lines.extend((synthesis, ""))
-                _append_reading(lines, reading)
-                for side_key, side_label in (
-                    ("transit_placement", "Transit body · Midpoint sign character"),
-                    ("natal_placement", "Natal point · Midpoint sign character"),
-                ):
-                    side = character.get(side_key)
-                    if not isinstance(side, Mapping):
-                        continue
-                    side_reading = side.get("reading")
-                    if isinstance(side_reading, Mapping):
-                        lines.extend((f"#### {side_label}", ""))
-                        _append_reading(lines, side_reading)
+                    title = str(
+                        character.get("title")
+                        or (
+                            f"Transit {_display(str(aspect['transit_body']))} "
+                            f"{str(aspect['aspect_id']).replace('_', ' ')} natal "
+                            f"{_display(str(aspect['natal_point']))}"
+                        )
+                    )
+                    lines.extend(
+                        (
+                            f"#### {title}",
+                            "",
+                            f"Geometry: separation {float(aspect['separation']):.4f}°, "
+                            f"orb {float(aspect['exactness']):.4f}°, {state}.",
+                            "",
+                        )
+                    )
+                    synthesis = str(character.get("synthesis") or "").strip()
+                    if synthesis:
+                        lines.extend((synthesis, ""))
+                    _append_reading(lines, reading)
+                    for side_key, side_label in (
+                        ("transit_placement", "Transit body · Midpoint sign character"),
+                        ("natal_placement", "Natal point · Midpoint sign character"),
+                    ):
+                        side = character.get(side_key)
+                        if not isinstance(side, Mapping):
+                            continue
+                        side_reading = side.get("reading")
+                        if isinstance(side_reading, Mapping):
+                            lines.extend((f"##### {side_label}", ""))
+                            _append_reading(lines, side_reading)
         else:
-            lines.append("No configured major transit–natal aspects were found.")
+            lines.append("No configured major sky–natal transit aspects were found.")
 
         lines.extend(("", "## Missing interpretation keys", ""))
         if self.gaps:
@@ -193,6 +216,7 @@ def compose_transit_report(
         relationships.append(
             {
                 "aspect": _json_value(hit),
+                "same_body": hit.transit_body == hit.natal_point,
                 "reading": resolver.resolve(key, context),
                 "character": _transit_relationship_character(
                     resolver,
@@ -234,15 +258,40 @@ def calculate_transit_report(
 ) -> TransitReport:
     """Calculate one transit chart through the primary engine and compose it."""
 
+    report, _geometry = calculate_transit_study(
+        natal,
+        transit_moment,
+        config,
+        store,
+        natal_source=natal_source,
+        natal_id=natal_id,
+    )
+    return report
+
+
+def calculate_transit_study(
+    natal: Chart,
+    transit_moment: MomentInput,
+    config: ChartConfig,
+    store: EntryLookup | None = None,
+    *,
+    natal_source: str = "inline",
+    natal_id: str | None = None,
+) -> tuple[TransitReport, TransitGeometry]:
+    """Calculate and return both the composed report and reusable geometry."""
+
     from ..chart import compute
 
     transit_chart = compute(transit_moment, config)
     geometry = compute_transit_geometry(natal, transit_chart, config)
-    return compose_transit_report(
+    return (
+        compose_transit_report(
+            geometry,
+            store,
+            natal_source=natal_source,
+            natal_id=natal_id,
+        ),
         geometry,
-        store,
-        natal_source=natal_source,
-        natal_id=natal_id,
     )
 
 
@@ -294,11 +343,12 @@ class _TransitResolver:
 
 
 def _transit_interpretation_key(hit: TransitAspectHit) -> str:
-    if hit.transit_body == hit.natal_point:
-        return f"aspect:{hit.transit_body}:{hit.aspect_id}:{hit.natal_point}"
     try:
         return aspect_key(hit.transit_body, hit.aspect_id, hit.natal_point)
     except ValueError:
+        # Custom geometry rules may intentionally have no interpretation
+        # inventory entry. Preserve an explicit missing key instead of making
+        # report composition fail; supported self-aspects resolve above.
         body_a, body_b = sorted((hit.transit_body, hit.natal_point))
         return f"aspect:{body_a}:{hit.aspect_id}:{body_b}"
 
@@ -439,5 +489,6 @@ __all__ = [
     "TRANSIT_MOON_WARNING",
     "TransitReport",
     "calculate_transit_report",
+    "calculate_transit_study",
     "compose_transit_report",
 ]

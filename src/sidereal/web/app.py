@@ -23,9 +23,11 @@ from ..ephemeris import SwissEphemeris
 from ..interpret.audit import report_interpretation_ids
 from ..interpret.compose import compose_report
 from ..interpret.store import InterpretationStore, InterpretationStoreError
-from ..interpret.transit import calculate_transit_report
+from ..interpret.synastry import calculate_synastry_report
+from ..interpret.transit import calculate_transit_study
 from ..library import list_charts, load_chart, save_chart
 from ..types import MomentInput
+from ..wheel import render_svg
 
 
 @dataclass(frozen=True, slots=True)
@@ -196,7 +198,9 @@ def create_app(
             else None
         )
         with _optional_store(settings) as store:
-            return compose_report(chart, store, comparison=comparison).to_dict()
+            result = compose_report(chart, store, comparison=comparison).to_dict()
+        result["wheel"] = _wheel_payload(chart)
+        return result
 
     @app.get("/api/charts")
     def charts_index() -> dict[str, Any]:
@@ -216,7 +220,10 @@ def create_app(
 
     @app.get("/api/charts/{chart_id}")
     def chart_show(chart_id: str) -> dict[str, Any]:
-        return load_chart(chart_id, settings.charts_dir).to_dict()
+        record = load_chart(chart_id, settings.charts_dir)
+        result = record.to_dict()
+        result["wheel"] = _wheel_payload(record.chart_object())
+        return result
 
     @app.post("/api/charts")
     def chart_save(payload: dict[str, Any]) -> dict[str, Any]:
@@ -248,7 +255,9 @@ def create_app(
             else None
         )
         with _optional_store(settings) as store:
-            return compose_report(chart, store, comparison=comparison).to_dict()
+            result = compose_report(chart, store, comparison=comparison).to_dict()
+        result["wheel"] = _wheel_payload(chart)
+        return result
 
     @app.post("/api/transit")
     def transit_report(payload: dict[str, Any]) -> dict[str, Any]:
@@ -288,13 +297,76 @@ def create_app(
         )
         transit_config = replace(transit_config, include_patterns=False)
         with _optional_store(settings) as store:
-            return calculate_transit_report(
+            report, geometry = calculate_transit_study(
                 natal,
                 transit_moment,
                 transit_config,
                 store,
                 natal_source=natal_source,
                 natal_id=natal_id,
+            )
+        result = report.to_dict()
+        result["wheel"] = _wheel_payload(
+            geometry.natal,
+            overlay_chart=geometry.transit,
+        )
+        return result
+
+    @app.post("/api/synastry")
+    def synastry_report(payload: dict[str, Any]) -> dict[str, Any]:
+        options = _options(payload)
+        records: dict[str, Any] = {}
+        inline_payloads: dict[str, Mapping[str, Any]] = {}
+        sources = {"a": "inline", "b": "inline"}
+        ids: dict[str, str | None] = {"a": None, "b": None}
+
+        for role in ("a", "b"):
+            saved_value = payload.get(f"{role}_id")
+            inline_value = payload.get(role)
+            if (saved_value is None) == (inline_value is None):
+                raise ValueError(
+                    f"provide exactly one of {role}_id or {role} for chart {role.upper()}"
+                )
+            if saved_value is not None:
+                identifier = _required_string(saved_value, f"{role}_id")
+                record = load_chart(identifier, settings.charts_dir)
+                records[role] = record
+                sources[role] = "saved"
+                ids[role] = record.id
+            else:
+                inline_payloads[role] = _mapping(inline_value, role)
+
+        base_record = records.get("a") or records.get("b")
+        base_config = base_record.chart_config() if base_record is not None else None
+        config = _chart_config(
+            settings,
+            options,
+            include_houses=True,
+            base=base_config,
+        )
+        config = replace(config, include_patterns=False)
+        charts = {
+            role: (
+                records[role].chart_object()
+                if role in records
+                else compute(
+                    _moment_from_payload(inline_payloads[role], name=role),
+                    config,
+                )
+            )
+            for role in ("a", "b")
+        }
+
+        with _optional_store(settings) as store:
+            return calculate_synastry_report(
+                charts["a"],
+                charts["b"],
+                config,
+                store,
+                source_a=sources["a"],
+                id_a=ids["a"],
+                source_b=sources["b"],
+                id_b=ids["b"],
             ).to_dict()
 
     @app.get("/api/db/gaps")
@@ -326,6 +398,25 @@ def create_app(
 def _moment_payload(payload: Mapping[str, Any]) -> Mapping[str, Any]:
     nested = payload.get("moment")
     return payload if nested is None else _mapping(nested, "moment")
+
+
+def _wheel_payload(
+    chart: Any,
+    *,
+    overlay_chart: Any | None = None,
+    width: int = 640,
+) -> dict[str, Any]:
+    has_ascendant = any(point.id == "asc" for point in chart.points)
+    return {
+        "version": 1,
+        "media_type": "image/svg+xml",
+        "kind": "transit_overlay" if overlay_chart is not None else "natal",
+        "width": width,
+        "orientation": (
+            "ascendant_at_9_oclock" if has_ascendant else "j2000_zero_at_9_oclock"
+        ),
+        "svg": render_svg(chart, width=width, overlay_chart=overlay_chart),
+    }
 
 
 def _moment_from_payload(
