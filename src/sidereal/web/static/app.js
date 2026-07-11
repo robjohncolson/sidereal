@@ -3,12 +3,15 @@
 const state = {
   charts: [],
   synastries: [],
+  transits: [],
   selectedChartId: null,
   selectedSavedChart: null,
   selectedSynastryId: null,
+  selectedTransitId: null,
   lastChartPayload: null,
   lastChartReport: null,
   lastSynastryReport: null,
+  lastTransitReport: null,
   toastTimer: null,
 };
 
@@ -120,6 +123,7 @@ function init() {
   void checkHealth();
   void loadLibrary();
   void loadSynastryLibrary();
+  void loadTransitLibrary();
 }
 
 function bindNavigation() {
@@ -144,6 +148,10 @@ function bindForms() {
     void loadSynastryLibrary({ announce: true });
   });
   byId("refresh-synastry-button").addEventListener("click", handleSynastryRefresh);
+  byId("refresh-transit-library-button").addEventListener("click", () => {
+    void loadTransitLibrary({ announce: true });
+  });
+  byId("refresh-transit-button").addEventListener("click", handleTransitRefresh);
 }
 
 function setFormDefaults() {
@@ -429,21 +437,154 @@ async function handleTransitSubmit(event) {
   const submit = form.querySelector('button[type="submit"]');
   const root = byId("transit-report");
   const empty = byId("transit-empty");
+  const selection = byId("transit-selection");
   clearStatus("transit-form-status");
+  clearStatus("transit-library-status");
 
   try {
     if (!form.reportValidity()) return;
     const payload = transitPayloadFromForm(form);
     setBusy(submit, true, "Calculating…");
+    selection.hidden = true;
     showLoading(root, empty, "Calculating transits", "The local engine is comparing the moving sky with fixed natal geometry.");
     const report = await api("/api/transit", { method: "POST", body: payload });
+    state.lastTransitReport = report;
     renderTransitReport(report, root);
-    setStatus("transit-form-status", "Transit study calculated locally.", "success");
+    const saved = report.saved_transit;
+    if (saved && saved.id) {
+      state.selectedTransitId = saved.id;
+      selection.hidden = false;
+      byId("selected-transit-title").textContent = saved.label || "Saved transit";
+      setStatus(
+        "transit-form-status",
+        `Transit calculated and saved as “${saved.label || saved.id}” (JSON + markdown for agent context).`,
+        "success",
+      );
+      void loadTransitLibrary();
+    } else {
+      state.selectedTransitId = null;
+      setStatus("transit-form-status", "Transit study calculated locally.", "success");
+    }
   } catch (error) {
     showError(root, empty, "Transit study could not be calculated", errorMessage(error));
     setStatus("transit-form-status", errorMessage(error), "error");
   } finally {
     setBusy(submit, false);
+  }
+}
+
+async function loadTransitLibrary({ announce = false } = {}) {
+  const list = byId("transit-library-list");
+  const summary = byId("transit-library-summary");
+  if (!list || !summary) return;
+  try {
+    const payload = await api("/api/transits");
+    state.transits = asArray(payload.transits);
+    renderTransitLibraryList();
+    summary.textContent =
+      state.transits.length === 0
+        ? "No saved transits yet. Calculate with “Save transit study” checked."
+        : `${state.transits.length} saved ${state.transits.length === 1 ? "study" : "studies"}.`;
+    if (announce) showToast("Transit library refreshed.");
+  } catch (error) {
+    list.replaceChildren(element("p", "library-empty-list", errorMessage(error)));
+    summary.textContent = "Could not load transit library.";
+  }
+}
+
+function renderTransitLibraryList() {
+  const list = byId("transit-library-list");
+  if (!list) return;
+  list.replaceChildren();
+  if (!state.transits.length) {
+    list.append(
+      element(
+        "p",
+        "library-empty-list",
+        "Snapshots appear here (e.g. Bobby · today sky) for reopen and agent context.",
+      ),
+    );
+    return;
+  }
+  for (const item of state.transits) {
+    const button = element("button", "library-item", "");
+    button.type = "button";
+    if (item.id === state.selectedTransitId) button.classList.add("is-selected");
+    button.append(element("strong", "library-item-title", item.label || item.id));
+    button.append(
+      element(
+        "span",
+        "library-item-meta",
+        [
+          item.natal_label ? `natal ${item.natal_label}` : null,
+          item.transit_local_datetime ? friendlyMoment(item.transit_local_datetime) : null,
+          item.relationship_count != null ? `${item.relationship_count} aspects` : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      ),
+    );
+    button.addEventListener("click", () => {
+      void openSavedTransit(item.id);
+    });
+    list.append(button);
+  }
+}
+
+async function openSavedTransit(snapshotId) {
+  const root = byId("transit-report");
+  const empty = byId("transit-empty");
+  const selection = byId("transit-selection");
+  clearStatus("transit-library-status");
+  try {
+    showLoading(root, empty, "Opening saved transit", "Loading the local snapshot for conversation context…");
+    const payload = await api(`/api/transits/${encodeURIComponent(snapshotId)}`);
+    const report = payload.report || payload;
+    state.selectedTransitId = payload.id || snapshotId;
+    state.lastTransitReport = report;
+    selection.hidden = false;
+    byId("selected-transit-title").textContent = payload.label || snapshotId;
+    renderTransitReport(report, root);
+    renderTransitLibraryList();
+    setStatus(
+      "transit-library-status",
+      "Loaded snapshot. Markdown context is also on disk under charts/transits/. Refresh re-runs from natal + DB.",
+      "success",
+    );
+  } catch (error) {
+    showError(root, empty, "Could not open transit snapshot", errorMessage(error));
+    setStatus("transit-library-status", errorMessage(error), "error");
+  }
+}
+
+async function handleTransitRefresh() {
+  if (!state.selectedTransitId) {
+    showToast("Open a saved transit first.", true);
+    return;
+  }
+  const button = byId("refresh-transit-button");
+  const root = byId("transit-report");
+  const empty = byId("transit-empty");
+  try {
+    setBusy(button, true, "Refreshing…");
+    showLoading(root, empty, "Refreshing transit", "Re-running from linked natal and stored sky moment…");
+    const payload = await api(
+      `/api/transits/${encodeURIComponent(state.selectedTransitId)}/refresh`,
+      { method: "POST", body: {} },
+    );
+    const report = payload.report || payload;
+    state.lastTransitReport = report;
+    byId("selected-transit-title").textContent =
+      (payload.saved_transit && payload.saved_transit.label) || payload.label || state.selectedTransitId;
+    renderTransitReport(report, root);
+    void loadTransitLibrary();
+    setStatus("transit-library-status", "Snapshot refreshed with current DB interpretations.", "success");
+    showToast("Transit snapshot refreshed.");
+  } catch (error) {
+    showError(root, empty, "Could not refresh transit", errorMessage(error));
+    setStatus("transit-library-status", errorMessage(error), "error");
+  } finally {
+    setBusy(button, false);
   }
 }
 
@@ -617,10 +758,14 @@ function chartPayloadFromForm(form) {
 function transitPayloadFromForm(form) {
   const natalId = fieldValue(form, "natal_id").trim();
   if (!natalId) throw new Error("Choose a saved natal chart.");
+  const save = Boolean(form.elements.namedItem("save_transit")?.checked);
+  const saveLabel = fieldValue(form, "save_label").trim();
   return {
     natal_id: natalId,
     transit: momentFromForm(form, { timeRequired: true }),
-    options: {},
+    save,
+    label: saveLabel || undefined,
+    options: { save },
   };
 }
 
@@ -1891,6 +2036,9 @@ function makeInlineError(text) {
 function activateView(name, { updateHash = true } = {}) {
   if (name === "synastry") {
     void loadSynastryLibrary();
+  }
+  if (name === "transit") {
+    void loadTransitLibrary();
   }
   const valid = ["chart", "library", "transit", "synastry"].includes(name)
     ? name

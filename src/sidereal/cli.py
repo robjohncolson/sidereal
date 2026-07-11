@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import asdict, is_dataclass, replace
-from datetime import date, time
+from datetime import date, datetime, time
 import json
 import os
 from pathlib import Path
@@ -37,6 +37,15 @@ def _time_value(value: str) -> time:
             "--time must be a local wall-clock time without an offset; use --tz"
         )
     return parsed
+
+
+def _when_value(value: str) -> datetime:
+    from .skypack import parse_local_datetime
+
+    try:
+        return parse_local_datetime(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
 def _comparison_value(value: str) -> tuple[str, ...]:
@@ -213,6 +222,19 @@ def build_parser() -> argparse.ArgumentParser:
     transit.add_argument("--lat", type=float, help="optional transit latitude")
     transit.add_argument("--lon", type=float, help="optional transit longitude")
     transit.add_argument("--label", default="Transit", help="transit moment label")
+    transit.add_argument(
+        "--save",
+        action="store_true",
+        help="save the study to charts/transits/ for later reopen or agent context",
+    )
+    transit.add_argument(
+        "--save-label",
+        help="label for the saved transit snapshot (default: natal · transit label)",
+    )
+    transit.add_argument(
+        "--save-id",
+        help="optional stable id for the saved transit snapshot",
+    )
     transit.add_argument("--out", type=Path, help="write the transit JSON report")
     transit.add_argument("--md", type=Path, help="write the transit Markdown report")
     transit.add_argument(
@@ -238,6 +260,56 @@ def build_parser() -> argparse.ArgumentParser:
     _add_db_argument(transit)
     _add_charts_argument(transit)
     transit.set_defaults(handler=_run_transit)
+
+    skypack = commands.add_parser(
+        "skypack",
+        help="export local sky and natal geometry as skypack_v1 JSON",
+    )
+    skypack.add_argument(
+        "--natal",
+        required=True,
+        help="saved natal chart id or label",
+    )
+    skypack.add_argument(
+        "--when",
+        type=_when_value,
+        metavar="ISO_LOCAL",
+        help="moving-sky local datetime (default: now)",
+    )
+    skypack.add_argument(
+        "--tz",
+        help="IANA timezone or UTC offset (default: saved natal timezone)",
+    )
+    skypack.add_argument(
+        "--ephe-path",
+        type=Path,
+        help="directory containing Swiss Ephemeris .se1 files",
+    )
+    skypack.add_argument("-o", "--out", type=Path, help="write pretty JSON")
+    _add_charts_argument(skypack)
+    skypack.set_defaults(handler=_run_skypack)
+
+    transit_list = commands.add_parser(
+        "transit-list",
+        help="list saved transit study snapshots",
+    )
+    _add_charts_argument(transit_list)
+    transit_list.set_defaults(handler=_run_transit_list)
+
+    transit_show = commands.add_parser(
+        "transit-show",
+        help="print a saved transit snapshot (JSON) for agent/human context",
+    )
+    transit_show.add_argument("snapshot", help="saved transit id or label")
+    transit_show.add_argument(
+        "--md-only",
+        action="store_true",
+        help="print only the companion markdown context pack",
+    )
+    transit_show.add_argument("--out", type=Path, help="write the snapshot JSON")
+    transit_show.add_argument("--md", type=Path, help="write the companion markdown")
+    _add_charts_argument(transit_show)
+    transit_show.set_defaults(handler=_run_transit_show)
 
     synastry = commands.add_parser(
         "synastry",
@@ -733,6 +805,25 @@ def _run_transit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
             markdown_path=args.md,
             title="Natal wheel with moving-sky overlay",
         )
+    saved_summary: dict[str, Any] | None = None
+    if getattr(args, "save", False):
+        from .transit_library import save_transit_snapshot
+
+        report_dict = report.to_dict()
+        save_label = (args.save_label or "").strip()
+        if not save_label:
+            natal_label = str(report_dict.get("natal", {}).get("label") or "natal")
+            transit_label = str(report_dict.get("transit", {}).get("label") or "transit")
+            save_label = f"{natal_label} · {transit_label}"
+        snapshot = save_transit_snapshot(
+            report_dict,
+            label=save_label,
+            markdown=report.to_markdown(),
+            charts_dir=args.charts_dir.expanduser(),
+            snapshot_id=(args.save_id or None),
+            natal_id=natal_id,
+        )
+        saved_summary = snapshot.summary_dict()
     wrote_output = False
     if args.out is not None:
         _write_text(args.out, json_text)
@@ -746,8 +837,68 @@ def _run_transit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
             render_svg(geometry.natal, overlay_chart=geometry.transit),
         )
         wrote_output = True
+    if saved_summary is not None:
+        print(json.dumps(saved_summary, ensure_ascii=False, indent=2, sort_keys=True))
+        wrote_output = True
     if not wrote_output:
         print(json_text)
+    return 0
+
+
+def _run_skypack(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .library import load_chart
+    from .skypack import build_skypack_from_saved_chart
+
+    record = load_chart(args.natal, args.charts_dir.expanduser())
+    _reject_saved_chart_overwrite(parser, record.source_path, args.out)
+    payload = build_skypack_from_saved_chart(
+        record,
+        when=args.when,
+        tz=args.tz,
+        ephe_path=args.ephe_path,
+    )
+    json_text = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        allow_nan=False,
+    )
+    if args.out is not None:
+        _write_text(args.out, json_text)
+    else:
+        print(json_text)
+    return 0
+
+
+def _run_transit_list(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .transit_library import list_transits
+
+    rows = list_transits(args.charts_dir.expanduser())
+    if not rows:
+        print("No saved transit studies.")
+        return 0
+    print("ID\tLABEL\tNATAL\tTRANSIT\tASPECTS")
+    for item in rows:
+        summary = item.summary_dict()
+        print(
+            f"{summary['id']}\t{summary['label']}\t{summary['natal_label']}\t"
+            f"{summary['transit_local_datetime']}\t{summary['relationship_count']}"
+        )
+    return 0
+
+
+def _run_transit_show(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .transit_library import load_transit
+
+    record = load_transit(args.snapshot, args.charts_dir.expanduser())
+    if args.out is not None:
+        _write_text(args.out, json.dumps(record.to_dict(), ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+    if args.md is not None:
+        _write_text(args.md, record.markdown if record.markdown.endswith("\n") else record.markdown + "\n")
+    if args.md_only:
+        print(record.markdown if record.markdown.endswith("\n") else record.markdown + "\n", end="")
+    elif args.out is None and args.md is None:
+        print(json.dumps(record.to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
     return 0
 
 

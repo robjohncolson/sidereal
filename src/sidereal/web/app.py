@@ -33,7 +33,9 @@ from ..library import (
     load_chart,
     save_chart,
 )
+from ..skypack import build_skypack
 from ..synastry_library import list_synastries, load_synastry, save_synastry_snapshot
+from ..transit_library import list_transits, load_transit, save_transit_snapshot
 from ..types import MomentInput
 from ..wheel import render_svg
 
@@ -226,6 +228,23 @@ def create_app(
             ]
         }
 
+    @app.get("/api/skypack")
+    def skypack_export(
+        natal_id: str | None = Query(default=None),
+        when: str | None = Query(default=None),
+        tz: str | None = Query(default=None),
+    ) -> dict[str, Any]:
+        identifier = _required_string(natal_id, "natal_id")
+        return build_skypack(
+            identifier,
+            when=when,
+            tz=tz,
+            charts_dir=settings.charts_dir,
+            boundary_path=settings.boundary_path,
+            ephe_path=settings.ephe_path,
+            require_swiss_ephemeris=settings.require_swiss_ephemeris,
+        )
+
     @app.get("/api/charts/{chart_id}")
     def chart_show(chart_id: str) -> dict[str, Any]:
         record = load_chart(chart_id, settings.charts_dir)
@@ -318,6 +337,103 @@ def create_app(
             geometry.natal,
             overlay_chart=geometry.transit,
         )
+        if _boolean(options, "save", False) or payload.get("save") is True:
+            label = str(payload.get("label") or payload.get("save_label") or "").strip()
+            if not label:
+                natal_label = str(result.get("natal", {}).get("label") or "natal")
+                transit_label = str(result.get("transit", {}).get("label") or "transit")
+                label = f"{natal_label} · {transit_label}"
+            snapshot = save_transit_snapshot(
+                result,
+                label=label,
+                markdown=report.to_markdown(),
+                charts_dir=settings.charts_dir,
+                snapshot_id=_optional_snapshot_id(payload.get("snapshot_id")),
+                natal_id=natal_id,
+            )
+            result["saved_transit"] = snapshot.summary_dict()
+        return result
+
+    @app.get("/api/transits")
+    def transits_index() -> dict[str, Any]:
+        return {
+            "transits": [item.summary_dict() for item in list_transits(settings.charts_dir)]
+        }
+
+    @app.get("/api/transits/{snapshot_id}")
+    def transit_show(snapshot_id: str) -> dict[str, Any]:
+        try:
+            record = load_transit(snapshot_id, settings.charts_dir)
+        except ChartNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except AmbiguousChartError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except ChartLibraryError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return record.to_dict()
+
+    @app.post("/api/transits/{snapshot_id}/refresh")
+    def transit_refresh(snapshot_id: str) -> dict[str, Any]:
+        """Re-run a saved transit from linked natal + stored moment, refresh DB text."""
+
+        try:
+            existing = load_transit(snapshot_id, settings.charts_dir)
+        except ChartNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        if not existing.natal_id:
+            raise HTTPException(
+                status_code=400,
+                detail="This snapshot has no linked natal chart id; re-run transit and save again.",
+            )
+        natal_record = load_chart(existing.natal_id, settings.charts_dir)
+        transit_meta = existing.report.get("transit")
+        if not isinstance(transit_meta, Mapping):
+            raise HTTPException(status_code=400, detail="Snapshot missing transit moment metadata")
+        # Prefer original moment fields if stored on report.transit
+        local_dt = str(transit_meta.get("local_datetime") or existing.transit_local_datetime)
+        try:
+            # local_datetime is ISO with offset; split for date/time/tz
+            from datetime import datetime as _dt
+
+            parsed = _dt.fromisoformat(local_dt)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Could not parse stored transit local_datetime: {local_dt}",
+            ) from exc
+        tz_name = str(transit_meta.get("tz") or getattr(natal_record, "tz", None) or "UTC")
+        transit_moment = MomentInput(
+            local_date=parsed.date(),
+            local_time=parsed.timetz().replace(tzinfo=None),
+            tz=tz_name,
+            lat=None,
+            lon=None,
+            label=str(transit_meta.get("label") or existing.transit_label),
+            fold=None,
+        )
+        transit_config = replace(natal_record.chart_config(), include_patterns=False, include_houses=False)
+        with _optional_store(settings) as store:
+            report, geometry = calculate_transit_study(
+                natal_record.chart_object(),
+                transit_moment,
+                transit_config,
+                store,
+                natal_source="saved",
+                natal_id=natal_record.id,
+            )
+        result = report.to_dict()
+        result["wheel"] = _wheel_payload(geometry.natal, overlay_chart=geometry.transit)
+        snapshot = save_transit_snapshot(
+            result,
+            label=existing.label,
+            markdown=report.to_markdown(),
+            charts_dir=settings.charts_dir,
+            snapshot_id=existing.id,
+            natal_id=natal_record.id,
+            overwrite=True,
+        )
+        result["saved_transit"] = snapshot.summary_dict()
+        result["markdown"] = snapshot.markdown
         return result
 
     @app.post("/api/synastry")

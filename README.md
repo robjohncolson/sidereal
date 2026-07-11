@@ -291,6 +291,43 @@ Same-body contacts such as moving Jupiter to natal Jupiter have their own
 report subsection. The transit wheel uses separate natal and moving-sky lanes,
 while retaining the natal Ascendant orientation and house cusps.
 
+## Sky pack for Moon Chorus
+
+Export the current moving sky, fixed natal glyphs, and major transit-to-natal
+geometry as local-only `skypack_v1` JSON:
+
+```bash
+python -m sidereal skypack --natal bobby-19831129T132400Z-e1d0a0c471 \
+  -o data/fixtures/skypack_bobby_sample.json
+```
+
+With no `--when` or `--tz`, the command uses the current instant and the saved
+natal chart's timezone. The checked-in Bobby sample fixes the sky at
+`2026-07-11T18:09:00+00:00`; regenerate that geometry with:
+
+```bash
+python -m sidereal skypack --natal bobby-19831129T132400Z-e1d0a0c471 \
+  --when 2026-07-11T14:09:00 --tz America/New_York \
+  --ephe-path data/ephe \
+  -o data/fixtures/skypack_bobby_sample.json
+```
+
+`generated_at` records the regeneration time. Last-decimal positions can also
+vary slightly when optional Swiss `.se1` files are absent and the documented
+Moshier fallback answers instead; the epoch and schema remain fixed.
+
+The localhost API exposes the same pack:
+
+```bash
+curl --get http://127.0.0.1:8742/api/skypack \
+  --data-urlencode natal_id=bobby-19831129T132400Z-e1d0a0c471 \
+  --data-urlencode when=2026-07-11T14:09:00 \
+  --data-urlencode tz=America/New_York
+```
+
+Packs are `local_only` and are consumed by aim-dojo's `?sky=clocked_chart`
+mode; they are not leaderboard, share, or multiplayer payloads.
+
 ## Transit vs two-person synastry
 
 A **transit** compares the moving sky at one date with one fixed natal chart.

@@ -113,6 +113,51 @@ def test_web_library_interpret_and_transit_round_trip(web_client: TestClient) ->
     assert entry.json()["status"] == "ready"
 
 
+def test_web_skypack_export_and_errors(web_client: TestClient) -> None:
+    saved_response = web_client.post(
+        "/api/charts",
+        json={"moment": _moment(label="Sky Pack Web"), "options": {}},
+    )
+    assert saved_response.status_code == 200, saved_response.text
+    saved = saved_response.json()
+
+    response = web_client.get(
+        "/api/skypack",
+        params={
+            "natal_id": saved["id"],
+            "when": "2026-07-11T18:09:00",
+            "tz": "UTC",
+        },
+    )
+    assert response.status_code == 200, response.text
+    pack = response.json()
+    assert pack["schema_version"] == 1
+    assert pack["type"] == "skypack"
+    assert pack["projection"] == "ecliptic_dome_v1"
+    assert pack["epoch_utc"] == "2026-07-11T18:09:00+00:00"
+    assert len(pack["sign_band"]) == 13
+    assert len(pack["movers"]) == 12
+    assert len(pack["natal_ghosts"]) == 12
+
+    missing = web_client.get(
+        "/api/skypack",
+        params={"natal_id": "does-not-exist"},
+    )
+    assert missing.status_code == 404
+    bad_when = web_client.get(
+        "/api/skypack",
+        params={"natal_id": saved["id"], "when": "not-a-datetime"},
+    )
+    assert bad_when.status_code == 400
+    bad_timezone = web_client.get(
+        "/api/skypack",
+        params={"natal_id": saved["id"], "tz": "Mars/Olympus_Mons"},
+    )
+    assert bad_timezone.status_code == 400
+    no_identifier = web_client.get("/api/skypack")
+    assert no_identifier.status_code == 400
+
+
 def test_web_inline_transit_and_validation_errors(web_client: TestClient) -> None:
     transit = web_client.post(
         "/api/transit",

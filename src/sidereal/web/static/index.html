@@ -278,16 +278,47 @@
                 <p class="field-help">The natal chart’s houses are used for overlays. Transit location is optional and does not replace the natal location.</p>
               </fieldset>
 
+              <fieldset>
+                <legend>Save for conversation</legend>
+                <div class="field">
+                  <label for="transit-save-label">Snapshot label <span class="optional">optional</span></label>
+                  <input id="transit-save-label" name="save_label" type="text" maxlength="120" placeholder="Bobby · today sky" autocomplete="off">
+                </div>
+                <label class="check-row">
+                  <input name="save_transit" type="checkbox" checked>
+                  <span>
+                    <strong>Save transit study</strong>
+                    <small>Stores JSON + markdown under charts/transits/ so you (or an agent) can reopen the full context later.</small>
+                  </span>
+                </label>
+              </fieldset>
+
               <button class="button primary full" type="submit"><span aria-hidden="true">↗</span> Calculate transits</button>
               <p class="form-status" id="transit-form-status" role="status" aria-live="polite"></p>
             </form>
+
+            <div class="card library-card transit-library-card">
+              <div class="library-card-head">
+                <h3>Saved transits</h3>
+                <button class="button secondary small" id="refresh-transit-library-button" type="button">Refresh</button>
+              </div>
+              <p class="field-help" id="transit-library-summary">Loading…</p>
+              <div class="library-list" id="transit-library-list" aria-live="polite"></div>
+            </div>
           </aside>
 
           <section class="report-shell" aria-label="Transit report">
             <div class="empty-state" id="transit-empty">
               <div class="empty-orbit transit-orbit" aria-hidden="true"><span></span></div>
               <h3>Choose a natal and transit moment</h3>
-              <p>The report will show transit signs, natal-house overlays when available, and moving-body aspects to fixed natal points.</p>
+              <p>The report will show transit signs, natal-house overlays when available, and moving-body aspects to fixed natal points. Open a saved transit snapshot to reload full context for study or agent chat.</p>
+            </div>
+            <div id="transit-selection" hidden>
+              <div class="toolbar-actions">
+                <p class="selected-chart-title" id="selected-transit-title">Saved transit</p>
+                <button class="button secondary small" id="refresh-transit-button" type="button">Refresh from natal + DB</button>
+              </div>
+              <p class="form-status" id="transit-library-status" role="status" aria-live="polite"></p>
             </div>
             <div class="report-root" id="transit-report" hidden></div>
           </section>

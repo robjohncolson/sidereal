@@ -1,0 +1,767 @@
+{
+  "schema_version": 1,
+  "type": "skypack",
+  "projection": "ecliptic_dome_v1",
+  "generated_at": "2026-07-11T18:09:00+00:00",
+  "epoch_utc": "2026-07-11T18:09:00+00:00",
+  "timezone": "America/New_York",
+  "location": null,
+  "natal_id": "bobby-19831129T132400Z-e1d0a0c471",
+  "natal_label": "bobby",
+  "system": "midpoint_v1",
+  "privacy": "local_only",
+  "sign_band": [
+    {
+      "id": "aries",
+      "glyph": "♈",
+      "lon_start_j2000": 31.2816,
+      "lon_end_j2000": 51.0083
+    },
+    {
+      "id": "taurus",
+      "glyph": "♉",
+      "lon_start_j2000": 51.0083,
+      "lon_end_j2000": 87.8655
+    },
+    {
+      "id": "gemini",
+      "glyph": "♊",
+      "lon_start_j2000": 87.8655,
+      "lon_end_j2000": 117.3194
+    },
+    {
+      "id": "cancer",
+      "glyph": "♋",
+      "lon_start_j2000": 117.3194,
+      "lon_end_j2000": 134.4689
+    },
+    {
+      "id": "leo",
+      "glyph": "♌",
+      "lon_start_j2000": 134.4689,
+      "lon_end_j2000": 172.8884
+    },
+    {
+      "id": "virgo",
+      "glyph": "♍",
+      "lon_start_j2000": 172.8884,
+      "lon_end_j2000": 222.6069
+    },
+    {
+      "id": "libra",
+      "glyph": "♎",
+      "lon_start_j2000": 222.6069,
+      "lon_end_j2000": 241.4853
+    },
+    {
+      "id": "scorpio",
+      "glyph": "♏",
+      "lon_start_j2000": 241.4853,
+      "lon_end_j2000": 254.7132
+    },
+    {
+      "id": "ophiuchus",
+      "glyph": "⛎",
+      "lon_start_j2000": 254.7132,
+      "lon_end_j2000": 267.0711
+    },
+    {
+      "id": "sagittarius",
+      "glyph": "♐",
+      "lon_start_j2000": 267.0711,
+      "lon_end_j2000": 300.4622
+    },
+    {
+      "id": "capricorn",
+      "glyph": "♑",
+      "lon_start_j2000": 300.4622,
+      "lon_end_j2000": 326.1312
+    },
+    {
+      "id": "aquarius",
+      "glyph": "♒",
+      "lon_start_j2000": 326.1312,
+      "lon_end_j2000": 349.2959
+    },
+    {
+      "id": "pisces",
+      "glyph": "♓",
+      "lon_start_j2000": 349.2959,
+      "lon_end_j2000": 31.2816
+    }
+  ],
+  "movers": [
+    {
+      "id": "sun",
+      "name": "Sun",
+      "glyph": "☉",
+      "lon_j2000": 109.08585808258134,
+      "sign": "gemini",
+      "degree_in_sign": 21.220358082581342,
+      "kind": "luminary",
+      "retro": false
+    },
+    {
+      "id": "moon",
+      "name": "Moon",
+      "glyph": "☽",
+      "lon_j2000": 71.66720579535294,
+      "sign": "taurus",
+      "degree_in_sign": 20.658905795352943,
+      "kind": "luminary",
+      "retro": false
+    },
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "glyph": "☿",
+      "lon_j2000": 111.17013501591536,
+      "sign": "gemini",
+      "degree_in_sign": 23.304635015915366,
+      "kind": "planet",
+      "retro": true
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "glyph": "♀",
+      "lon_j2000": 151.8862145358329,
+      "sign": "leo",
+      "degree_in_sign": 17.4173145358329,
+      "kind": "planet",
+      "retro": false
+    },
+    {
+      "id": "mars",
+      "name": "Mars",
+      "glyph": "♂",
+      "lon_j2000": 68.77356280477969,
+      "sign": "taurus",
+      "degree_in_sign": 17.765262804779688,
+      "kind": "planet",
+      "retro": false
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "glyph": "♃",
+      "lon_j2000": 122.11939992238551,
+      "sign": "cancer",
+      "degree_in_sign": 4.79999992238551,
+      "kind": "planet",
+      "retro": false
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "glyph": "♄",
+      "lon_j2000": 14.183630179220827,
+      "sign": "pisces",
+      "degree_in_sign": 24.887730179220796,
+      "kind": "planet",
+      "retro": false
+    },
+    {
+      "id": "uranus",
+      "name": "Uranus",
+      "glyph": "♅",
+      "lon_j2000": 63.84634206622722,
+      "sign": "taurus",
+      "degree_in_sign": 12.838042066227224,
+      "kind": "planet",
+      "retro": false
+    },
+    {
+      "id": "neptune",
+      "name": "Neptune",
+      "glyph": "♆",
+      "lon_j2000": 4.040185513201382,
+      "sign": "pisces",
+      "degree_in_sign": 14.744285513201362,
+      "kind": "planet",
+      "retro": true
+    },
+    {
+      "id": "pluto",
+      "name": "Pluto",
+      "glyph": "♇",
+      "lon_j2000": 304.271184073517,
+      "sign": "capricorn",
+      "degree_in_sign": 3.808984073517024,
+      "kind": "planet",
+      "retro": true
+    },
+    {
+      "id": "north_node",
+      "name": "North Node",
+      "glyph": "☊",
+      "lon_j2000": 330.1647002790426,
+      "sign": "aquarius",
+      "degree_in_sign": 4.0335002790426415,
+      "kind": "node",
+      "retro": true
+    },
+    {
+      "id": "south_node",
+      "name": "South Node",
+      "glyph": "☋",
+      "lon_j2000": 150.16470027904262,
+      "sign": "leo",
+      "degree_in_sign": 15.69580027904263,
+      "kind": "node",
+      "retro": true
+    }
+  ],
+  "natal_ghosts": [
+    {
+      "id": "sun",
+      "name": "Sun",
+      "glyph": "☉",
+      "lon_j2000": 246.97846978378357,
+      "sign": "scorpio",
+      "degree_in_sign": 5.493169783783571,
+      "kind": "luminary"
+    },
+    {
+      "id": "moon",
+      "name": "Moon",
+      "glyph": "☽",
+      "lon_j2000": 184.59180154482254,
+      "sign": "virgo",
+      "degree_in_sign": 11.703401544822555,
+      "kind": "luminary"
+    },
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "glyph": "☿",
+      "lon_j2000": 263.1618457527146,
+      "sign": "ophiuchus",
+      "degree_in_sign": 8.448645752714611,
+      "kind": "planet"
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "glyph": "♀",
+      "lon_j2000": 202.0963523712784,
+      "sign": "virgo",
+      "degree_in_sign": 29.207952371278424,
+      "kind": "planet"
+    },
+    {
+      "id": "mars",
+      "name": "Mars",
+      "glyph": "♂",
+      "lon_j2000": 186.73319896148547,
+      "sign": "virgo",
+      "degree_in_sign": 13.84479896148548,
+      "kind": "planet"
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "glyph": "♃",
+      "lon_j2000": 258.79928259567714,
+      "sign": "ophiuchus",
+      "degree_in_sign": 4.086082595677141,
+      "kind": "planet"
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "glyph": "♄",
+      "lon_j2000": 220.92346547844514,
+      "sign": "virgo",
+      "degree_in_sign": 48.03506547844515,
+      "kind": "planet"
+    },
+    {
+      "id": "uranus",
+      "name": "Uranus",
+      "glyph": "♅",
+      "lon_j2000": 249.42830057008516,
+      "sign": "scorpio",
+      "degree_in_sign": 7.943000570085161,
+      "kind": "planet"
+    },
+    {
+      "id": "neptune",
+      "name": "Neptune",
+      "glyph": "♆",
+      "lon_j2000": 268.36548497143207,
+      "sign": "sagittarius",
+      "degree_in_sign": 1.2943849714320663,
+      "kind": "planet"
+    },
+    {
+      "id": "pluto",
+      "name": "Pluto",
+      "glyph": "♇",
+      "lon_j2000": 211.11504307232934,
+      "sign": "virgo",
+      "degree_in_sign": 38.22664307232935,
+      "kind": "planet"
+    },
+    {
+      "id": "north_node",
+      "name": "North Node",
+      "glyph": "☊",
+      "lon_j2000": 76.18671926260545,
+      "sign": "taurus",
+      "degree_in_sign": 25.178419262605452,
+      "kind": "node"
+    },
+    {
+      "id": "south_node",
+      "name": "South Node",
+      "glyph": "☋",
+      "lon_j2000": 256.18671926260544,
+      "sign": "ophiuchus",
+      "degree_in_sign": 1.4735192626054356,
+      "kind": "node"
+    }
+  ],
+  "resonances": [
+    {
+      "transit_body": "jupiter",
+      "natal_point": "mars",
+      "aspect_id": "sextile",
+      "aspect_glyph": "⚹",
+      "separation": 64.61379903909994,
+      "orb": 4.613799039099945,
+      "orb_limit": 6.0,
+      "applying": true
+    },
+    {
+      "transit_body": "jupiter",
+      "natal_point": "moon",
+      "aspect_id": "sextile",
+      "aspect_glyph": "⚹",
+      "separation": 62.47240162243702,
+      "orb": 2.472401622437019,
+      "orb_limit": 7.0,
+      "applying": true
+    },
+    {
+      "transit_body": "jupiter",
+      "natal_point": "pluto",
+      "aspect_id": "square",
+      "aspect_glyph": "□",
+      "separation": 88.99564314994382,
+      "orb": 1.0043568500561832,
+      "orb_limit": 7.0,
+      "applying": false
+    },
+    {
+      "transit_body": "jupiter",
+      "natal_point": "sun",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 124.85906986139804,
+      "orb": 4.859069861398041,
+      "orb_limit": 9.0,
+      "applying": true
+    },
+    {
+      "transit_body": "jupiter",
+      "natal_point": "uranus",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 127.30890064769966,
+      "orb": 7.308900647699659,
+      "orb_limit": 8.0,
+      "applying": true
+    },
+    {
+      "transit_body": "mars",
+      "natal_point": "mars",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 117.95963615670576,
+      "orb": 2.0403638432942444,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "mars",
+      "natal_point": "moon",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 115.81823874004283,
+      "orb": 4.18176125995717,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "mars",
+      "natal_point": "north_node",
+      "aspect_id": "conjunction",
+      "aspect_glyph": "☌",
+      "separation": 7.413156457825778,
+      "orb": 7.413156457825778,
+      "orb_limit": 8.0,
+      "applying": true
+    },
+    {
+      "transit_body": "mars",
+      "natal_point": "sun",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 178.2049069790039,
+      "orb": 1.7950930209960916,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "mars",
+      "natal_point": "uranus",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 179.34526223469453,
+      "orb": 0.6547377653054696,
+      "orb_limit": 8.0,
+      "applying": true
+    },
+    {
+      "transit_body": "mercury",
+      "natal_point": "venus",
+      "aspect_id": "square",
+      "aspect_glyph": "□",
+      "separation": 90.92621735536306,
+      "orb": 0.9262173553630646,
+      "orb_limit": 7.0,
+      "applying": false
+    },
+    {
+      "transit_body": "moon",
+      "natal_point": "jupiter",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 172.86792319967583,
+      "orb": 7.132076800324171,
+      "orb_limit": 9.0,
+      "applying": true
+    },
+    {
+      "transit_body": "moon",
+      "natal_point": "mars",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 115.06599316613256,
+      "orb": 4.934006833867443,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "moon",
+      "natal_point": "moon",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 112.92459574946963,
+      "orb": 7.075404250530369,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "moon",
+      "natal_point": "north_node",
+      "aspect_id": "conjunction",
+      "aspect_glyph": "☌",
+      "separation": 4.519513467252523,
+      "orb": 4.519513467252523,
+      "orb_limit": 9.0,
+      "applying": true
+    },
+    {
+      "transit_body": "moon",
+      "natal_point": "sun",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 175.3112639884306,
+      "orb": 4.688736011569404,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "moon",
+      "natal_point": "uranus",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 177.76109477473221,
+      "orb": 2.2389052252677857,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "neptune",
+      "natal_point": "mars",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 177.3069865517159,
+      "orb": 2.6930134482840913,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "neptune",
+      "natal_point": "moon",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 179.44838396837883,
+      "orb": 0.5516160316211653,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "neptune",
+      "natal_point": "sun",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 117.06171572941781,
+      "orb": 2.938284270582187,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "neptune",
+      "natal_point": "uranus",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 114.61188494311625,
+      "orb": 5.388115056883748,
+      "orb_limit": 6.0,
+      "applying": false
+    },
+    {
+      "transit_body": "north_node",
+      "natal_point": "neptune",
+      "aspect_id": "sextile",
+      "aspect_glyph": "⚹",
+      "separation": 61.79921530761055,
+      "orb": 1.7992153076105524,
+      "orb_limit": 6.0,
+      "applying": true
+    },
+    {
+      "transit_body": "north_node",
+      "natal_point": "pluto",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 119.04965720671328,
+      "orb": 0.9503427932867226,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "north_node",
+      "natal_point": "sun",
+      "aspect_id": "square",
+      "aspect_glyph": "□",
+      "separation": 83.18623049525905,
+      "orb": 6.813769504740947,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "pluto",
+      "natal_point": "mars",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 117.53798511203155,
+      "orb": 2.4620148879684507,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "pluto",
+      "natal_point": "moon",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 119.67938252869448,
+      "orb": 0.32061747130552476,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "pluto",
+      "natal_point": "pluto",
+      "aspect_id": "square",
+      "aspect_glyph": "□",
+      "separation": 93.15614100118768,
+      "orb": 3.1561410011876774,
+      "orb_limit": 5.0,
+      "applying": true
+    },
+    {
+      "transit_body": "pluto",
+      "natal_point": "saturn",
+      "aspect_id": "square",
+      "aspect_glyph": "□",
+      "separation": 83.34771859507188,
+      "orb": 6.652281404928118,
+      "orb_limit": 7.0,
+      "applying": false
+    },
+    {
+      "transit_body": "pluto",
+      "natal_point": "sun",
+      "aspect_id": "sextile",
+      "aspect_glyph": "⚹",
+      "separation": 57.29271428973345,
+      "orb": 2.7072857102665466,
+      "orb_limit": 7.0,
+      "applying": false
+    },
+    {
+      "transit_body": "saturn",
+      "natal_point": "jupiter",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 115.38434758354367,
+      "orb": 4.615652416456328,
+      "orb_limit": 8.0,
+      "applying": true
+    },
+    {
+      "transit_body": "saturn",
+      "natal_point": "mars",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 172.54956878226466,
+      "orb": 7.450431217735343,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "saturn",
+      "natal_point": "north_node",
+      "aspect_id": "sextile",
+      "aspect_glyph": "⚹",
+      "separation": 62.00308908338462,
+      "orb": 2.003089083384623,
+      "orb_limit": 6.0,
+      "applying": true
+    },
+    {
+      "transit_body": "saturn",
+      "natal_point": "sun",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 127.20516039543725,
+      "orb": 7.205160395437247,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "saturn",
+      "natal_point": "uranus",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 124.75532960913569,
+      "orb": 4.755329609135686,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "saturn",
+      "natal_point": "venus",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 172.08727780794243,
+      "orb": 7.912722192057572,
+      "orb_limit": 8.0,
+      "applying": true
+    },
+    {
+      "transit_body": "sun",
+      "natal_point": "saturn",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 111.83760739586381,
+      "orb": 8.162392604136187,
+      "orb_limit": 9.0,
+      "applying": false
+    },
+    {
+      "transit_body": "sun",
+      "natal_point": "venus",
+      "aspect_id": "square",
+      "aspect_glyph": "□",
+      "separation": 93.01049428869709,
+      "orb": 3.010494288697089,
+      "orb_limit": 8.0,
+      "applying": true
+    },
+    {
+      "transit_body": "uranus",
+      "natal_point": "mars",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 122.88685689525823,
+      "orb": 2.8868568952582336,
+      "orb_limit": 8.0,
+      "applying": true
+    },
+    {
+      "transit_body": "uranus",
+      "natal_point": "moon",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 120.74545947859531,
+      "orb": 0.7454594785953077,
+      "orb_limit": 9.0,
+      "applying": true
+    },
+    {
+      "transit_body": "uranus",
+      "natal_point": "sun",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 176.86787228244367,
+      "orb": 3.1321277175563296,
+      "orb_limit": 9.0,
+      "applying": true
+    },
+    {
+      "transit_body": "uranus",
+      "natal_point": "uranus",
+      "aspect_id": "opposition",
+      "aspect_glyph": "☍",
+      "separation": 174.41804149614205,
+      "orb": 5.581958503857948,
+      "orb_limit": 6.0,
+      "applying": true
+    },
+    {
+      "transit_body": "venus",
+      "natal_point": "neptune",
+      "aspect_id": "trine",
+      "aspect_glyph": "△",
+      "separation": 116.47927043559918,
+      "orb": 3.520729564400824,
+      "orb_limit": 8.0,
+      "applying": false
+    },
+    {
+      "transit_body": "venus",
+      "natal_point": "pluto",
+      "aspect_id": "sextile",
+      "aspect_glyph": "⚹",
+      "separation": 59.22882853649645,
+      "orb": 0.7711714635035491,
+      "orb_limit": 6.0,
+      "applying": false
+    },
+    {
+      "transit_body": "venus",
+      "natal_point": "sun",
+      "aspect_id": "square",
+      "aspect_glyph": "□",
+      "separation": 95.09225524795067,
+      "orb": 5.092255247950675,
+      "orb_limit": 8.0,
+      "applying": true
+    }
+  ]
+}
