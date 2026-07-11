@@ -1,0 +1,32 @@
+{
+  "id": "midpoint_v1",
+  "name": "True Sidereal Midpoint Method",
+  "frame": "ecliptic_j2000",
+  "unit": "degree",
+  "blend_orb_deg_default": 3.0,
+  "sign_count": 13,
+  "version": 1,
+  "license": "CC BY-NC-ND 4.0",
+  "license_id": "cc-by-nc-nd-4.0",
+  "source": {
+    "method": "Chimenti Midpoint Method",
+    "doi": "10.5281/zenodo.20747017",
+    "url": "https://masteringthezodiac.com/midpoint-method",
+    "note": "Start longitudes reconstructed from published J2000 boundary table and sign lengths; sum of lengths must be 360°."
+  },
+  "signs": [
+    { "id": "aries",       "name": "Aries",       "order": 1,  "start_deg": 31.2816,  "length_deg": 19.7267 },
+    { "id": "taurus",      "name": "Taurus",      "order": 2,  "start_deg": 51.0083,  "length_deg": 36.8572 },
+    { "id": "gemini",      "name": "Gemini",      "order": 3,  "start_deg": 87.8655,  "length_deg": 29.4539 },
+    { "id": "cancer",      "name": "Cancer",      "order": 4,  "start_deg": 117.3194, "length_deg": 17.1495 },
+    { "id": "leo",         "name": "Leo",         "order": 5,  "start_deg": 134.4689, "length_deg": 38.4195 },
+    { "id": "virgo",       "name": "Virgo",       "order": 6,  "start_deg": 172.8884, "length_deg": 49.7185 },
+    { "id": "libra",       "name": "Libra",       "order": 7,  "start_deg": 222.6069, "length_deg": 18.8784 },
+    { "id": "scorpio",     "name": "Scorpio",     "order": 8,  "start_deg": 241.4853, "length_deg": 13.2279 },
+    { "id": "ophiuchus",   "name": "Ophiuchus",   "order": 9,  "start_deg": 254.7132, "length_deg": 12.3578 },
+    { "id": "sagittarius", "name": "Sagittarius", "order": 10, "start_deg": 267.0711, "length_deg": 33.3912 },
+    { "id": "capricorn",   "name": "Capricorn",   "order": 11, "start_deg": 300.4622, "length_deg": 25.6690 },
+    { "id": "aquarius",    "name": "Aquarius",    "order": 12, "start_deg": 326.1312, "length_deg": 23.1646 },
+    { "id": "pisces",      "name": "Pisces",      "order": 13, "start_deg": 349.2959, "length_deg": 41.9857 }
+  ]
+}

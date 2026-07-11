@@ -1,0 +1,28 @@
+# Python environments and build output
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Generated charts, reports, and local databases
+charts/
+reports/
+*.db
+*.db-shm
+*.db-wal
+
+# Swiss Ephemeris data can be large. Keep its setup note only.
+data/ephe/*
+!data/ephe/README.md
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+

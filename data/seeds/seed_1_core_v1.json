@@ -1,0 +1,1453 @@
+{
+  "records": [
+    {
+      "id": "sign:aries",
+      "keywords": [
+        "initiative",
+        "directness",
+        "courage"
+      ],
+      "license": "personal-use",
+      "sign": "aries",
+      "source": "original",
+      "status": "ready",
+      "summary": "Aries is symbolically associated with initiation, direct action, and the courage to meet a situation plainly. Its working tension is between decisive movement and enough pause to choose a useful direction.",
+      "title": "Aries",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:taurus",
+      "keywords": [
+        "stability",
+        "sensation",
+        "stewardship"
+      ],
+      "license": "personal-use",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Taurus is traditionally associated with steadiness, sensory presence, and careful stewardship of what has value. Its symbolism asks how persistence can provide continuity without becoming resistance to necessary change.",
+      "title": "Taurus",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:gemini",
+      "keywords": [
+        "curiosity",
+        "language",
+        "connection"
+      ],
+      "license": "personal-use",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Gemini is associated with curiosity, language, comparison, and the movement of information between people. Its working tension is to stay adaptable while giving important questions enough sustained attention.",
+      "title": "Gemini",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:cancer",
+      "keywords": [
+        "belonging",
+        "protection",
+        "memory"
+      ],
+      "license": "personal-use",
+      "sign": "cancer",
+      "source": "original",
+      "status": "ready",
+      "summary": "Cancer is traditionally read through belonging, protection, memory, and sensitivity to emotional atmosphere. Its symbolism considers how care can create shelter while still allowing honest movement beyond familiar patterns.",
+      "title": "Cancer",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:leo",
+      "keywords": [
+        "creativity",
+        "warmth",
+        "recognition"
+      ],
+      "license": "personal-use",
+      "sign": "leo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Leo is symbolically associated with creative presence, generosity, play, and the wish to be genuinely seen. Its working tension is to cultivate confident expression that also makes room for other people to shine.",
+      "title": "Leo",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:virgo",
+      "keywords": [
+        "discernment",
+        "craft",
+        "service"
+      ],
+      "license": "personal-use",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Virgo is associated with discernment, craft, practical service, and attention to the details that make a system work. Its symbolism asks for useful refinement while cautioning against treating every imperfection as a failure.",
+      "title": "Virgo",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:libra",
+      "keywords": [
+        "reciprocity",
+        "balance",
+        "perspective"
+      ],
+      "license": "personal-use",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "Libra is traditionally associated with reciprocity, proportion, perspective, and the art of negotiating shared space. Its working tension is to seek fairness without losing contact with a clear personal position.",
+      "title": "Libra",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:scorpio",
+      "keywords": [
+        "depth",
+        "trust",
+        "transformation"
+      ],
+      "license": "personal-use",
+      "sign": "scorpio",
+      "source": "original",
+      "status": "ready",
+      "summary": "Scorpio is symbolically associated with depth, trust, guarded resources, and change that exposes what is essential. Its symbolism asks for emotional honesty and responsible power rather than control for its own sake.",
+      "title": "Scorpio",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:ophiuchus",
+      "keywords": [
+        "integration",
+        "liminality",
+        "hard-won knowledge"
+      ],
+      "license": "personal-use",
+      "sign": "ophiuchus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Ophiuchus is treated here as a first-class sign associated with integration, liminal passages, and knowledge tested under pressure. Its symbolism concerns holding contradictions long enough to form a wiser response, not making medical or fated claims.",
+      "title": "Ophiuchus",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:sagittarius",
+      "keywords": [
+        "meaning",
+        "exploration",
+        "conviction"
+      ],
+      "license": "personal-use",
+      "sign": "sagittarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sagittarius is associated with exploration, conviction, broad context, and the search for a meaningful orientation. Its working tension is to pursue a larger horizon while remaining answerable to evidence and lived detail.",
+      "title": "Sagittarius",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:capricorn",
+      "keywords": [
+        "responsibility",
+        "structure",
+        "mastery"
+      ],
+      "license": "personal-use",
+      "sign": "capricorn",
+      "source": "original",
+      "status": "ready",
+      "summary": "Capricorn is traditionally associated with responsibility, structure, endurance, and mastery earned over time. Its symbolism asks how ambition and boundaries can support meaningful work without reducing worth to achievement.",
+      "title": "Capricorn",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:aquarius",
+      "keywords": [
+        "independence",
+        "systems",
+        "community"
+      ],
+      "license": "personal-use",
+      "sign": "aquarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Aquarius is symbolically associated with independent thought, collective systems, experimentation, and future-facing questions. Its working tension is to contribute an original perspective without becoming detached from particular people and consequences.",
+      "title": "Aquarius",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "sign:pisces",
+      "keywords": [
+        "imagination",
+        "empathy",
+        "permeability"
+      ],
+      "license": "personal-use",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Pisces is associated with imagination, empathy, permeability, and awareness of experiences that resist tidy categories. Its symbolism asks for compassion and creative openness together with boundaries that keep sensitivity workable.",
+      "title": "Pisces",
+      "type": "sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 1,
+      "id": "house:1",
+      "keywords": [
+        "self-presentation",
+        "approach",
+        "beginnings"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The first house is traditionally read as the arena of immediate self-presentation, embodied approach, and how one enters new situations. It describes a symbolic mode of engagement rather than a fixed identity.",
+      "title": "House 1",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 2,
+      "id": "house:2",
+      "keywords": [
+        "resources",
+        "values",
+        "sufficiency"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The second house is associated with resources, values, skills, and a working sense of sufficiency. Its symbolism asks what is cultivated, protected, and treated as worth sustaining.",
+      "title": "House 2",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 3,
+      "id": "house:3",
+      "keywords": [
+        "learning",
+        "communication",
+        "local world"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The third house is associated with everyday learning, communication, siblings or peers, and movement through the local environment. It highlights the habits through which information is gathered and exchanged.",
+      "title": "House 3",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 4,
+      "id": "house:4",
+      "keywords": [
+        "roots",
+        "home",
+        "private foundation"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The fourth house is traditionally read through home, roots, ancestry, and the private foundation beneath public life. Its symbolism concerns how belonging and inner continuity are made and revised.",
+      "title": "House 4",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 5,
+      "id": "house:5",
+      "keywords": [
+        "creativity",
+        "play",
+        "self-expression"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The fifth house is associated with creativity, play, romance, and forms of expression undertaken for their own vitality. It asks what a person chooses to bring forward and take joy in shaping.",
+      "title": "House 5",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 6,
+      "id": "house:6",
+      "keywords": [
+        "routines",
+        "craft",
+        "maintenance"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The sixth house is associated with routines, craft, service, and the maintenance that supports daily life. It symbolically emphasizes workable practices and the relationship between effort and function, without making health predictions.",
+      "title": "House 6",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 7,
+      "id": "house:7",
+      "keywords": [
+        "partnership",
+        "agreement",
+        "encounter"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The seventh house is traditionally associated with partnership, agreement, open conflict, and significant one-to-one encounters. Its symbolism explores how selfhood is negotiated in the presence of an equal other.",
+      "title": "House 7",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 8,
+      "id": "house:8",
+      "keywords": [
+        "shared resources",
+        "trust",
+        "transition"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The eighth house is associated with shared resources, trust, obligations, and transitions that require mutual accountability. It asks how entanglement, vulnerability, and consequential change are handled.",
+      "title": "House 8",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 9,
+      "id": "house:9",
+      "keywords": [
+        "worldview",
+        "study",
+        "distance"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The ninth house is traditionally read through worldview, advanced study, long journeys, and encounters with unfamiliar frameworks. Its symbolism concerns the search for orientation beyond the immediately known.",
+      "title": "House 9",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 10,
+      "id": "house:10",
+      "keywords": [
+        "vocation",
+        "reputation",
+        "public responsibility"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The tenth house is associated with vocation, reputation, public contribution, and visible responsibility. It describes the symbolic terrain of accountability and direction rather than guaranteeing status or career outcomes.",
+      "title": "House 10",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 11,
+      "id": "house:11",
+      "keywords": [
+        "community",
+        "alliance",
+        "future aims"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The eleventh house is associated with communities, alliances, audiences, and aims that extend beyond private concerns. Its symbolism asks how participation in a larger network shapes possibility and obligation.",
+      "title": "House 11",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "house": 12,
+      "id": "house:12",
+      "keywords": [
+        "retreat",
+        "unseen patterns",
+        "release"
+      ],
+      "license": "personal-use",
+      "source": "original",
+      "status": "ready",
+      "summary": "The twelfth house is traditionally read through retreat, solitude, unseen patterns, and forms of release or closure. It invites reflective attention to what operates outside ordinary visibility without treating mystery as diagnosis.",
+      "title": "House 12",
+      "type": "house",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:sun",
+      "keywords": [
+        "identity",
+        "purpose",
+        "vital expression"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Sun symbolizes coherent identity, purpose, and the wish to express a central organizing principle. It is traditionally read as a direction of conscious development, not proof of a fixed personality.",
+      "title": "Sun",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:moon",
+      "keywords": [
+        "needs",
+        "memory",
+        "adaptation"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "source": "original",
+      "status": "ready",
+      "summary": "The Moon symbolizes changing needs, memory, habit, and instinctive adaptation to an environment. Its placement is traditionally used to reflect on familiar emotional rhythms rather than to predict behavior.",
+      "title": "Moon",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:mercury",
+      "keywords": [
+        "perception",
+        "language",
+        "reasoning"
+      ],
+      "license": "personal-use",
+      "planet": "mercury",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mercury symbolizes perception, language, exchange, and the methods used to organize information. Its placement offers a working metaphor for how attention moves and meaning is communicated.",
+      "title": "Mercury",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:venus",
+      "keywords": [
+        "attraction",
+        "values",
+        "relating"
+      ],
+      "license": "personal-use",
+      "planet": "venus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Venus symbolizes attraction, values, pleasure, and the practices through which relationship and aesthetic preference are cultivated. It does not determine compatibility or financial outcomes.",
+      "title": "Venus",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:mars",
+      "keywords": [
+        "agency",
+        "desire",
+        "assertion"
+      ],
+      "license": "personal-use",
+      "planet": "mars",
+      "source": "original",
+      "status": "ready",
+      "summary": "Mars symbolizes agency, desire, conflict, and the capacity to act with force or precision. Its placement can frame reflection on assertion and effort without implying inevitable aggression.",
+      "title": "Mars",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:jupiter",
+      "keywords": [
+        "expansion",
+        "meaning",
+        "confidence"
+      ],
+      "license": "personal-use",
+      "planet": "jupiter",
+      "source": "original",
+      "status": "ready",
+      "summary": "Jupiter symbolizes expansion, confidence, teaching, and the search for a larger frame of meaning. Its traditional reading includes both generative opportunity and the need to notice excess.",
+      "title": "Jupiter",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:saturn",
+      "keywords": [
+        "limits",
+        "responsibility",
+        "time"
+      ],
+      "license": "personal-use",
+      "planet": "saturn",
+      "source": "original",
+      "status": "ready",
+      "summary": "Saturn symbolizes limits, responsibility, time, and structures that are tested through sustained effort. It is best read as a language for boundaries and maturation, not punishment or doom.",
+      "title": "Saturn",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:uranus",
+      "keywords": [
+        "disruption",
+        "independence",
+        "innovation"
+      ],
+      "license": "personal-use",
+      "planet": "uranus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Uranus symbolizes disruption, independence, experimentation, and breaks from an established pattern. Its placement can describe a field of symbolic revision without promising sudden events.",
+      "title": "Uranus",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:neptune",
+      "keywords": [
+        "imagination",
+        "idealization",
+        "dissolution"
+      ],
+      "license": "personal-use",
+      "planet": "neptune",
+      "source": "original",
+      "status": "ready",
+      "summary": "Neptune symbolizes imagination, idealization, ambiguity, and the loosening of ordinary boundaries. Its placement invites discernment between inspiration and projection without making clinical claims.",
+      "title": "Neptune",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:pluto",
+      "keywords": [
+        "power",
+        "depth",
+        "renewal"
+      ],
+      "license": "personal-use",
+      "planet": "pluto",
+      "source": "original",
+      "status": "ready",
+      "summary": "Pluto symbolizes power, depth, compulsion, and processes of symbolic breakdown and renewal. It is a reflective metaphor for consequential change, not a forecast of crisis.",
+      "title": "Pluto",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:north_node",
+      "keywords": [
+        "development",
+        "stretch",
+        "orientation"
+      ],
+      "license": "personal-use",
+      "planet": "north_node",
+      "source": "original",
+      "status": "ready",
+      "summary": "The North Node is traditionally treated as a symbolic orientation toward unfamiliar development and constructive stretch. It is a calculated point, not a planet or a command about destiny.",
+      "title": "North Node",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "id": "planet:south_node",
+      "keywords": [
+        "familiarity",
+        "inheritance",
+        "release"
+      ],
+      "license": "personal-use",
+      "planet": "south_node",
+      "source": "original",
+      "status": "ready",
+      "summary": "The South Node is traditionally treated as a symbolic field of familiarity, inherited habits, and capacities already close at hand. It can be read as material to use consciously rather than a past that must be rejected.",
+      "title": "South Node",
+      "type": "planet",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:aries",
+      "keywords": [
+        "identity",
+        "purpose",
+        "initiative",
+        "directness",
+        "courage"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "aries",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Aries is traditionally read as identity and purpose expressed through initiative, candor, and a willingness to begin. This placement may invite a person to pair swift self-direction with awareness of consequences; it does not define personality or fate.",
+      "title": "Sun in Aries",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:taurus",
+      "keywords": [
+        "identity",
+        "purpose",
+        "stability",
+        "sensation",
+        "stewardship"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Taurus is traditionally read as identity and purpose expressed through patience, embodied attention, and durable commitment. This placement may invite a person to let stability support growth instead of closing change out; it does not define personality or fate.",
+      "title": "Sun in Taurus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:gemini",
+      "keywords": [
+        "identity",
+        "purpose",
+        "curiosity",
+        "language",
+        "connection"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Gemini is traditionally read as identity and purpose expressed through curiosity, verbal agility, and connective thinking. This placement may invite a person to turn many observations into clear and responsible understanding; it does not define personality or fate.",
+      "title": "Sun in Gemini",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:cancer",
+      "keywords": [
+        "identity",
+        "purpose",
+        "belonging",
+        "protection",
+        "memory"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "cancer",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Cancer is traditionally read as identity and purpose expressed through protective care, memory, and emotional attunement. This placement may invite a person to build belonging without making familiarity the only measure of safety; it does not define personality or fate.",
+      "title": "Sun in Cancer",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:leo",
+      "keywords": [
+        "identity",
+        "purpose",
+        "creativity",
+        "warmth",
+        "recognition"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "leo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Leo is traditionally read as identity and purpose expressed through warmth, creative authorship, and visible conviction. This placement may invite a person to offer what is distinctive without depending entirely on applause; it does not define personality or fate.",
+      "title": "Sun in Leo",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:virgo",
+      "keywords": [
+        "identity",
+        "purpose",
+        "discernment",
+        "craft",
+        "service"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Virgo is traditionally read as identity and purpose expressed through careful observation, skill-building, and practical improvement. This placement may invite a person to use discernment in service of wholeness rather than endless correction; it does not define personality or fate.",
+      "title": "Sun in Virgo",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:libra",
+      "keywords": [
+        "identity",
+        "purpose",
+        "reciprocity",
+        "balance",
+        "perspective"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Libra is traditionally read as identity and purpose expressed through diplomacy, aesthetic judgment, and relational awareness. This placement may invite a person to make room for several perspectives while still choosing honestly; it does not define personality or fate.",
+      "title": "Sun in Libra",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:scorpio",
+      "keywords": [
+        "identity",
+        "purpose",
+        "depth",
+        "trust",
+        "transformation"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "scorpio",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Scorpio is traditionally read as identity and purpose expressed through intensity, perceptiveness, and commitment to what matters. This placement may invite a person to use depth to clarify and transform rather than to harden suspicion; it does not define personality or fate.",
+      "title": "Sun in Scorpio",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:ophiuchus",
+      "keywords": [
+        "identity",
+        "purpose",
+        "integration",
+        "liminality",
+        "hard-won knowledge"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "ophiuchus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Ophiuchus is traditionally read as identity and purpose expressed through boundary-crossing insight, integration, and composure under pressure. This placement may invite a person to turn difficult knowledge into responsible and humane action; it does not define personality or fate.",
+      "title": "Sun in Ophiuchus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:sagittarius",
+      "keywords": [
+        "identity",
+        "purpose",
+        "meaning",
+        "exploration",
+        "conviction"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "sagittarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Sagittarius is traditionally read as identity and purpose expressed through wide-ranging inquiry, candor, and a search for meaning. This placement may invite a person to let experience refine conviction instead of using certainty to end inquiry; it does not define personality or fate.",
+      "title": "Sun in Sagittarius",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:capricorn",
+      "keywords": [
+        "identity",
+        "purpose",
+        "responsibility",
+        "structure",
+        "mastery"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "capricorn",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Capricorn is traditionally read as identity and purpose expressed through discipline, strategic patience, and respect for durable structure. This placement may invite a person to build authority through responsibility while leaving room for human limits; it does not define personality or fate.",
+      "title": "Sun in Capricorn",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:aquarius",
+      "keywords": [
+        "identity",
+        "purpose",
+        "independence",
+        "systems",
+        "community"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "aquarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Aquarius is traditionally read as identity and purpose expressed through inventiveness, systems awareness, and principled independence. This placement may invite a person to connect new ideas to the communities and realities they affect; it does not define personality or fate.",
+      "title": "Sun in Aquarius",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:sun:pisces",
+      "keywords": [
+        "identity",
+        "purpose",
+        "imagination",
+        "empathy",
+        "permeability"
+      ],
+      "license": "personal-use",
+      "planet": "sun",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sun in Pisces is traditionally read as identity and purpose expressed through imagination, receptivity, and compassionate perception. This placement may invite a person to give subtle impressions a grounded form and sustainable boundary; it does not define personality or fate.",
+      "title": "Sun in Pisces",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:aries",
+      "keywords": [
+        "needs",
+        "memory",
+        "initiative",
+        "directness",
+        "courage"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "aries",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Aries symbolically links changing needs, memory, and habit with initiative, candor, and a willingness to begin. A useful working question is how this style can respect genuine emotional limits and pair swift self-direction with awareness of consequences.",
+      "title": "Moon in Aries",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:taurus",
+      "keywords": [
+        "needs",
+        "memory",
+        "stability",
+        "sensation",
+        "stewardship"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Taurus symbolically links changing needs, memory, and habit with patience, embodied attention, and durable commitment. A useful working question is how this style can respect genuine emotional limits and let stability support growth instead of closing change out.",
+      "title": "Moon in Taurus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:gemini",
+      "keywords": [
+        "needs",
+        "memory",
+        "curiosity",
+        "language",
+        "connection"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Gemini symbolically links changing needs, memory, and habit with curiosity, verbal agility, and connective thinking. A useful working question is how this style can respect genuine emotional limits and turn many observations into clear and responsible understanding.",
+      "title": "Moon in Gemini",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:cancer",
+      "keywords": [
+        "needs",
+        "memory",
+        "belonging",
+        "protection"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "cancer",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Cancer symbolically links changing needs, memory, and habit with protective care, memory, and emotional attunement. A useful working question is how this style can respect genuine emotional limits and build belonging without making familiarity the only measure of safety.",
+      "title": "Moon in Cancer",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:leo",
+      "keywords": [
+        "needs",
+        "memory",
+        "creativity",
+        "warmth",
+        "recognition"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "leo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Leo symbolically links changing needs, memory, and habit with warmth, creative authorship, and visible conviction. A useful working question is how this style can respect genuine emotional limits and offer what is distinctive without depending entirely on applause.",
+      "title": "Moon in Leo",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:virgo",
+      "keywords": [
+        "needs",
+        "memory",
+        "discernment",
+        "craft",
+        "service"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Virgo symbolically links changing needs, memory, and habit with careful observation, skill-building, and practical improvement. A useful working question is how this style can respect genuine emotional limits and use discernment in service of wholeness rather than endless correction.",
+      "title": "Moon in Virgo",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:libra",
+      "keywords": [
+        "needs",
+        "memory",
+        "reciprocity",
+        "balance",
+        "perspective"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Libra symbolically links changing needs, memory, and habit with diplomacy, aesthetic judgment, and relational awareness. A useful working question is how this style can respect genuine emotional limits and make room for several perspectives while still choosing honestly.",
+      "title": "Moon in Libra",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:scorpio",
+      "keywords": [
+        "needs",
+        "memory",
+        "depth",
+        "trust",
+        "transformation"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "scorpio",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Scorpio symbolically links changing needs, memory, and habit with intensity, perceptiveness, and commitment to what matters. A useful working question is how this style can respect genuine emotional limits and use depth to clarify and transform rather than to harden suspicion.",
+      "title": "Moon in Scorpio",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:ophiuchus",
+      "keywords": [
+        "needs",
+        "memory",
+        "integration",
+        "liminality",
+        "hard-won knowledge"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "ophiuchus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Ophiuchus symbolically links changing needs, memory, and habit with boundary-crossing insight, integration, and composure under pressure. A useful working question is how this style can respect genuine emotional limits and turn difficult knowledge into responsible and humane action.",
+      "title": "Moon in Ophiuchus",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:sagittarius",
+      "keywords": [
+        "needs",
+        "memory",
+        "meaning",
+        "exploration",
+        "conviction"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "sagittarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Sagittarius symbolically links changing needs, memory, and habit with wide-ranging inquiry, candor, and a search for meaning. A useful working question is how this style can respect genuine emotional limits and let experience refine conviction instead of using certainty to end inquiry.",
+      "title": "Moon in Sagittarius",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:capricorn",
+      "keywords": [
+        "needs",
+        "memory",
+        "responsibility",
+        "structure",
+        "mastery"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "capricorn",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Capricorn symbolically links changing needs, memory, and habit with discipline, strategic patience, and respect for durable structure. A useful working question is how this style can respect genuine emotional limits and build authority through responsibility while leaving room for human limits.",
+      "title": "Moon in Capricorn",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:aquarius",
+      "keywords": [
+        "needs",
+        "memory",
+        "independence",
+        "systems",
+        "community"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "aquarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Aquarius symbolically links changing needs, memory, and habit with inventiveness, systems awareness, and principled independence. A useful working question is how this style can respect genuine emotional limits and connect new ideas to the communities and realities they affect.",
+      "title": "Moon in Aquarius",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "blend_note": "When near a boundary, read this alongside the adjacent sign as two symbolic lenses rather than a fractional identity.",
+      "id": "planet_in_sign:moon:pisces",
+      "keywords": [
+        "needs",
+        "memory",
+        "imagination",
+        "empathy",
+        "permeability"
+      ],
+      "license": "personal-use",
+      "planet": "moon",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Moon in Pisces symbolically links changing needs, memory, and habit with imagination, receptivity, and compassionate perception. A useful working question is how this style can respect genuine emotional limits and give subtle impressions a grounded form and sustainable boundary.",
+      "title": "Moon in Pisces",
+      "type": "planet_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:aries",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "initiative",
+        "directness",
+        "courage"
+      ],
+      "license": "personal-use",
+      "sign": "aries",
+      "source": "original",
+      "status": "ready",
+      "summary": "Aries on the Ascendant is traditionally read as an immediate approach shaped by initiative, candor, and a willingness to begin. It may invite the outward style to pair swift self-direction with awareness of consequences, without reducing the person to a first impression.",
+      "title": "Ascendant in Aries",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:taurus",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "stability",
+        "sensation",
+        "stewardship"
+      ],
+      "license": "personal-use",
+      "sign": "taurus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Taurus on the Ascendant is traditionally read as an immediate approach shaped by patience, embodied attention, and durable commitment. It may invite the outward style to let stability support growth instead of closing change out, without reducing the person to a first impression.",
+      "title": "Ascendant in Taurus",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:gemini",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "curiosity",
+        "language",
+        "connection"
+      ],
+      "license": "personal-use",
+      "sign": "gemini",
+      "source": "original",
+      "status": "ready",
+      "summary": "Gemini on the Ascendant is traditionally read as an immediate approach shaped by curiosity, verbal agility, and connective thinking. It may invite the outward style to turn many observations into clear and responsible understanding, without reducing the person to a first impression.",
+      "title": "Ascendant in Gemini",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:cancer",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "belonging",
+        "protection",
+        "memory"
+      ],
+      "license": "personal-use",
+      "sign": "cancer",
+      "source": "original",
+      "status": "ready",
+      "summary": "Cancer on the Ascendant is traditionally read as an immediate approach shaped by protective care, memory, and emotional attunement. It may invite the outward style to build belonging without making familiarity the only measure of safety, without reducing the person to a first impression.",
+      "title": "Ascendant in Cancer",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:leo",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "creativity",
+        "warmth",
+        "recognition"
+      ],
+      "license": "personal-use",
+      "sign": "leo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Leo on the Ascendant is traditionally read as an immediate approach shaped by warmth, creative authorship, and visible conviction. It may invite the outward style to offer what is distinctive without depending entirely on applause, without reducing the person to a first impression.",
+      "title": "Ascendant in Leo",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:virgo",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "discernment",
+        "craft",
+        "service"
+      ],
+      "license": "personal-use",
+      "sign": "virgo",
+      "source": "original",
+      "status": "ready",
+      "summary": "Virgo on the Ascendant is traditionally read as an immediate approach shaped by careful observation, skill-building, and practical improvement. It may invite the outward style to use discernment in service of wholeness rather than endless correction, without reducing the person to a first impression.",
+      "title": "Ascendant in Virgo",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:libra",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "reciprocity",
+        "balance",
+        "perspective"
+      ],
+      "license": "personal-use",
+      "sign": "libra",
+      "source": "original",
+      "status": "ready",
+      "summary": "Libra on the Ascendant is traditionally read as an immediate approach shaped by diplomacy, aesthetic judgment, and relational awareness. It may invite the outward style to make room for several perspectives while still choosing honestly, without reducing the person to a first impression.",
+      "title": "Ascendant in Libra",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:scorpio",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "depth",
+        "trust",
+        "transformation"
+      ],
+      "license": "personal-use",
+      "sign": "scorpio",
+      "source": "original",
+      "status": "ready",
+      "summary": "Scorpio on the Ascendant is traditionally read as an immediate approach shaped by intensity, perceptiveness, and commitment to what matters. It may invite the outward style to use depth to clarify and transform rather than to harden suspicion, without reducing the person to a first impression.",
+      "title": "Ascendant in Scorpio",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:ophiuchus",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "integration",
+        "liminality",
+        "hard-won knowledge"
+      ],
+      "license": "personal-use",
+      "sign": "ophiuchus",
+      "source": "original",
+      "status": "ready",
+      "summary": "Ophiuchus on the Ascendant is traditionally read as an immediate approach shaped by boundary-crossing insight, integration, and composure under pressure. It may invite the outward style to turn difficult knowledge into responsible and humane action, without reducing the person to a first impression.",
+      "title": "Ascendant in Ophiuchus",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:sagittarius",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "meaning",
+        "exploration",
+        "conviction"
+      ],
+      "license": "personal-use",
+      "sign": "sagittarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Sagittarius on the Ascendant is traditionally read as an immediate approach shaped by wide-ranging inquiry, candor, and a search for meaning. It may invite the outward style to let experience refine conviction instead of using certainty to end inquiry, without reducing the person to a first impression.",
+      "title": "Ascendant in Sagittarius",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:capricorn",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "responsibility",
+        "structure",
+        "mastery"
+      ],
+      "license": "personal-use",
+      "sign": "capricorn",
+      "source": "original",
+      "status": "ready",
+      "summary": "Capricorn on the Ascendant is traditionally read as an immediate approach shaped by discipline, strategic patience, and respect for durable structure. It may invite the outward style to build authority through responsibility while leaving room for human limits, without reducing the person to a first impression.",
+      "title": "Ascendant in Capricorn",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:aquarius",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "independence",
+        "systems",
+        "community"
+      ],
+      "license": "personal-use",
+      "sign": "aquarius",
+      "source": "original",
+      "status": "ready",
+      "summary": "Aquarius on the Ascendant is traditionally read as an immediate approach shaped by inventiveness, systems awareness, and principled independence. It may invite the outward style to connect new ideas to the communities and realities they affect, without reducing the person to a first impression.",
+      "title": "Ascendant in Aquarius",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    },
+    {
+      "angle": "asc",
+      "blend_note": "Near a sign boundary, include the adjacent Ascendant reading and state the measured distance to the boundary.",
+      "id": "angle_in_sign:asc:pisces",
+      "keywords": [
+        "approach",
+        "self-presentation",
+        "imagination",
+        "empathy",
+        "permeability"
+      ],
+      "license": "personal-use",
+      "sign": "pisces",
+      "source": "original",
+      "status": "ready",
+      "summary": "Pisces on the Ascendant is traditionally read as an immediate approach shaped by imagination, receptivity, and compassionate perception. It may invite the outward style to give subtle impressions a grounded form and sustainable boundary, without reducing the person to a first impression.",
+      "title": "Ascendant in Pisces",
+      "type": "angle_in_sign",
+      "updated": "2026-07-10",
+      "version": 2
+    }
+  ],
+  "schema_version": 1,
+  "seed_id": "seed_1_core_v1"
+}

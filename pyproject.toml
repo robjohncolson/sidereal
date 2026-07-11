@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sidereal"
+version = "0.1.0"
+description = "Offline-first 13-sign Midpoint chart calculator and interpretation tool"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pyswisseph>=2.10.3.2",
+  "tzdata>=2024.1; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+sidereal = "sidereal.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.data-files]
+"share/sidereal/boundaries" = ["data/boundaries/*.json"]
+"share/sidereal/seeds" = ["data/seeds/*.json"]
+"share/sidereal/ephe" = ["data/ephe/README.md"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
