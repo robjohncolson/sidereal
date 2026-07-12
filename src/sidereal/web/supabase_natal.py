@@ -143,6 +143,11 @@ class SupabaseNatalStore:
                 json=dict(json) if json is not None else None,
             )
             response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            status = int(exc.response.status_code)
+            # Safe, actionable signal only — never echo Supabase response bodies
+            # (they can include policy text or keys in some misconfigurations).
+            raise NatalStoreError(f"Natal backend HTTP {status}") from exc
         except httpx.HTTPError as exc:
             raise NatalStoreError("Natal backend request failed") from exc
         if not response.content:

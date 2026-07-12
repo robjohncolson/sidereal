@@ -339,11 +339,17 @@ def create_app(
     @app.exception_handler(NatalStoreError)
     async def natal_store_error_handler(
         _request: Any,
-        _exc: NatalStoreError,
+        exc: NatalStoreError,
     ) -> JSONResponse:
+        # Only pass through short machine codes we generate ourselves.
+        raw = str(exc).strip()
+        if raw.startswith("Natal backend HTTP ") and len(raw) <= 40:
+            detail = raw
+        else:
+            detail = "Natal storage is temporarily unavailable"
         return JSONResponse(
             status_code=503,
-            content={"detail": "Natal storage is temporarily unavailable"},
+            content={"detail": detail},
         )
 
     def authenticated_user_id(
@@ -387,6 +393,14 @@ def create_app(
             ephe_path=settings.ephe_path,
             require_swiss_ephemeris=settings.require_swiss_ephemeris,
         )
+        store_name = type(active_natal_store).__name__
+        if store_name == "SupabaseNatalStore":
+            natal_backend = "supabase"
+        elif store_name == "MemoryNatalStore":
+            natal_backend = "memory"
+        else:
+            natal_backend = "custom"
+        auth_name = type(active_authenticator).__name__
         result: dict[str, Any] = {
             "status": "ok",
             "sidereal_version": __version__,
@@ -395,6 +409,8 @@ def create_app(
             "ephemeris_backend": None,
             "db_available": settings.db_path.is_file(),
             "saved_charts": len(list_charts(settings.charts_dir)),
+            "natal_backend": natal_backend,
+            "auth_configured": auth_name != "RejectingAuthenticator",
         }
         try:
             batch = provider.calculate_positions(2451545.0)
@@ -521,8 +537,13 @@ def create_app(
         )
         saved = active_natal_store.upsert(record)
         active_personal_cache.invalidate(user_id)
+        # Build the private pack in the same request so the client does not depend
+        # on a second hop (and so multi-instance memory backends still work).
+        pack = active_personal_cache.get(saved)
         response.headers["Cache-Control"] = "private, no-store"
-        return saved.to_dict()
+        result = saved.to_dict()
+        result["skypack"] = pack
+        return result
 
     @app.get("/api/me/natal")
     def personal_natal_get(

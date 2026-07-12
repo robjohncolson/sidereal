@@ -148,6 +148,13 @@ def test_personal_natal_crud_private_pack_and_user_isolation(
     assert saved["birth_date"] == "1983-11-29"
     assert saved["birth_time"] == "22:24:00"
     assert "chart" not in saved and "points" not in saved
+    embedded_pack = saved.pop("skypack")
+    assert embedded_pack["schema_version"] == 2
+    assert embedded_pack["type"] == "skypack"
+    assert embedded_pack["privacy"] == "user_private"
+    assert embedded_pack["natal_id"] == "user-a"
+    assert len(embedded_pack["movers"]) == 12
+    assert len(embedded_pack["natal_ghosts"]) == 12
 
     for invalid_date, invalid_time in (
         ("2026-03-08", "02:30:00"),  # DST gap

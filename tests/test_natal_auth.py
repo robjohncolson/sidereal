@@ -292,7 +292,7 @@ def test_supabase_natal_store_crud_and_sanitized_failures() -> None:
             )
         ),
     )
-    with pytest.raises(NatalStoreError, match="request failed") as raised:
+    with pytest.raises(NatalStoreError, match="Natal backend HTTP 500") as raised:
         failing.get("user-a")
     assert "secret remote detail" not in str(raised.value)
 
