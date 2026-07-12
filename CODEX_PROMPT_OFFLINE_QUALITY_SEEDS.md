@@ -1,6 +1,6 @@
 # Codex prompt — Offline quality seed fills (Parcel S)
 
-Copy everything below the line into Codex.  
+Copy everything below the line into Codex.
 **Working directory:** `/mnt/c/Users/rober/Downloads/Projects/sidereal`
 
 ---
@@ -13,10 +13,10 @@ Be **literal**. Do not scrape third-party sites into the repo. Do not put API ke
 
 ## Required reading (first)
 
-1. **Spec (wins):** `SPEC_OFFLINE_QUALITY_SEEDS.md`  
-2. Parcel Q: `src/sidereal/interpret/ai_seed.py`, `CODEX_PROMPT_AI_SEED_WORKER.md`  
-3. Store import: `src/sidereal/interpret/store.py`, CLI `db import`  
-4. Schema sources/statuses: `src/sidereal/interpret/schema.py` (`SOURCES`, seed record shape)  
+1. **Spec (wins):** `SPEC_OFFLINE_QUALITY_SEEDS.md`
+2. Parcel Q: `src/sidereal/interpret/ai_seed.py`, `CODEX_PROMPT_AI_SEED_WORKER.md`
+3. Store import: `src/sidereal/interpret/store.py`, CLI `db import`
+4. Schema sources/statuses: `src/sidereal/interpret/schema.py` (`SOURCES`, seed record shape)
 5. Style *reference only* (human): https://siderealist.com/sidereal_articles.html — 13-sign sidereal culture, Ophiuchus as a full citizen. **Do not download or paste article bodies** into seeds or code.
 
 ## Scope — Parcel S1 (this PR)
@@ -32,10 +32,10 @@ Be **literal**. Do not scrape third-party sites into the repo. Do not put API ke
 
 ## Out of scope
 
-- aim-dojo  
-- Removing DeepSeek  
-- Automatic Codex invocation from Python  
-- Full catalog fill in one PR  
+- aim-dojo
+- Removing DeepSeek
+- Automatic Codex invocation from Python
+- Full catalog fill in one PR
 
 ## Apply-json file shapes
 
@@ -53,10 +53,10 @@ On success print a batch summary (`filled` / `skipped` / `invalid`) as JSON.
 
 Mirror `fill_interpretation`:
 
-- Only supported inventory ids (`sign` / `planet_in_sign` / `aspect`)  
-- Bump version from current stub/ready when replacing stub  
-- `status=ready`, `license=personal-use`, `source=ai-offline`  
-- Race/conflict handling consistent with store  
+- Only supported inventory ids (`sign` / `planet_in_sign` / `aspect`)
+- Bump version from current stub/ready when replacing stub
+- `status=ready`, `license=personal-use`, `source=ai-offline`
+- Race/conflict handling consistent with store
 
 ## Epistemic
 
@@ -74,8 +74,8 @@ pytest tests/test_ai_seed_*.py -q
 
 ## Checklist
 
-- [ ] S1–S6  
-- [ ] pytest green  
-- [ ] No network in tests  
-- [ ] No third-party article text committed  
-- [ ] No aim-dojo edits  
+- [ ] S1–S6
+- [ ] pytest green
+- [ ] No network in tests
+- [ ] No third-party article text committed
+- [ ] No aim-dojo edits

@@ -1,8 +1,8 @@
 # Offline quality seed fills (Parcel S)
 
-**Status:** planned  
-**Depends on:** Parcel Q (`interpret/ai_seed.py`, store upsert, CLI)  
-**Related style reference (human reading only, do not scrape wholesale):**  
+**Status:** planned
+**Depends on:** Parcel Q (`interpret/ai_seed.py`, store upsert, CLI)
+**Related style reference (human reading only, do not scrape wholesale):**
 https://siderealist.com/sidereal_articles.html — 13-sign sidereal culture, Ophiuchus-as-citizen, irreverent but symbol-literate voice. Prefer *attitude* (constellation-first, anti-tropical default, Ophiuchus normal) over copying celebrity bios or paywalled essays.
 
 ## Problem
@@ -23,9 +23,9 @@ Railway DeepSeek (`deepseek-v4-flash`) works for async stub fills, but:
 
 ## Non-goals
 
-- Per-user natal novels  
-- Scraping siderealist.com into the repo or prompts as full article text  
-- Replacing geometry / Midpoint boundaries  
+- Per-user natal novels
+- Scraping siderealist.com into the repo or prompts as full article text
+- Replacing geometry / Midpoint boundaries
 - aim-dojo UI changes (optional later: “source: ai” badge)
 
 ## Design
@@ -105,12 +105,12 @@ Or `fill-gaps` still runs online for residual stubs.
 
 ## Acceptance
 
-- [ ] `export-prompts` produces key-free JSONL  
-- [ ] `apply-json` validates and upserts; rejects banned fragments  
-- [ ] New source value accepted by schema  
-- [ ] pytest covers apply-json happy path + validation failure  
-- [ ] README documents offline Codex workflow + Railway import  
-- [ ] No aim-dojo edits required  
+- [ ] `export-prompts` produces key-free JSONL
+- [ ] `apply-json` validates and upserts; rejects banned fragments
+- [ ] New source value accepted by schema
+- [ ] pytest covers apply-json happy path + validation failure
+- [ ] README documents offline Codex workflow + Railway import
+- [ ] No aim-dojo edits required
 
 ## Parcel order
 
