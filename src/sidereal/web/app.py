@@ -110,6 +110,13 @@ class HostGuardMiddleware:
     def _is_allowed(self, host: str) -> bool:
         if host in self.allowed_hosts:
             return True
+        # Public deploy (allow_lan): Railway edge/healthcheck Host names are not loopback IPs.
+        if self.allow_ip_hosts and (
+            host.endswith(".up.railway.app")
+            or host.endswith(".railway.app")
+            or host.endswith(".railway.internal")
+        ):
+            return True
         if not self.allow_ip_hosts:
             return False
         try:
