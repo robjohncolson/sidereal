@@ -2,31 +2,34 @@
 
 **Status:** planned
 **Depends on:** Parcel Q (`interpret/ai_seed.py`, store upsert, CLI)
-**Related style reference (human reading only, do not scrape wholesale):**
-https://siderealist.com/sidereal_articles.html — 13-sign sidereal culture, Ophiuchus-as-citizen, irreverent but symbol-literate voice. Prefer *attitude* (constellation-first, anti-tropical default, Ophiuchus normal) over copying celebrity bios or paywalled essays.
+
+**Primary external material (encouraged):**
+https://siderealist.com/ — especially https://siderealist.com/sidereal_articles.html and linked 13-sign pages.
+
+Agents **should** fetch and use this site as grounding for offline fills: constellation-first / Midpoint-adjacent 13-sign culture, Ophiuchus as a full citizen, irreverent symbol-literate voice. Distill into our catalog schema (title / summary / growth / keywords). Prefer transforming and synthesizing over dump-paste of whole celebrity bios; short attributed excerpts in prompt context or `data/references/` notes are fine when they improve fidelity.
 
 ## Problem
 
 Railway DeepSeek (`deepseek-v4-flash`) works for async stub fills, but:
 
 1. Context is thin (system blurb + id + keywords only).
-2. Batch quality is better done **offline** with a stronger author (Codex / Claude / local).
+2. Batch quality is better done **offline** with a stronger author (Codex / Claude / local) **plus** real sidereal-culture source material.
 3. Production volume writes are easiest via `db import` or dashboard shell, not SSH from every agent environment.
 
 ## Goals
 
 1. **Pluggable author** — DeepSeek remains the online default; offline tools can inject JSON without HTTP.
-2. **Richer offline prompts** — optional few-shot from existing `source=original` / `ready` seeds; optional voice notes pointing at Midpoint 13-sign practice (not tropical).
+2. **Richer offline prompts** — few-shot from existing `source=original` / `ready` seeds **and** optional scraped/distilled notes from siderealist.com (and similar 13-sign sources the operator approves).
 3. **Export pack** — write a seed JSON file ready for `python -m sidereal db import …`.
 4. **Import path documented** for Railway `/data/sidereal.db`.
-5. **Epistemic safety unchanged** — same `validate_generated_record` + banned fragments; symbolic study only.
+5. **Epistemic safety unchanged** — same `validate_generated_record` + banned fragments; symbolic study only (no medical/financial/fate guarantees).
 
 ## Non-goals
 
 - Per-user natal novels
-- Scraping siderealist.com into the repo or prompts as full article text
 - Replacing geometry / Midpoint boundaries
 - aim-dojo UI changes (optional later: “source: ai” badge)
+- Requiring network access inside CI tests (scrape/export can be offline-prepared fixtures)
 
 ## Design
 
@@ -44,6 +47,17 @@ Implementations:
 | `JsonFileAuthor` / stdin | Offline Codex output validated then upserted |
 | `RecordingAuthor` | Tests |
 
+### Source material workflow (encouraged)
+
+1. Fetch relevant pages from siderealist.com (articles index, sign pages, Ophiuchus, etc.).
+2. Distill into short **context blocks** per topic (sign / body / aspect class) — either:
+   - injected into exported prompt JSONL as `source_notes`, or
+   - saved under `data/references/siderealist/` as markdown notes for human/Codex reuse.
+3. Author fills **our** JSON fields from inventory id + keywords + source notes + few-shot ready seeds.
+4. Apply via `apply-json` so validation still gates banned predictive/medical language.
+
+Do **not** treat siderealist.com as geometric authority over this repo’s Midpoint J2000 boundaries; it is **cultural / interpretive** context.
+
 ### CLI additions (Parcel S)
 
 ```bash
@@ -58,7 +72,7 @@ python -m sidereal ai-seed apply-json --db data/sidereal.db --file /tmp/filled.j
 python -m sidereal ai-seed pack-stubs --db data/sidereal.db --limit 20 -o data/seeds/seed_13_offline_ai_v1.json
 ```
 
-`export-prompts`: one JSONL line per stub/missing supported id = dry-run request + entry_id (no API keys).
+`export-prompts`: one JSONL line per stub/missing supported id = dry-run request + entry_id (no API keys). May include optional `source_notes` when provided via `--notes-dir` or embedded few-shot.
 
 `apply-json`: file shape either:
 
@@ -77,19 +91,18 @@ python -m sidereal ai-seed pack-stubs --db data/sidereal.db --limit 20 -o data/s
 }
 ```
 
-or a single object with `id` + generated fields. Validated, then `upsert` with `source: "ai-offline"` (add to `SOURCES` if missing) or reuse `ai-deepseek` with a note in growth — prefer new source `ai-offline` for provenance.
+or a single object with `id` + generated fields. Validated, then `upsert` with `source: "ai-offline"` (add to `SOURCES`).
 
 `pack-stubs`: optional helper that emits inventory-shaped seed file after apply for git tracking.
 
-### Prompt enrichment (offline only by default)
+### Prompt enrichment (offline)
 
 Optional flag `--few-shot N` on export-prompts:
 
 - Pull up to N **ready** entries of the **same type** from the store (prefer `source=original`).
 - Attach as abbreviated examples in the user message (title + summary only, truncated).
-- System prompt may add one short bullet: *“Midpoint 13-sign true-sidereal; Ophiuchus is a full sign; constellation-aligned culture, not tropical personality columns.”*
-
-Do **not** paste third-party article text into the repo.
+- System / user context should reinforce Midpoint 13-sign true-sidereal and Ophiuchus-as-citizen.
+- **Encouraged:** attach distilled siderealist (or notes-dir) excerpts relevant to that id’s sign/body.
 
 ### Production upload
 
@@ -108,8 +121,8 @@ Or `fill-gaps` still runs online for residual stubs.
 - [ ] `export-prompts` produces key-free JSONL
 - [ ] `apply-json` validates and upserts; rejects banned fragments
 - [ ] New source value accepted by schema
-- [ ] pytest covers apply-json happy path + validation failure
-- [ ] README documents offline Codex workflow + Railway import
+- [ ] pytest covers apply-json happy path + validation failure (no live scrape required in CI)
+- [ ] README documents offline Codex workflow, **source material fetch encouraged**, Railway import
 - [ ] No aim-dojo edits required
 
 ## Parcel order
@@ -117,7 +130,7 @@ Or `fill-gaps` still runs online for residual stubs.
 | Parcel | Repo | Deliverable |
 |--------|------|-------------|
 | **S1** | sidereal | export-prompts + apply-json + source `ai-offline` + tests |
-| **S2** | sidereal | optional few-shot on export; pack-stubs helper |
-| **S3** | ops | fill remaining stubs offline; import to Railway |
+| **S2** | sidereal | few-shot + optional notes-dir / source_notes; pack-stubs |
+| **S3** | ops + author | scrape/distill siderealist → fill remaining stubs offline → import Railway |
 
 DeepSeek online path remains Parcel Q; S does not remove it.
