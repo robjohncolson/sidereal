@@ -25,6 +25,15 @@ def _date_value(value: str) -> date:
         ) from exc
 
 
+def _sky_day_date_value(value: str) -> date:
+    from .skyday import parse_skyday_date
+
+    try:
+        return parse_skyday_date(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+
+
 def _time_value(value: str) -> time:
     try:
         parsed = time.fromisoformat(value)
@@ -263,7 +272,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     skypack = commands.add_parser(
         "skypack",
-        help="export local sky and natal geometry as skypack_v1 JSON",
+        help="export local sky and natal geometry as skypack_v2 JSON",
     )
     skypack.add_argument(
         "--natal",
@@ -288,6 +297,39 @@ def build_parser() -> argparse.ArgumentParser:
     skypack.add_argument("-o", "--out", type=Path, help="write pretty JSON")
     _add_charts_argument(skypack)
     skypack.set_defaults(handler=_run_skypack)
+
+    sky_day = commands.add_parser(
+        "sky-day",
+        help="export public natal-free daily sky geometry as skyday_v1 JSON",
+    )
+    sky_day.add_argument(
+        "--tz",
+        default="UTC",
+        help="IANA timezone for the civil day boundary (default: %(default)s)",
+    )
+    sky_day.add_argument(
+        "--date",
+        type=_sky_day_date_value,
+        dest="cache_date",
+        help="civil cache date (default: today in --tz)",
+    )
+    sky_day.add_argument(
+        "--boundary-path",
+        type=Path,
+        help="override the packaged Midpoint boundary JSON",
+    )
+    sky_day.add_argument(
+        "--ephe-path",
+        type=Path,
+        help="directory containing Swiss Ephemeris .se1 files",
+    )
+    sky_day.add_argument(
+        "--require-swiss-ephemeris",
+        action="store_true",
+        help="fail instead of accepting Swiss Ephemeris' Moshier fallback",
+    )
+    sky_day.add_argument("-o", "--out", type=Path, help="write pretty JSON")
+    sky_day.set_defaults(handler=_run_sky_day)
 
     transit_list = commands.add_parser(
         "transit-list",
@@ -856,6 +898,29 @@ def _run_skypack(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
         when=args.when,
         tz=args.tz,
         ephe_path=args.ephe_path,
+    )
+    json_text = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        allow_nan=False,
+    )
+    if args.out is not None:
+        _write_text(args.out, json_text)
+    else:
+        print(json_text)
+    return 0
+
+
+def _run_sky_day(args: argparse.Namespace, _parser: argparse.ArgumentParser) -> int:
+    from .skyday import build_skyday
+
+    payload = build_skyday(
+        tz=args.tz,
+        date=args.cache_date,
+        boundary_path=args.boundary_path,
+        ephe_path=args.ephe_path,
+        require_swiss_ephemeris=args.require_swiss_ephemeris,
     )
     json_text = json.dumps(
         payload,

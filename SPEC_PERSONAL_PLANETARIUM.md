@@ -1,12 +1,13 @@
-# Personal Planetarium — Implementation Plan
+# Personal Planetarium — Implementation Plan (v1, shipped)
 
-**Canonical copy lives with the game consumer:**
+**v1** Parcel A is shipped. **Next work is v2:**
 
-→ **`/mnt/c/Users/rober/Downloads/Projects/aim-dojo/SPEC_PERSONAL_PLANETARIUM.md`**
+→ **`/mnt/c/Users/rober/Downloads/Projects/aim-dojo/SPEC_PERSONAL_PLANETARIUM_V2.md`**  
+→ Codex: `CODEX_PROMPT_SKYPACK_V2.md`
 
-Read that file in full before implementing Parcel A (skypack).
-
-**This repo’s prompt for Codex:** `CODEX_PROMPT_SKYPACK.md`
+**v1 historical plan:**  
+`/mnt/c/Users/rober/Downloads/Projects/aim-dojo/SPEC_PERSONAL_PLANETARIUM.md`  
+**v1 Codex prompt:** `CODEX_PROMPT_SKYPACK.md`
 
 ## Your slice (sidereal only)
 

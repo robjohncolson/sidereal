@@ -294,7 +294,7 @@ while retaining the natal Ascendant orientation and house cusps.
 ## Sky pack for Moon Chorus
 
 Export the current moving sky, fixed natal glyphs, and major transit-to-natal
-geometry as local-only `skypack_v1` JSON:
+geometry as local-only `skypack_v2` JSON:
 
 ```bash
 python -m sidereal skypack --natal bobby-19831129T132400Z-e1d0a0c471 \
@@ -316,6 +316,13 @@ python -m sidereal skypack --natal bobby-19831129T132400Z-e1d0a0c471 \
 vary slightly when optional Swiss `.se1` files are absent and the documented
 Moshier fallback answers instead; the epoch and schema remain fixed.
 
+Version 2 adds `same_body_delta` (shortest-arc now-vs-natal values) and
+`resonance_rank` (deterministic, tightest-first any-hit ordering) while keeping
+the v1 geometry arrays. Every ranked resonance has a positive `orb_limit`;
+missing or non-positive limits are rejected rather than guessed. Moon Chorus
+may use theatre lighting, but glyph positions remain anchored to the real
+`epoch_utc` J2000 longitudes.
+
 The localhost API exposes the same pack:
 
 ```bash
@@ -327,6 +334,60 @@ curl --get http://127.0.0.1:8742/api/skypack \
 
 Packs are `local_only` and are consumed by aim-dojo's `?sky=clocked_chart`
 mode; they are not leaderboard, share, or multiplayer payloads.
+
+### Public sky-day API
+
+`sky-day` is the natal-free public geometry counterpart to a personal sky
+pack. It calculates all 12 configured movers at local noon on one civil date,
+maps them through the same Midpoint boundaries and glyph helpers, and emits no
+birth identifiers, natal ghosts, resonances, or relationship data:
+
+```bash
+python -m sidereal sky-day --tz UTC --date 2026-07-12 \
+  -o /tmp/skyday.json
+```
+
+The web route has the same `skyday_v1` contract:
+
+```bash
+curl --get http://127.0.0.1:8742/api/sky-day \
+  --data-urlencode tz=UTC \
+  --data-urlencode date=2026-07-12
+```
+
+Omit `date` to use today in the requested timezone. An optional `when` accepts
+a local or offset-aware ISO calculation instant; otherwise the representative
+instant is local noon. The server caches the first complete response under the
+independently selected `tz:YYYY-MM-DD` key, so later requests for that key
+retain the same `generated_at`, epoch, and geometry even if they pass another
+`when`. This cache is process-local and resets on restart; successful responses
+also advertise `Cache-Control: public, max-age=3600`.
+
+Cross-origin `GET` and `OPTIONS` are granted only on `/api/sky-day` for the
+Moon Chorus Vercel/GitHub origins and the two `:8931` development origins.
+Merge additional exact origins with the comma-separated
+`SKY_DAY_CORS_ORIGINS` environment variable. Other API routes do not inherit
+this CORS grant.
+
+### Sky Listen API
+
+The local desk can return a short symbolic placement note plus personal
+transit context for a saved natal chart:
+
+```bash
+curl --get http://127.0.0.1:8742/api/sky-listen \
+  --data-urlencode natal_id=bobby-19831129T132400Z-e1d0a0c471 \
+  --data-urlencode body=pluto \
+  --data-urlencode when=2026-07-11T14:09:00 \
+  --data-urlencode tz=America/New_York
+```
+
+Omit `natal_id` for the generic placement block only; use `sign=libra` for a
+constellation/sign Listen. Responses are local-only symbolic study notes, not
+predictions. Browser `GET` requests to this endpoint from the exact development
+origins `http://127.0.0.1:8931` and `http://localhost:8931` are allowed while
+the existing Host-header guard remains active; other API routes do not receive
+that cross-origin grant.
 
 ## Transit vs two-person synastry
 
@@ -388,6 +449,30 @@ headers; if you deliberately browse through a local DNS name, add that exact
 name with repeatable `--trusted-host NAME`. Wildcards are refused so the Host
 guard continues to block DNS-rebinding origins.
 
+### Railway notes for public sky-day
+
+For a future isolated Railway instance, install the web extra and pass
+Railway's port, public bind, and exact generated hostname explicitly:
+
+```bash
+python -m pip install ".[web]"
+python -m sidereal serve --host 0.0.0.0 --allow-lan \
+  --trusted-host "$RAILWAY_PUBLIC_DOMAIN" --port "$PORT"
+```
+
+- Set `SKY_DAY_CORS_ORIGINS` when the game uses an origin beyond the built-in
+  allowlist.
+- Set `SIDEREAL_EPHE_PATH` to a directory or mounted volume containing the
+  Swiss `.se1` files. Without them, the documented Moshier fallback is used;
+  strict Swiss mode should not be enabled until those files are present.
+- `SIDEREAL_BOUNDARY_PATH` may override the packaged Midpoint boundary JSON.
+- Use `/api/sky-day?tz=UTC` (or `/api/health`) as the health check. The day
+  cache is in-memory per process and is intentionally rebuilt after restarts.
+- Do not place personal chart files or an interpretation database in the
+  public image. The current `serve` command still exposes the wider local-desk
+  routes and has no authentication, so a public deployment must be isolated
+  from any private Sidereal data.
+
 The browser provides chart calculation and readable reports, a searchable
 timezone/place picker, saved-chart library actions, current-DB
 reinterpretation, transits to a selected saved natal, and two-saved-chart
@@ -414,6 +499,7 @@ tables. Its JSON API uses the same validation and calculation paths as the CLI:
 | Method | Route | Purpose |
 |--------|-------|---------|
 | `GET` | `/api/health` | Version, ephemeris probe, DB availability, and saved-chart count |
+| `GET` | `/api/sky-day` | Public, natal-free daily Midpoint body geometry |
 | `POST` | `/api/chart` | Calculate and compose a full chart report |
 | `POST` | `/api/transit` | Run a saved-natal or inline-natal transit report |
 | `POST` | `/api/synastry` | Compare two saved and/or inline fixed charts |
@@ -507,6 +593,8 @@ python -m sidereal save \
 python -m sidereal synastry --a "Smoke" --b "Smoke Partner" \
   --db data/sidereal.db \
   --md /tmp/sidereal-synastry.md --out /tmp/sidereal-synastry.json
+python -m sidereal sky-day --tz UTC --date 2026-07-12 \
+  -o /tmp/sidereal-skyday.json
 # With .[web] installed, in another terminal:
 python -m sidereal serve
 # curl http://127.0.0.1:8742/api/health

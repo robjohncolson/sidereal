@@ -1,4 +1,4 @@
-"""Geometry-only ``skypack_v1`` export for local planetarium consumers."""
+"""Geometry-only ``skypack_v2`` export for local planetarium consumers."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import math
 from pathlib import Path
 from typing import Any
 
+from .aspects import shortest_arc
 from .chart import compute
 from .config import BODY_IDS
 from .library import DEFAULT_CHARTS_DIR, SavedChart, load_chart
@@ -18,9 +19,9 @@ from .zodiac.base import normalize_longitude
 from .zodiac.midpoint import MidpointZodiac
 
 
-SKYPACK_SCHEMA_VERSION = 1
+SKYPACK_SCHEMA_VERSION = 2
 SKYPACK_TYPE = "skypack"
-SKYPACK_PROJECTION = "ecliptic_dome_v1"
+SKYPACK_PROJECTION = "ecliptic_band_v2"
 
 BODY_GLYPHS: dict[str, str] = {
     "sun": "☉",
@@ -95,7 +96,7 @@ def build_skypack(
     require_swiss_ephemeris: bool = False,
     generated_at: datetime | None = None,
 ) -> dict[str, Any]:
-    """Load one saved natal chart and build its local ``skypack_v1`` document.
+    """Load one saved natal chart and build its local ``skypack_v2`` document.
 
     An offset-free ``when`` is interpreted in ``tz``. When ``tz`` is omitted,
     the saved natal chart's timezone is used. When ``when`` is omitted, the
@@ -211,6 +212,9 @@ def _pack_from_geometry(
             }
         )
 
+    same_body_delta = _same_body_deltas(movers, natal_ghosts)
+    resonance_rank = rank_resonances(resonances)
+
     return {
         "schema_version": SKYPACK_SCHEMA_VERSION,
         "type": SKYPACK_TYPE,
@@ -227,7 +231,104 @@ def _pack_from_geometry(
         "movers": movers,
         "natal_ghosts": natal_ghosts,
         "resonances": resonances,
+        "same_body_delta": same_body_delta,
+        "resonance_rank": resonance_rank,
     }
+
+
+def _same_body_deltas(
+    movers: list[dict[str, Any]],
+    natal_ghosts: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Return shortest-arc deltas for ids present in both body collections."""
+
+    natal_by_id = {item["id"]: item for item in natal_ghosts}
+    result: list[dict[str, Any]] = []
+    for mover in movers:
+        body_id = mover["id"]
+        natal = natal_by_id.get(body_id)
+        if natal is None:
+            continue
+        mover_lon = _finite_number(
+            mover["lon_j2000"],
+            f"{body_id} mover longitude",
+        )
+        natal_lon = _finite_number(
+            natal["lon_j2000"],
+            f"{body_id} natal longitude",
+        )
+        result.append(
+            {
+                "id": body_id,
+                "delta_deg": shortest_arc(mover_lon, natal_lon),
+                "mover_lon_j2000": mover_lon,
+                "natal_lon_j2000": natal_lon,
+            }
+        )
+    return result
+
+
+def rank_resonances(
+    resonances: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Return all resonances ranked by normalized orb, tightest first.
+
+    A positive ``orb_limit`` is required for every row. Missing, non-finite,
+    or non-positive limits are rejected rather than assigned a guessed sort
+    position.
+    """
+
+    sortable: list[tuple[float, str, str, str, dict[str, Any]]] = []
+    for index, resonance in enumerate(resonances):
+        name = f"resonances[{index}]"
+        try:
+            transit_body = resonance["transit_body"]
+            natal_point = resonance["natal_point"]
+            aspect_id = resonance["aspect_id"]
+            aspect_glyph = resonance["aspect_glyph"]
+            raw_orb = resonance["orb"]
+            raw_orb_limit = resonance["orb_limit"]
+        except KeyError as exc:
+            raise ValueError(
+                f"{name} is missing required field {exc.args[0]!r}"
+            ) from exc
+        for field, value in (
+            ("transit_body", transit_body),
+            ("natal_point", natal_point),
+            ("aspect_id", aspect_id),
+            ("aspect_glyph", aspect_glyph),
+        ):
+            if not isinstance(value, str) or not value:
+                raise ValueError(f"{name}.{field} must be a non-empty string")
+        orb = _finite_number(raw_orb, f"{name}.orb")
+        orb_limit = _finite_number(raw_orb_limit, f"{name}.orb_limit")
+        if orb < 0.0:
+            raise ValueError(f"{name}.orb must be non-negative")
+        if orb_limit <= 0.0:
+            raise ValueError(f"{name}.orb_limit must be positive")
+        ranked = {
+            "transit_body": transit_body,
+            "natal_point": natal_point,
+            "aspect_id": aspect_id,
+            "aspect_glyph": aspect_glyph,
+            "orb": orb,
+            "orb_limit": orb_limit,
+        }
+        sortable.append(
+            (
+                orb / orb_limit,
+                transit_body,
+                natal_point,
+                aspect_id,
+                ranked,
+            )
+        )
+
+    sortable.sort(key=lambda item: item[:4])
+    return [
+        {**item[4], "rank": rank}
+        for rank, item in enumerate(sortable, start=1)
+    ]
 
 
 def _sign_band(zodiac: MidpointZodiac) -> list[dict[str, Any]]:
@@ -279,6 +380,22 @@ def _body_entries(chart: Chart, *, moving: bool) -> list[dict[str, Any]]:
             entry["retro"] = bool(point.retro)
         result.append(entry)
     return result
+
+
+def build_sign_band(zodiac: MidpointZodiac) -> list[dict[str, Any]]:
+    """Return the shared Midpoint sign-band wire representation."""
+
+    return _sign_band(zodiac)
+
+
+def build_body_entries(
+    chart: Chart,
+    *,
+    moving: bool,
+) -> list[dict[str, Any]]:
+    """Return the shared ordered body wire representation for a chart."""
+
+    return _body_entries(chart, moving=moving)
 
 
 def _body_kind(body_id: str) -> str:
@@ -352,7 +469,11 @@ __all__ = [
     "SKYPACK_PROJECTION",
     "SKYPACK_SCHEMA_VERSION",
     "SKYPACK_TYPE",
+    "build_body_entries",
+    "build_sign_band",
     "build_skypack",
     "build_skypack_from_saved_chart",
     "parse_local_datetime",
+    "rank_resonances",
+    "shortest_arc",
 ]

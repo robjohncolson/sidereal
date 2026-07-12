@@ -5,9 +5,17 @@ import json
 import math
 from pathlib import Path
 
+import pytest
+
 from sidereal.cli import main
 from sidereal.config import BODY_IDS
-from sidereal.skypack import ASPECT_GLYPHS, BODY_GLYPHS, build_skypack
+from sidereal.skypack import (
+    ASPECT_GLYPHS,
+    BODY_GLYPHS,
+    build_skypack,
+    rank_resonances,
+    shortest_arc,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +41,8 @@ REQUIRED_TOP_LEVEL = {
     "movers",
     "natal_ghosts",
     "resonances",
+    "same_body_delta",
+    "resonance_rank",
 }
 
 
@@ -48,9 +58,9 @@ def _build_fixed_pack() -> dict[str, object]:
 
 def _assert_valid_pack(pack: dict[str, object]) -> None:
     assert set(pack) == REQUIRED_TOP_LEVEL
-    assert pack["schema_version"] == 1
+    assert pack["schema_version"] == 2
     assert pack["type"] == "skypack"
-    assert pack["projection"] == "ecliptic_dome_v1"
+    assert pack["projection"] == "ecliptic_band_v2"
     assert pack["system"] == "midpoint_v1"
     assert pack["privacy"] == "local_only"
     assert pack["location"] is None
@@ -148,6 +158,175 @@ def _assert_valid_pack(pack: dict[str, object]) -> None:
         assert 0.0 <= item["separation"] <= 180.0
         assert 0.0 <= item["orb"] <= item["orb_limit"]
         assert item["applying"] in (True, False, None)
+
+    movers_by_id = {item["id"]: item for item in movers}
+    ghosts_by_id = {item["id"]: item for item in ghosts}
+    common_ids = tuple(
+        body_id
+        for body_id in BODY_IDS
+        if body_id in movers_by_id and body_id in ghosts_by_id
+    )
+    same_body_delta = pack["same_body_delta"]
+    assert isinstance(same_body_delta, list)
+    assert tuple(item["id"] for item in same_body_delta) == common_ids
+    for item in same_body_delta:
+        assert set(item) == {
+            "id",
+            "delta_deg",
+            "mover_lon_j2000",
+            "natal_lon_j2000",
+        }
+        mover_lon = movers_by_id[item["id"]]["lon_j2000"]
+        natal_lon = ghosts_by_id[item["id"]]["lon_j2000"]
+        raw_delta = abs(mover_lon - natal_lon) % 360.0
+        expected_delta = min(raw_delta, 360.0 - raw_delta)
+        assert item["mover_lon_j2000"] == mover_lon
+        assert item["natal_lon_j2000"] == natal_lon
+        assert math.isfinite(item["delta_deg"])
+        assert item["delta_deg"] == pytest.approx(expected_delta, abs=1e-6)
+        assert 0.0 <= item["delta_deg"] <= 180.0
+
+    resonance_by_key = {
+        (
+            item["transit_body"],
+            item["natal_point"],
+            item["aspect_id"],
+        ): item
+        for item in resonances
+    }
+    assert len(resonance_by_key) == len(resonances)
+    resonance_rank = pack["resonance_rank"]
+    assert isinstance(resonance_rank, list)
+    assert len(resonance_rank) == len(resonances)
+    assert [item["rank"] for item in resonance_rank] == list(
+        range(1, len(resonance_rank) + 1)
+    )
+    actual_sort_keys = []
+    for item in resonance_rank:
+        assert set(item) == {
+            "transit_body",
+            "natal_point",
+            "aspect_id",
+            "aspect_glyph",
+            "orb",
+            "orb_limit",
+            "rank",
+        }
+        key = (
+            item["transit_body"],
+            item["natal_point"],
+            item["aspect_id"],
+        )
+        source = resonance_by_key[key]
+        assert item["aspect_glyph"] == source["aspect_glyph"]
+        assert item["orb"] == source["orb"]
+        assert item["orb_limit"] == source["orb_limit"]
+        actual_sort_keys.append(
+            (
+                item["orb"] / item["orb_limit"],
+                item["transit_body"],
+                item["natal_point"],
+                item["aspect_id"],
+            )
+        )
+    assert actual_sort_keys == sorted(actual_sort_keys)
+
+
+@pytest.mark.parametrize(
+    ("longitude_a", "longitude_b", "expected"),
+    [
+        (0.0, 0.0, 0.0),
+        (0.0, 180.0, 180.0),
+        (10.0, 350.0, 20.0),
+        (0.0, 90.0, 90.0),
+    ],
+)
+def test_shortest_arc_cases(
+    longitude_a: float,
+    longitude_b: float,
+    expected: float,
+) -> None:
+    assert shortest_arc(longitude_a, longitude_b) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("invalid", [math.inf, -math.inf, math.nan])
+def test_shortest_arc_rejects_non_finite_values(invalid: float) -> None:
+    with pytest.raises(ValueError, match="longitudes must be finite"):
+        shortest_arc(invalid, 0.0)
+
+
+def test_resonance_rank_uses_normalized_orb_and_lexical_ties() -> None:
+    rows = [
+        {
+            "transit_body": "venus",
+            "natal_point": "sun",
+            "aspect_id": "trine",
+            "aspect_glyph": "△",
+            "orb": 2.0,
+            "orb_limit": 8.0,
+        },
+        {
+            "transit_body": "mars",
+            "natal_point": "sun",
+            "aspect_id": "square",
+            "aspect_glyph": "□",
+            "orb": 1.0,
+            "orb_limit": 4.0,
+        },
+        {
+            "transit_body": "mars",
+            "natal_point": "moon",
+            "aspect_id": "trine",
+            "aspect_glyph": "△",
+            "orb": 2.0,
+            "orb_limit": 8.0,
+        },
+        {
+            "transit_body": "mars",
+            "natal_point": "moon",
+            "aspect_id": "sextile",
+            "aspect_glyph": "⚹",
+            "orb": 1.5,
+            "orb_limit": 6.0,
+        },
+        {
+            "transit_body": "jupiter",
+            "natal_point": "moon",
+            "aspect_id": "opposition",
+            "aspect_glyph": "☍",
+            "orb": 0.5,
+            "orb_limit": 5.0,
+        },
+    ]
+
+    ranked = rank_resonances(rows)
+
+    assert [item["rank"] for item in ranked] == [1, 2, 3, 4, 5]
+    assert [
+        (item["transit_body"], item["natal_point"], item["aspect_id"])
+        for item in ranked
+    ] == [
+        ("jupiter", "moon", "opposition"),
+        ("mars", "moon", "sextile"),
+        ("mars", "moon", "trine"),
+        ("mars", "sun", "square"),
+        ("venus", "sun", "trine"),
+    ]
+
+
+def test_resonance_rank_rejects_missing_or_invalid_limits() -> None:
+    base = {
+        "transit_body": "mars",
+        "natal_point": "moon",
+        "aspect_id": "trine",
+        "aspect_glyph": "△",
+        "orb": 1.0,
+    }
+
+    with pytest.raises(ValueError, match="missing required field 'orb_limit'"):
+        rank_resonances([base])
+    with pytest.raises(ValueError, match="orb_limit must be positive"):
+        rank_resonances([{**base, "orb_limit": 0.0}])
 
 
 def test_skypack_schema_and_body_geometry() -> None:

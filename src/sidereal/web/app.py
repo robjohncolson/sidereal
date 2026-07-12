@@ -8,10 +8,11 @@ from dataclasses import dataclass, replace
 from datetime import date, time
 import ipaddress
 import math
+import os
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Header, HTTPException, Query, Response
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -33,11 +34,29 @@ from ..library import (
     load_chart,
     save_chart,
 )
+from ..sky_listen import build_sky_listen
+from ..skyday import SkyDayCache, SkyDayCalculationError
 from ..skypack import build_skypack
 from ..synastry_library import list_synastries, load_synastry, save_synastry_snapshot
 from ..transit_library import list_transits, load_transit, save_transit_snapshot
 from ..types import MomentInput
 from ..wheel import render_svg
+
+
+_SKY_LISTEN_DEV_ORIGINS = frozenset(
+    (
+        "http://127.0.0.1:8931",
+        "http://localhost:8931",
+    )
+)
+_SKY_DAY_DEFAULT_ORIGINS = frozenset(
+    (
+        "http://127.0.0.1:8931",
+        "http://localhost:8931",
+        "https://aim-dojo.vercel.app",
+        "https://robjohncolson.github.io",
+    )
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,6 +164,8 @@ def create_app(
         allow_lan=allow_lan,
         trusted_hosts=normalized_trusted,
     )
+    sky_day_origins = _sky_day_allowed_origins()
+    sky_day_cache = SkyDayCache()
     static_dir = Path(__file__).with_name("static")
     app = FastAPI(
         title="Sidereal local desk",
@@ -154,6 +175,7 @@ def create_app(
         openapi_url="/api/openapi.json",
     )
     app.state.sidereal_settings = settings
+    app.state.sky_day_cache = sky_day_cache
     app.add_middleware(
         HostGuardMiddleware,
         allowed_hosts=allowed_hosts,
@@ -243,6 +265,102 @@ def create_app(
             boundary_path=settings.boundary_path,
             ephe_path=settings.ephe_path,
             require_swiss_ephemeris=settings.require_swiss_ephemeris,
+        )
+
+    @app.get("/api/sky-day")
+    def sky_day(
+        response: Response,
+        tz: str = Query(default="UTC"),
+        date: str | None = Query(default=None),
+        when: str | None = Query(default=None),
+        origin: str | None = Header(default=None),
+    ) -> Any:
+        _set_sky_day_headers(response, origin, sky_day_origins)
+        try:
+            return sky_day_cache.get(
+                tz=tz,
+                date=date,
+                when=when,
+                boundary_path=settings.boundary_path,
+                ephe_path=settings.ephe_path,
+                require_swiss_ephemeris=settings.require_swiss_ephemeris,
+            )
+        except ValueError as exc:
+            return _sky_day_error_response(
+                status_code=400,
+                detail=str(exc),
+                origin=origin,
+                allowed_origins=sky_day_origins,
+            )
+        except SkyDayCalculationError as exc:
+            return _sky_day_error_response(
+                status_code=500,
+                detail=f"Sky-day calculation failed: {exc}",
+                origin=origin,
+                allowed_origins=sky_day_origins,
+            )
+
+    @app.options("/api/sky-day", include_in_schema=False)
+    def sky_day_preflight(
+        origin: str | None = Header(default=None),
+        access_control_request_method: str | None = Header(default=None),
+    ) -> Response:
+        if origin not in sky_day_origins:
+            return Response(status_code=400)
+        if access_control_request_method != "GET":
+            return Response(status_code=405)
+        return Response(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Methods": "GET",
+                "Vary": "Origin",
+            },
+        )
+
+    @app.get("/api/sky-listen")
+    def sky_listen(
+        response: Response,
+        natal_id: str | None = Query(default=None),
+        body: str | None = Query(default=None),
+        sign: str | None = Query(default=None),
+        kind: str | None = Query(default=None),
+        when: str | None = Query(default=None),
+        tz: str | None = Query(default=None),
+        origin: str | None = Header(default=None),
+    ) -> dict[str, Any]:
+        _set_sky_listen_cors(response, origin)
+        with _optional_store(settings) as store:
+            return build_sky_listen(
+                natal_id=natal_id,
+                body=body,
+                sign=sign,
+                kind=kind,
+                when=when,
+                tz=tz,
+                charts_dir=settings.charts_dir,
+                boundary_path=settings.boundary_path,
+                ephe_path=settings.ephe_path,
+                require_swiss_ephemeris=settings.require_swiss_ephemeris,
+                store=store,
+            )
+
+    @app.options("/api/sky-listen", include_in_schema=False)
+    def sky_listen_preflight(
+        origin: str | None = Header(default=None),
+        access_control_request_method: str | None = Header(default=None),
+    ) -> Response:
+        if origin not in _SKY_LISTEN_DEV_ORIGINS:
+            return Response(status_code=400)
+        if access_control_request_method != "GET":
+            return Response(status_code=405)
+        return Response(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Methods": "GET",
+                "Vary": "Origin",
+            },
         )
 
     @app.get("/api/charts/{chart_id}")
@@ -792,6 +910,46 @@ def _optional_snapshot_id(value: Any) -> str | None:
         raise ValueError("snapshot_id must be a string when provided")
     text = value.strip()
     return text or None
+
+
+def _set_sky_listen_cors(response: Response, origin: str | None) -> None:
+    if origin in _SKY_LISTEN_DEV_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+
+
+def _sky_day_allowed_origins() -> frozenset[str]:
+    configured = os.environ.get("SKY_DAY_CORS_ORIGINS", "")
+    additions = (item.strip() for item in configured.split(","))
+    return frozenset((*_SKY_DAY_DEFAULT_ORIGINS, *(item for item in additions if item)))
+
+
+def _set_sky_day_headers(
+    response: Response,
+    origin: str | None,
+    allowed_origins: frozenset[str],
+) -> None:
+    response.headers["Cache-Control"] = "public, max-age=3600"
+    response.headers["Vary"] = "Origin"
+    if origin in allowed_origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
+
+
+def _sky_day_error_response(
+    *,
+    status_code: int,
+    detail: str,
+    origin: str | None,
+    allowed_origins: frozenset[str],
+) -> JSONResponse:
+    response = JSONResponse(
+        status_code=status_code,
+        content={"detail": detail},
+        headers={"Cache-Control": "no-store", "Vary": "Origin"},
+    )
+    if origin in allowed_origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    return response
 
 
 @contextmanager
