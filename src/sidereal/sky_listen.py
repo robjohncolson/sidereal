@@ -50,23 +50,122 @@ def build_sky_listen(
 ) -> dict[str, Any]:
     """Calculate one moving sky and compose a compact Listen response."""
 
-    target_kind, target_body, target_sign = normalize_sky_listen_target(
+    normalize_sky_listen_target(
         body=body,
         sign=sign,
         kind=kind,
     )
     natal_identifier = _optional_non_empty(natal_id, "natal_id")
-    record = (
-        load_chart(natal_identifier, Path(charts_dir).expanduser())
-        if natal_identifier is not None
-        else None
+    if natal_identifier is None:
+        return _build_sky_listen_from_chart(
+            natal_chart=None,
+            natal_config=ChartConfig(),
+            natal_id=None,
+            timezone_fallback="UTC",
+            body=body,
+            sign=sign,
+            kind=kind,
+            when=when,
+            tz=tz,
+            boundary_path=boundary_path,
+            ephe_path=ephe_path,
+            require_swiss_ephemeris=require_swiss_ephemeris,
+            store=store,
+            now=now,
+            natal_source="inline",
+        )
+    record = load_chart(natal_identifier, Path(charts_dir).expanduser())
+    return build_sky_listen_from_chart(
+        record.chart_object(),
+        record.chart_config(),
+        natal_id=record.id,
+        body=body,
+        sign=sign,
+        kind=kind,
+        when=when,
+        tz=tz,
+        boundary_path=boundary_path,
+        ephe_path=ephe_path,
+        require_swiss_ephemeris=require_swiss_ephemeris,
+        store=store,
+        now=now,
+        natal_source="saved",
+    )
+
+
+def build_sky_listen_from_chart(
+    natal_chart: Chart,
+    natal_config: ChartConfig,
+    *,
+    natal_id: str,
+    body: str | None = None,
+    sign: str | None = None,
+    kind: str | None = None,
+    when: datetime | str | None = None,
+    tz: str | None = None,
+    boundary_path: Path | str | None = None,
+    ephe_path: Path | str | None = None,
+    require_swiss_ephemeris: bool = False,
+    store: EntryLookup | None = None,
+    now: datetime | None = None,
+    natal_source: str = "user_private",
+) -> dict[str, Any]:
+    """Compose Listen from authenticated natal geometry already in memory."""
+
+    if not isinstance(natal_chart, Chart):
+        raise TypeError("natal_chart must be a Chart")
+    if not isinstance(natal_config, ChartConfig):
+        raise TypeError("natal_config must be a ChartConfig")
+    canonical_natal_id = _optional_non_empty(natal_id, "natal_id")
+    assert canonical_natal_id is not None
+    return _build_sky_listen_from_chart(
+        natal_chart=natal_chart,
+        natal_config=natal_config,
+        natal_id=canonical_natal_id,
+        timezone_fallback=natal_chart.meta.input.tz,
+        body=body,
+        sign=sign,
+        kind=kind,
+        when=when,
+        tz=tz,
+        boundary_path=boundary_path,
+        ephe_path=ephe_path,
+        require_swiss_ephemeris=require_swiss_ephemeris,
+        store=store,
+        now=now,
+        natal_source=natal_source,
+    )
+
+
+def _build_sky_listen_from_chart(
+    *,
+    natal_chart: Chart | None,
+    natal_config: ChartConfig,
+    natal_id: str | None,
+    timezone_fallback: str,
+    body: str | None,
+    sign: str | None,
+    kind: str | None,
+    when: datetime | str | None,
+    tz: str | None,
+    boundary_path: Path | str | None,
+    ephe_path: Path | str | None,
+    require_swiss_ephemeris: bool,
+    store: EntryLookup | None,
+    now: datetime | None,
+    natal_source: str,
+) -> dict[str, Any]:
+    target_kind, target_body, target_sign = normalize_sky_listen_target(
+        body=body,
+        sign=sign,
+        kind=kind,
     )
     timezone_name = _timezone_name(
         tz,
-        record.tz if record is not None else "UTC",
+        timezone_fallback,
     )
     transit_moment = _sky_moment(when, timezone_name, now=now)
-    base_config = record.chart_config() if record is not None else ChartConfig()
+    base_config = natal_config
     active_config = replace(
         base_config,
         boundary_path=(
@@ -89,29 +188,25 @@ def build_sky_listen(
 
     geometry: TransitGeometry | None = None
     report: TransitReport | None = None
-    canonical_natal_id: str | None = None
-    if record is None:
+    if natal_chart is None:
         transit_chart = compute(transit_moment, active_config)
     elif target_kind == "sign":
-        natal_chart = record.chart_object()
         transit_chart = compute(transit_moment, active_config)
         geometry = compute_transit_geometry(
             natal_chart,
             transit_chart,
             active_config,
         )
-        canonical_natal_id = record.id
     else:
         report, geometry = calculate_transit_study(
-            record.chart_object(),
+            natal_chart,
             transit_moment,
             active_config,
             store,
-            natal_source="saved",
-            natal_id=record.id,
+            natal_source=natal_source,
+            natal_id=natal_id,
         )
         transit_chart = geometry.transit
-        canonical_natal_id = record.id
 
     return compose_sky_listen(
         transit_chart,
@@ -120,7 +215,7 @@ def build_sky_listen(
         sign=target_sign,
         timezone_name=timezone_name,
         store=store,
-        natal_id=canonical_natal_id,
+        natal_id=natal_id,
         geometry=geometry,
         transit_report=report,
     )
@@ -583,6 +678,7 @@ __all__ = [
     "SKY_LISTEN_SYSTEM",
     "SKY_LISTEN_TYPE",
     "build_sky_listen",
+    "build_sky_listen_from_chart",
     "compose_sky_listen",
     "normalize_sky_listen_target",
 ]

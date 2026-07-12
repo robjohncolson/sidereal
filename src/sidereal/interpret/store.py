@@ -31,6 +31,10 @@ class SeedImportError(InterpretationStoreError):
     """Raised when a seed file is invalid or conflicts at the same version."""
 
 
+class EntryConflictError(InterpretationStoreError):
+    """Raised when an entry changed after a caller read its expected state."""
+
+
 @dataclass(frozen=True, slots=True)
 class ImportResult:
     files: int
@@ -503,6 +507,70 @@ class InterpretationStore:
             unchanged=unchanged,
             skipped=skipped,
         )
+
+    def upsert_entry(
+        self,
+        entry: InterpretationEntry,
+        *,
+        expected: InterpretationEntry | None,
+    ) -> InterpretationEntry:
+        """Atomically apply one entry if its stored state still matches ``expected``.
+
+        Once the compare-and-swap guard succeeds, the same version rules used by
+        deterministic seed imports apply: lower versions leave the current entry
+        untouched, identical same-version entries are no-ops, divergent
+        same-version entries fail, and higher versions replace the full record.
+        """
+
+        if not isinstance(entry, InterpretationEntry):
+            raise TypeError("entry must be an InterpretationEntry")
+        if expected is not None and not isinstance(expected, InterpretationEntry):
+            raise TypeError("expected must be an InterpretationEntry or None")
+
+        connection = self._require_schema()
+        placeholders = ", ".join("?" for _ in _ENTRY_COLUMNS)
+        insert_sql = (
+            f"INSERT INTO interpretation_entries ({', '.join(_ENTRY_COLUMNS)}) "
+            f"VALUES ({placeholders})"
+        )
+        update_columns = _ENTRY_COLUMNS[1:]
+        update_sql = (
+            "UPDATE interpretation_entries SET "
+            + ", ".join(f"{column} = ?" for column in update_columns)
+            + " WHERE id = ?"
+        )
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute(
+                "SELECT * FROM interpretation_entries WHERE id = ?", (entry.id,)
+            ).fetchone()
+            current = None if row is None else self._row_to_entry(row)
+            if current != expected:
+                raise EntryConflictError(
+                    f"interpretation entry {entry.id!r} changed after it was read"
+                )
+
+            if current is None:
+                connection.execute(insert_sql, self._record_values(entry))
+                result = entry
+            elif entry.version < current.version:
+                result = current
+            elif entry.version > current.version:
+                values = self._record_values(entry)
+                connection.execute(update_sql, values[1:] + (entry.id,))
+                result = entry
+            elif entry.to_dict() == current.to_dict():
+                result = current
+            else:
+                raise SeedImportError(
+                    f"same-version conflict for {entry.id!r}; "
+                    "increment version rather than silently overwriting"
+                )
+            connection.commit()
+            return result
+        except Exception:
+            connection.rollback()
+            raise
 
     def get(self, entry_id: str) -> InterpretationEntry | None:
         connection = self._require_schema()

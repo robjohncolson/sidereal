@@ -66,8 +66,20 @@ def _comparison_value(value: str) -> tuple[str, ...]:
         raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
+def _positive_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            f"invalid positive integer: {value!r}"
+        ) from exc
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("value must be a positive integer")
+    return parsed
+
+
 def _db_default() -> Path:
-    configured = os.environ.get("SIDEREAL_DB_PATH")
+    configured = os.environ.get("SIDEREAL_DB") or os.environ.get("SIDEREAL_DB_PATH")
     return Path(configured).expanduser() if configured else DEFAULT_DB_PATH
 
 
@@ -430,6 +442,53 @@ def build_parser() -> argparse.ArgumentParser:
     db_get.add_argument("key", help="canonical interpretation id")
     _add_db_argument(db_get)
     db_get.set_defaults(handler=_run_db_get)
+
+    ai_seed = commands.add_parser(
+        "ai-seed",
+        help="author shared interpretation gaps with the configured AI service",
+    )
+    ai_seed_commands = ai_seed.add_subparsers(
+        dest="ai_seed_command",
+        metavar="AI_SEED_COMMAND",
+    )
+
+    ai_seed_dry_run = ai_seed_commands.add_parser(
+        "dry-run",
+        help="print the generated request without calling the AI service",
+    )
+    ai_seed_dry_run.add_argument(
+        "--id",
+        required=True,
+        dest="entry_id",
+        help="canonical interpretation id",
+    )
+    ai_seed_dry_run.set_defaults(handler=_run_ai_seed_dry_run)
+
+    ai_seed_fill = ai_seed_commands.add_parser(
+        "fill",
+        help="generate and store one missing or stub interpretation",
+    )
+    ai_seed_fill.add_argument(
+        "--id",
+        required=True,
+        dest="entry_id",
+        help="canonical interpretation id",
+    )
+    _add_db_argument(ai_seed_fill)
+    ai_seed_fill.set_defaults(handler=_run_ai_seed_fill)
+
+    ai_seed_fill_gaps = ai_seed_commands.add_parser(
+        "fill-gaps",
+        help="generate and store a bounded batch of interpretation gaps",
+    )
+    ai_seed_fill_gaps.add_argument(
+        "--limit",
+        required=True,
+        type=_positive_int,
+        help="maximum number of gaps to fill",
+    )
+    _add_db_argument(ai_seed_fill_gaps)
+    ai_seed_fill_gaps.set_defaults(handler=_run_ai_seed_fill_gaps)
 
     serve = commands.add_parser(
         "serve",
@@ -1160,6 +1219,45 @@ def _run_db_get(args: argparse.Namespace, _parser: argparse.ArgumentParser) -> i
     return 0
 
 
+def _run_ai_seed_dry_run(
+    args: argparse.Namespace,
+    _parser: argparse.ArgumentParser,
+) -> int:
+    from .interpret.ai_seed import dry_run_interpretation
+
+    result = dry_run_interpretation(args.entry_id)
+    print(json.dumps(_json_ready(result), indent=2, sort_keys=True, ensure_ascii=False))
+    return 0
+
+
+def _run_ai_seed_fill(
+    args: argparse.Namespace,
+    _parser: argparse.ArgumentParser,
+) -> int:
+    from .interpret.ai_seed import fill_interpretation
+    from .interpret.store import InterpretationStore
+
+    path = _require_db(args.db)
+    with InterpretationStore(path) as store:
+        result = fill_interpretation(args.entry_id, store)
+    print(json.dumps(_json_ready(result), indent=2, sort_keys=True, ensure_ascii=False))
+    return 0
+
+
+def _run_ai_seed_fill_gaps(
+    args: argparse.Namespace,
+    _parser: argparse.ArgumentParser,
+) -> int:
+    from .interpret.ai_seed import fill_interpretation_gaps
+    from .interpret.store import InterpretationStore
+
+    path = _require_db(args.db)
+    with InterpretationStore(path) as store:
+        result = fill_interpretation_gaps(store, limit=args.limit)
+    print(json.dumps(_json_ready(result), indent=2, sort_keys=True, ensure_ascii=False))
+    return 0
+
+
 def _run_serve(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     import ipaddress
 
@@ -1178,7 +1276,8 @@ def _run_serve(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
         )
     if not loopback:
         print(
-            "WARNING: sidereal is exposed beyond localhost; there is no authentication.",
+            "WARNING: sidereal is exposed beyond localhost; legacy desk routes "
+            "have no authentication.",
             file=sys.stderr,
         )
 

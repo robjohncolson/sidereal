@@ -85,7 +85,12 @@ ENTRY_TYPES: tuple[str, ...] = (
     "angle_in_sign",
 )
 STATUSES: tuple[str, ...] = ("stub", "ready", "user")
-SOURCES: tuple[str, ...] = ("original", "user", "generated_draft")
+SOURCES: tuple[str, ...] = (
+    "original",
+    "user",
+    "generated_draft",
+    "ai-deepseek",
+)
 
 SEED_DATE = "2026-07-10"
 # Seed JSON remains v1 even though Phase 5 migrates the SQLite store to schema

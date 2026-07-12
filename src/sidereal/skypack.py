@@ -10,7 +10,7 @@ from typing import Any
 
 from .aspects import shortest_arc
 from .chart import compute
-from .config import BODY_IDS
+from .config import BODY_IDS, ChartConfig
 from .library import DEFAULT_CHARTS_DIR, SavedChart, load_chart
 from .timebase import parse_timezone, resolve_moment
 from .transit import TransitGeometry, compute_transit_geometry
@@ -127,14 +127,60 @@ def build_skypack_from_saved_chart(
 ) -> dict[str, Any]:
     """Build a pack from an already-loaded, validated saved-chart record."""
 
+    return build_skypack_from_chart(
+        record.chart_object(),
+        record.chart_config(),
+        natal_id=record.id,
+        natal_label=record.label,
+        when=when,
+        tz=tz,
+        boundary_path=boundary_path,
+        ephe_path=ephe_path,
+        require_swiss_ephemeris=require_swiss_ephemeris,
+        privacy="local_only",
+        generated_at=generated_at,
+    )
+
+
+def build_skypack_from_chart(
+    natal_chart: Chart,
+    natal_config: ChartConfig,
+    *,
+    natal_id: str,
+    natal_label: str = "Saved sky",
+    when: datetime | str | None = None,
+    tz: str | None = None,
+    boundary_path: Path | str | None = None,
+    ephe_path: Path | str | None = None,
+    require_swiss_ephemeris: bool = False,
+    privacy: str = "user_private",
+    generated_at: datetime | None = None,
+) -> dict[str, Any]:
+    """Build a pack from private in-memory natal geometry.
+
+    Authenticated callers use ``privacy='user_private'``.  The legacy
+    saved-chart wrapper above deliberately retains ``local_only``.
+    """
+
+    if not isinstance(natal_chart, Chart):
+        raise TypeError("natal_chart must be a Chart")
+    if not isinstance(natal_config, ChartConfig):
+        raise TypeError("natal_config must be a ChartConfig")
+    if not isinstance(natal_id, str) or not natal_id.strip():
+        raise ValueError("natal_id must be a non-empty string")
+    if not isinstance(natal_label, str):
+        raise ValueError("natal_label must be a string")
+    if privacy not in {"local_only", "user_private"}:
+        raise ValueError("privacy must be local_only or user_private")
+
     generated_utc = _generated_instant(generated_at)
-    timezone_name = _timezone_name(tz, record.tz)
+    timezone_name = _timezone_name(tz, natal_chart.meta.input.tz)
     # Validate even when the epoch is already aware or defaults to now; the
     # timezone remains part of the public pack contract.
     parse_timezone(timezone_name)
     epoch_utc = _epoch_instant(when, timezone_name, default=generated_utc)
 
-    base_config = record.chart_config()
+    base_config = natal_config
     active_config = replace(
         base_config,
         boundary_path=(
@@ -163,25 +209,29 @@ def build_skypack_from_saved_chart(
     )
     transit_chart = compute(transit_moment, active_config, zodiac=zodiac)
     geometry = compute_transit_geometry(
-        record.chart_object(),
+        natal_chart,
         transit_chart,
         active_config,
     )
     return _pack_from_geometry(
-        record,
         geometry,
         zodiac,
+        natal_id=natal_id.strip(),
+        natal_label=natal_label,
         timezone_name=timezone_name,
+        privacy=privacy,
         generated_at=generated_utc,
     )
 
 
 def _pack_from_geometry(
-    record: SavedChart,
     geometry: TransitGeometry,
     zodiac: MidpointZodiac,
     *,
+    natal_id: str,
+    natal_label: str,
     timezone_name: str,
+    privacy: str,
     generated_at: datetime,
 ) -> dict[str, Any]:
     movers = _body_entries(geometry.transit, moving=True)
@@ -223,10 +273,10 @@ def _pack_from_geometry(
         "epoch_utc": _utc_isoformat(geometry.transit.meta.utc_datetime),
         "timezone": timezone_name,
         "location": None,
-        "natal_id": record.id,
-        "natal_label": record.label,
+        "natal_id": natal_id,
+        "natal_label": natal_label,
         "system": "midpoint_v1",
-        "privacy": "local_only",
+        "privacy": privacy,
         "sign_band": _sign_band(zodiac),
         "movers": movers,
         "natal_ghosts": natal_ghosts,
@@ -472,6 +522,7 @@ __all__ = [
     "build_body_entries",
     "build_sign_band",
     "build_skypack",
+    "build_skypack_from_chart",
     "build_skypack_from_saved_chart",
     "parse_local_datetime",
     "rank_resonances",

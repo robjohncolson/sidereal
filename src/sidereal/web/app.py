@@ -12,16 +12,27 @@ import os
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Header, HTTPException, Query, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Response
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .. import __version__
+from ..auth import (
+    AuthenticationError,
+    Authenticator,
+    authenticator_from_env,
+    normalize_user_id,
+)
 from ..chart import compute
 from ..comparison import build_comparison
 from ..config import ChartConfig
 from ..ephemeris import SwissEphemeris
 from ..interpret.audit import report_interpretation_ids
+from ..interpret.ai_seed import (
+    EnqueueingEntryLookup,
+    SeedQueue,
+    ai_seed_queue_from_env,
+)
 from ..interpret.compose import compose_report
 from ..interpret.store import InterpretationStore, InterpretationStoreError
 from ..interpret.synastry import calculate_synastry_report
@@ -34,13 +45,16 @@ from ..library import (
     load_chart,
     save_chart,
 )
-from ..sky_listen import build_sky_listen
+from ..natal import NatalStore, NatalStoreError, natal_record_from_payload
+from ..personal_sky import PersonalSkyCache, build_personal_skypack, compute_natal_chart
+from ..sky_listen import build_sky_listen, build_sky_listen_from_chart
 from ..skyday import SkyDayCache, SkyDayCalculationError
 from ..skypack import build_skypack
 from ..synastry_library import list_synastries, load_synastry, save_synastry_snapshot
 from ..transit_library import list_transits, load_transit, save_transit_snapshot
 from ..types import MomentInput
 from ..wheel import render_svg
+from .supabase_natal import natal_store_from_env
 
 
 _SKY_LISTEN_DEV_ORIGINS = frozenset(
@@ -126,6 +140,63 @@ class HostGuardMiddleware:
         return True
 
 
+class ScopedCORSMiddleware:
+    """Add browser CORS only to the public sky/personal API surface."""
+
+    def __init__(
+        self,
+        app: Any,
+        *,
+        allowed_origins: frozenset[str],
+        exact_paths: tuple[str, ...],
+        path_prefixes: tuple[str, ...] = (),
+    ) -> None:
+        self.app = app
+        self.allowed_origins = allowed_origins
+        self.exact_paths = frozenset(exact_paths)
+        self.path_prefixes = path_prefixes
+
+    async def __call__(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
+        path = str(scope.get("path") or "")
+        selected = path in self.exact_paths or any(
+            path.startswith(prefix) for prefix in self.path_prefixes
+        )
+        origin = _header_value(scope, b"origin") if selected else None
+        cors_allowed = origin in self.allowed_origins
+        private_response = path.startswith("/api/me/") or (
+            path == "/api/sky-listen"
+            and (
+                _header_value(scope, b"authorization") is not None
+                or _header_value(scope, b"x-dev-user-id") is not None
+            )
+        )
+        if not cors_allowed and not private_response:
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_cors(message: dict[str, Any]) -> None:
+            if message.get("type") == "http.response.start":
+                headers = list(message.get("headers", ()))
+                if cors_allowed:
+                    if not any(
+                        key.lower() == b"access-control-allow-origin"
+                        for key, _ in headers
+                    ):
+                        assert origin is not None
+                        headers.append(
+                            (b"access-control-allow-origin", origin.encode("latin-1"))
+                        )
+                    headers = _merge_vary_origin(headers)
+                if private_response and not any(
+                    key.lower() == b"cache-control" for key, _ in headers
+                ):
+                    headers.append((b"cache-control", b"private, no-store"))
+                message = {**message, "headers": headers}
+            await send(message)
+
+        await self.app(scope, receive, send_with_cors)
+
+
 def create_app(
     *,
     db_path: Path | str = Path("data/sidereal.db"),
@@ -136,6 +207,11 @@ def create_app(
     bind_host: str = "127.0.0.1",
     allow_lan: bool = False,
     trusted_hosts: tuple[str, ...] = (),
+    natal_store: NatalStore | None = None,
+    authenticator: Authenticator | None = None,
+    personal_sky_cache: PersonalSkyCache | None = None,
+    ai_seed_queue: SeedQueue | None = None,
+    allow_dev_auth: bool | None = None,
 ) -> FastAPI:
     """Create a same-origin local API and static UI application."""
 
@@ -172,7 +248,49 @@ def create_app(
         trusted_hosts=normalized_trusted,
     )
     sky_day_origins = _sky_day_allowed_origins()
+    personal_origins = frozenset((*sky_day_origins, *_SKY_LISTEN_DEV_ORIGINS))
     sky_day_cache = SkyDayCache()
+    active_natal_store = (
+        natal_store if natal_store is not None else natal_store_from_env()
+    )
+    active_authenticator = (
+        authenticator if authenticator is not None else authenticator_from_env()
+    )
+    active_ai_seed_queue = (
+        ai_seed_queue
+        if ai_seed_queue is not None
+        else ai_seed_queue_from_env(settings.db_path)
+    )
+    dev_auth_enabled = (
+        os.environ.get("SIDEREAL_DEV_AUTH") == "1"
+        if allow_dev_auth is None
+        else allow_dev_auth
+    )
+    if not isinstance(dev_auth_enabled, bool):
+        raise ValueError("allow_dev_auth must be a boolean or None")
+    if dev_auth_enabled and (allow_lan or not _is_loopback_host(normalized_bind)):
+        raise ValueError("development auth is allowed only on a loopback server")
+
+    def personal_pack_builder(
+        record: Any,
+        *,
+        when: Any,
+        tz: str,
+    ) -> dict[str, Any]:
+        return build_personal_skypack(
+            record,
+            when=when,
+            tz=tz,
+            boundary_path=settings.boundary_path,
+            ephe_path=settings.ephe_path,
+            require_swiss_ephemeris=settings.require_swiss_ephemeris,
+        )
+
+    active_personal_cache = (
+        personal_sky_cache
+        if personal_sky_cache is not None
+        else PersonalSkyCache(personal_pack_builder)
+    )
     static_dir = Path(__file__).with_name("static")
     app = FastAPI(
         title="Sidereal local desk",
@@ -183,11 +301,28 @@ def create_app(
     )
     app.state.sidereal_settings = settings
     app.state.sky_day_cache = sky_day_cache
+    app.state.natal_store = active_natal_store
+    app.state.personal_sky_cache = active_personal_cache
+    app.state.ai_seed_queue = active_ai_seed_queue
+    app.add_middleware(
+        ScopedCORSMiddleware,
+        allowed_origins=personal_origins,
+        exact_paths=("/api/sky-listen",),
+        path_prefixes=("/api/me/",),
+    )
     app.add_middleware(
         HostGuardMiddleware,
         allowed_hosts=allowed_hosts,
         allow_ip_hosts=allow_lan,
     )
+
+    if active_ai_seed_queue is not None:
+        app.router.add_event_handler("startup", active_ai_seed_queue.start)
+        app.router.add_event_handler("shutdown", active_ai_seed_queue.close)
+
+    close_natal_store = getattr(active_natal_store, "close", None)
+    if callable(close_natal_store):
+        app.router.add_event_handler("shutdown", close_natal_store)
 
     @app.exception_handler(InterpretationStoreError)
     async def store_error_handler(_request: Any, exc: InterpretationStoreError) -> JSONResponse:
@@ -200,6 +335,51 @@ def create_app(
     @app.exception_handler(ValueError)
     async def value_error_handler(_request: Any, exc: ValueError) -> JSONResponse:
         return JSONResponse(status_code=400, content={"detail": str(exc)})
+
+    @app.exception_handler(NatalStoreError)
+    async def natal_store_error_handler(
+        _request: Any,
+        _exc: NatalStoreError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Natal storage is temporarily unavailable"},
+        )
+
+    def authenticated_user_id(
+        authorization: str | None,
+        dev_user_id: str | None,
+        *,
+        required: bool,
+    ) -> str | None:
+        if authorization is None:
+            if dev_user_id is not None:
+                if not dev_auth_enabled:
+                    raise _unauthorized()
+                try:
+                    return normalize_user_id(dev_user_id)
+                except AuthenticationError as exc:
+                    raise _unauthorized() from exc
+            if required:
+                raise _unauthorized()
+            return None
+        try:
+            token = _bearer_token(authorization)
+            return normalize_user_id(active_authenticator.authenticate(token))
+        except AuthenticationError as exc:
+            raise _unauthorized() from exc
+
+    def required_personal_user_id(
+        authorization: str | None = Header(default=None),
+        dev_user_id: str | None = Header(default=None, alias="X-Dev-User-Id"),
+    ) -> str:
+        user_id = authenticated_user_id(
+            authorization,
+            dev_user_id,
+            required=True,
+        )
+        assert user_id is not None
+        return user_id
 
     @app.get("/api/health")
     def health() -> dict[str, Any]:
@@ -325,6 +505,78 @@ def create_app(
             },
         )
 
+    @app.post("/api/me/natal")
+    def personal_natal_upsert(
+        payload: dict[str, Any],
+        response: Response,
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = natal_record_from_payload(user_id, payload)
+        # Validate civil-time/ephemeris calculation before replacing a good row.
+        compute_natal_chart(
+            record,
+            boundary_path=settings.boundary_path,
+            ephe_path=settings.ephe_path,
+            require_swiss_ephemeris=settings.require_swiss_ephemeris,
+        )
+        saved = active_natal_store.upsert(record)
+        active_personal_cache.invalidate(user_id)
+        response.headers["Cache-Control"] = "private, no-store"
+        return saved.to_dict()
+
+    @app.get("/api/me/natal")
+    def personal_natal_get(
+        response: Response,
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = active_natal_store.get(user_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="No natal profile is saved")
+        response.headers["Cache-Control"] = "private, no-store"
+        return record.to_dict()
+
+    @app.delete("/api/me/natal", status_code=204)
+    def personal_natal_delete(
+        user_id: str = Depends(required_personal_user_id),
+    ) -> Response:
+        active_natal_store.delete(user_id)
+        active_personal_cache.invalidate(user_id)
+        return Response(status_code=204, headers={"Cache-Control": "private, no-store"})
+
+    @app.get("/api/me/skypack")
+    def personal_skypack(
+        response: Response,
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = active_natal_store.get(user_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="No natal profile is saved")
+        response.headers["Cache-Control"] = "private, no-store"
+        return active_personal_cache.get(record)
+
+    @app.options("/api/me/{resource:path}", include_in_schema=False)
+    def personal_preflight(
+        resource: str,
+        origin: str | None = Header(default=None),
+        access_control_request_method: str | None = Header(default=None),
+    ) -> Response:
+        del resource
+        if origin not in personal_origins:
+            return Response(status_code=400)
+        if access_control_request_method not in {"GET", "POST", "DELETE"}:
+            return Response(status_code=405)
+        return Response(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": (
+                    "Authorization, Content-Type"
+                    + (", X-Dev-User-Id" if dev_auth_enabled else "")
+                ),
+                "Access-Control-Max-Age": "600",
+            },
+        )
+
     @app.get("/api/sky-listen")
     def sky_listen(
         response: Response,
@@ -335,21 +587,82 @@ def create_app(
         when: str | None = Query(default=None),
         tz: str | None = Query(default=None),
         origin: str | None = Header(default=None),
+        authorization: str | None = Header(default=None),
+        dev_user_id: str | None = Header(default=None, alias="X-Dev-User-Id"),
     ) -> dict[str, Any]:
-        _set_sky_listen_cors(response, origin)
+        _set_sky_listen_cors(response, origin, personal_origins)
         with _optional_store(settings) as store:
-            return build_sky_listen(
-                natal_id=natal_id,
+            listen_store = (
+                EnqueueingEntryLookup(store, active_ai_seed_queue)
+                if store is not None and active_ai_seed_queue is not None
+                else store
+            )
+            if natal_id is not None:
+                if authorization is not None or dev_user_id is not None:
+                    authenticated_user_id(
+                        authorization,
+                        dev_user_id,
+                        required=True,
+                    )
+                    raise HTTPException(
+                        status_code=400,
+                        detail="provide either natal_id or authenticated user natal, not both",
+                    )
+                return build_sky_listen(
+                    natal_id=natal_id,
+                    body=body,
+                    sign=sign,
+                    kind=kind,
+                    when=when,
+                    tz=tz,
+                    charts_dir=settings.charts_dir,
+                    boundary_path=settings.boundary_path,
+                    ephe_path=settings.ephe_path,
+                    require_swiss_ephemeris=settings.require_swiss_ephemeris,
+                    store=listen_store,
+                )
+            user_id = authenticated_user_id(
+                authorization,
+                dev_user_id,
+                required=False,
+            )
+            if user_id is not None:
+                response.headers["Cache-Control"] = "private, no-store"
+            record = (
+                active_natal_store.get(user_id) if user_id is not None else None
+            )
+            if record is None:
+                return build_sky_listen(
+                    body=body,
+                    sign=sign,
+                    kind=kind,
+                    when=when,
+                    tz=tz,
+                    charts_dir=settings.charts_dir,
+                    boundary_path=settings.boundary_path,
+                    ephe_path=settings.ephe_path,
+                    require_swiss_ephemeris=settings.require_swiss_ephemeris,
+                    store=listen_store,
+                )
+            natal_chart, natal_config = compute_natal_chart(
+                record,
+                boundary_path=settings.boundary_path,
+                ephe_path=settings.ephe_path,
+                require_swiss_ephemeris=settings.require_swiss_ephemeris,
+            )
+            return build_sky_listen_from_chart(
+                natal_chart,
+                natal_config,
+                natal_id=user_id,
                 body=body,
                 sign=sign,
                 kind=kind,
                 when=when,
                 tz=tz,
-                charts_dir=settings.charts_dir,
                 boundary_path=settings.boundary_path,
                 ephe_path=settings.ephe_path,
                 require_swiss_ephemeris=settings.require_swiss_ephemeris,
-                store=store,
+                store=listen_store,
             )
 
     @app.options("/api/sky-listen", include_in_schema=False)
@@ -357,7 +670,7 @@ def create_app(
         origin: str | None = Header(default=None),
         access_control_request_method: str | None = Header(default=None),
     ) -> Response:
-        if origin not in _SKY_LISTEN_DEV_ORIGINS:
+        if origin not in personal_origins:
             return Response(status_code=400)
         if access_control_request_method != "GET":
             return Response(status_code=405)
@@ -366,6 +679,10 @@ def create_app(
             headers={
                 "Access-Control-Allow-Origin": origin,
                 "Access-Control-Allow-Methods": "GET",
+                "Access-Control-Allow-Headers": (
+                    "Authorization"
+                    + (", X-Dev-User-Id" if dev_auth_enabled else "")
+                ),
                 "Vary": "Origin",
             },
         )
@@ -887,6 +1204,31 @@ def _normalize_host(value: Any) -> str | None:
     return normalized
 
 
+def _header_value(scope: Mapping[str, Any], name: bytes) -> str | None:
+    for key, value in scope.get("headers", ()):
+        if key.lower() == name:
+            try:
+                return value.decode("latin-1")
+            except UnicodeDecodeError:  # pragma: no cover - latin-1 decodes all bytes
+                return None
+    return None
+
+
+def _merge_vary_origin(
+    headers: list[tuple[bytes, bytes]],
+) -> list[tuple[bytes, bytes]]:
+    for index, (key, value) in enumerate(headers):
+        if key.lower() != b"vary":
+            continue
+        tokens = [item.strip() for item in value.decode("latin-1").split(",")]
+        if not any(item.casefold() == "origin" for item in tokens):
+            tokens.append("Origin")
+            headers[index] = (key, ", ".join(tokens).encode("latin-1"))
+        return headers
+    headers.append((b"vary", b"Origin"))
+    return headers
+
+
 def _required_host(value: Any, name: str) -> str:
     normalized = _normalize_host(value)
     if normalized is None or normalized == "*":
@@ -919,8 +1261,34 @@ def _optional_snapshot_id(value: Any) -> str | None:
     return text or None
 
 
-def _set_sky_listen_cors(response: Response, origin: str | None) -> None:
-    if origin in _SKY_LISTEN_DEV_ORIGINS:
+def _bearer_token(value: str) -> str:
+    if not isinstance(value, str):
+        raise AuthenticationError("Invalid bearer authorization")
+    scheme, separator, token = value.strip().partition(" ")
+    if (
+        not separator
+        or scheme.casefold() != "bearer"
+        or not token
+        or any(character.isspace() for character in token)
+    ):
+        raise AuthenticationError("Invalid bearer authorization")
+    return token
+
+
+def _unauthorized() -> HTTPException:
+    return HTTPException(
+        status_code=401,
+        detail="Invalid or missing bearer token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
+def _set_sky_listen_cors(
+    response: Response,
+    origin: str | None,
+    allowed_origins: frozenset[str],
+) -> None:
+    if origin in allowed_origins:
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Vary"] = "Origin"
 
@@ -978,4 +1346,9 @@ def _required_store(settings: WebSettings) -> Iterator[InterpretationStore]:
         yield store
 
 
-__all__ = ["HostGuardMiddleware", "WebSettings", "create_app"]
+__all__ = [
+    "HostGuardMiddleware",
+    "ScopedCORSMiddleware",
+    "WebSettings",
+    "create_app",
+]

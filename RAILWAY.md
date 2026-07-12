@@ -1,4 +1,4 @@
-# Deploy sidereal on Railway (public sky-day)
+# Deploy sidereal on Railway (public sky + optional private natal)
 
 This service powers Moon Chorus **public** planet positions:
 
@@ -6,7 +6,8 @@ This service powers Moon Chorus **public** planet positions:
 GET https://<your-service>.up.railway.app/api/sky-day?tz=UTC
 ```
 
-No birth data is required. Personal charts stay optional / local.
+No birth data is required for the public sky. Save my sky is optional and uses
+authenticated Supabase-backed natal rows when the variables below are set.
 
 ## One-time setup (Dashboard)
 
@@ -16,15 +17,34 @@ No birth data is required. Personal charts stay optional / local.
 4. After first deploy, open **Settings → Networking → Generate Domain**.
 5. Copy the public URL, e.g. `https://sidereal-production-xxxx.up.railway.app`.
 
-### Variables (optional)
+### Variables
 
 | Variable | Purpose |
 |----------|---------|
 | `SKY_DAY_CORS_ORIGINS` | Extra browser origins (comma-separated). Defaults already include `https://aim-dojo.vercel.app` and local `:8931`. |
 | `SIDEREAL_TRUSTED_HOSTS` | Extra `Host` headers (custom domains), comma-separated. |
 | `PORT` | Set by Railway automatically. |
+| `SUPABASE_URL` | Supabase project URL and JWT issuer base. |
+| `SUPABASE_JWT_SECRET` | Legacy/shared Supabase HS256 JWT secret for access-token verification. |
+| `SUPABASE_SECRET_KEY` | Preferred current `sb_secret_*` server key for owner-keyed `natal_charts` CRUD. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Legacy server-role JWT fallback when no secret key is set. |
+| `SIDEREAL_NATAL_BACKEND` | Use `supabase` in production (`auto` is the default). |
+| `SIDEREAL_DB` | Interpretation SQLite path; point this at a persistent Railway volume. |
+| `DEEPSEEK_API_KEY` | Server-only key that enables shared missing/stub seed fills. |
+| `DEEPSEEK_MODEL` | Optional model override; defaults to `deepseek-v4-flash`. |
+| `DEEPSEEK_BASE_URL` | Optional API base; defaults to `https://api.deepseek.com`. |
 
 `RAILWAY_PUBLIC_DOMAIN` is set by Railway; the start script passes it as `--trusted-host`.
+
+This parcel pins user-token verification to HS256. If Supabase Auth uses
+asymmetric signing keys, add JWKS verification before enabling the private
+routes. Keep every server key out of browser configuration and logs.
+
+For durable AI fills, attach a Railway volume and set, for example,
+`SIDEREAL_DB=/data/sidereal.db`. The start script initializes/imports the
+catalog only when that file is absent; later `ai-deepseek` entries remain in
+the same database across deploys. Without `DEEPSEEK_API_KEY`, the Listen hook
+does not start a worker.
 
 ## Point Moon Chorus at it
 
@@ -68,6 +88,9 @@ Expect `type: "skyday"`, `privacy: "public"`, 12 movers.
 ## Notes
 
 - Ephemeris files are **downloaded in the Docker build** (not stored in git).
-- Interpretation seeds are imported at build for optional listen/desk routes.
-- Empty `charts/` on Railway — no personal birth charts in the public image.
+- Interpretation seeds initialize the SQLite catalog; AI fills require a
+  persistent `SIDEREAL_DB` volume to survive deploys.
+- Keep `charts/` empty on Railway. Authenticated natal metadata stays in
+  Supabase and private chart geometry is computed in memory.
+- Never set `SIDEREAL_DEV_AUTH=1` on Railway.
 - Swiss Ephemeris license applies when redistributing data; see Astrodienst docs.

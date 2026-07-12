@@ -3,7 +3,7 @@
 from .audit import report_interpretation_ids
 from .compose import EPISTEMIC_NOTE, InterpretationReport, ReportGap, compose_report
 from .schema import InterpretationEntry, expected_entry_ids
-from .store import ImportResult, InterpretationStore, InventoryAudit
+from .store import EntryConflictError, ImportResult, InterpretationStore, InventoryAudit
 from .transit import (
     TRANSIT_EPISTEMIC_NOTE,
     TRANSIT_MOON_WARNING,
@@ -14,6 +14,7 @@ from .transit import (
 
 __all__ = [
     "EPISTEMIC_NOTE",
+    "EntryConflictError",
     "ImportResult",
     "InterpretationEntry",
     "InterpretationReport",

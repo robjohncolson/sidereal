@@ -117,9 +117,10 @@ adds each chart's Midpoint sign character. Ascendant↔Ascendant and
 Midheaven↔Midheaven geometry stays explicitly `not_applicable`; no angle
 self-keys are added to the inventory. The family seed files contain no birth
 moments, coordinates, saved-chart identifiers, or report snapshots.
-`gaps` audits the complete inventory. `SIDEREAL_DB_PATH` changes the default
-`data/sidereal.db` path. A chart still calculates if that database does not
-exist; its report lists the interpretation keys as missing.
+`gaps` audits the complete inventory. `SIDEREAL_DB` changes the default
+`data/sidereal.db` path; legacy `SIDEREAL_DB_PATH` remains a fallback. A chart
+still calculates if that database does not exist; its report lists the
+interpretation keys as missing.
 
 The interpretation database schema is version 2. Opening an existing version
 1 database for `db import` performs a transactional, data-preserving migration
@@ -139,6 +140,49 @@ python -m sidereal db gaps --db data/sidereal.db \
 `--chart` reads a full report JSON. `--chart-id` resolves a local saved-chart id
 or unambiguous label and composes its current interpretation key set. The
 result reports ready, stub, and missing ids only within that scope.
+
+### AI-assisted shared seed fills
+
+Parcel Q can fill a missing or stub catalog record through DeepSeek. A fill is
+keyed only by the shared interpretation id—such as
+`planet_in_sign:mars:aries` or `aspect:moon:trine:saturn`—so the resulting text
+serves every user who encounters that geometry. Prompts contain the id and
+inventory keywords only; they never contain a user id, birth data, chart
+coordinates, or a personalized essay request.
+
+```bash
+# No API key, network call, or database write:
+python -m sidereal ai-seed dry-run \
+  --id 'planet_in_sign:mars:aries'
+
+# Requires an initialized interpretation database and server-side key:
+python -m sidereal ai-seed fill \
+  --id 'aspect:moon:trine:saturn' --db data/sidereal.db
+python -m sidereal ai-seed fill-gaps \
+  --limit 10 --db data/sidereal.db
+```
+
+| Variable | Purpose |
+|----------|---------|
+| `DEEPSEEK_API_KEY` | Server-only credential; required by fill commands and never returned to clients |
+| `DEEPSEEK_MODEL` | Optional model override; defaults to current `deepseek-v4-flash` |
+| `DEEPSEEK_BASE_URL` | Optional API base; defaults to `https://api.deepseek.com` |
+| `SIDEREAL_DB` | SQLite path, preferably on a persistent Railway volume |
+
+The client uses DeepSeek's non-streaming
+[`POST /chat/completions`](https://api-docs.deepseek.com/api/create-chat-completion)
+JSON-output contract. Generated objects must contain exactly `title`,
+`summary`, `growth`, and `keywords`; deterministic validation rejects malformed,
+predictive, medical, financial, legal, crisis, and guaranteed-outcome language
+before SQLite is touched. Ready/user-authored records are never overwritten;
+stub fills increment the existing version and use source `ai-deepseek`.
+
+When `DEEPSEEK_API_KEY` and the interpretation database are present, Sky
+Listen queues missing/stub ids in a bounded background worker and returns its
+current geometry/text immediately. Queued and in-flight ids are de-duplicated
+within the process. A failed fill leaves the stub unchanged and can be retried
+on a later request; the next request sees a successfully committed ready entry.
+Without the key, the HTTP hook is inert.
 
 ## Calculate a chart
 
@@ -363,11 +407,84 @@ retain the same `generated_at`, epoch, and geometry even if they pass another
 `when`. This cache is process-local and resets on restart; successful responses
 also advertise `Cache-Control: public, max-age=3600`.
 
-Cross-origin `GET` and `OPTIONS` are granted only on `/api/sky-day` for the
-Moon Chorus Vercel/GitHub origins and the two `:8931` development origins.
+Cross-origin access is scoped to the sky surfaces: `/api/sky-day`,
+`/api/sky-listen`, and authenticated `/api/me/*`. The built-in allowlist has
+the Moon Chorus Vercel/GitHub origins and the two `:8931` development origins.
 Merge additional exact origins with the comma-separated
-`SKY_DAY_CORS_ORIGINS` environment variable. Other API routes do not inherit
-this CORS grant.
+`SKY_DAY_CORS_ORIGINS` environment variable. Legacy desk/report routes do not
+inherit this CORS grant.
+
+### Authenticated Save my sky API
+
+Moon Chorus users may opt into one private natal record. These routes require
+`Authorization: Bearer <supabase_access_token>` and derive `user_id` only from
+the verified JWT subject:
+
+| Method | Route | Result |
+|--------|-------|--------|
+| `POST` | `/api/me/natal` | Validate, calculate, and upsert the user's birth profile |
+| `GET` | `/api/me/natal` | Return that user's normalized profile metadata |
+| `DELETE` | `/api/me/natal` | Idempotently clear that user's profile |
+| `GET` | `/api/me/skypack` | Return today's `user_private` natal-bearing skypack |
+
+Unknown or null birth time is normalized to `time_unknown: true` and stored as
+null. Calculation uses local noon while retaining `time_known: false`, so no
+houses or angles are invented. Personal skypacks are cached in-process by
+user, timezone, and civil date; a profile edit/delete invalidates that user's
+entries. Packs contain geometry and a neutral label, never date of birth,
+coordinates, or place text.
+
+Nonexistent local times during a DST jump are rejected. The v1 payload has no
+fold selector for a repeated DST hour, so ambiguous local times are also
+rejected rather than guessed; save the time as unknown when the occurrence
+cannot be established unambiguously.
+
+Railway/Supabase configuration:
+
+| Variable | Purpose |
+|----------|---------|
+| `SUPABASE_URL` | Project URL; also pins the accepted JWT issuer |
+| `SUPABASE_JWT_SECRET` | Legacy/shared Supabase HS256 JWT secret used to verify access tokens |
+| `SUPABASE_JWT_AUDIENCE` | Optional audience override; defaults to `authenticated` |
+| `SUPABASE_SECRET_KEY` | Preferred current `sb_secret_*` server-only PostgREST credential |
+| `SUPABASE_SERVICE_ROLE_KEY` | Legacy server-only JWT credential; fallback when no secret key is set |
+| `SUPABASE_NATAL_TABLE` | Optional table override; defaults to `natal_charts` |
+| `SIDEREAL_NATAL_BACKEND` | `auto`, `supabase`, or explicit volatile `memory` |
+| `SIDEREAL_DEV_AUTH` | Set to `1` only locally to enable `X-Dev-User-Id` |
+
+`auto` selects Supabase when its URL/server-key variables are complete and
+otherwise uses process memory. Partial Supabase storage configuration fails at
+startup instead of silently losing durable profiles. `SUPABASE_SECRET_KEY`
+takes precedence when both server-key forms are present. Server keys are never
+returned to or accepted from the browser. The expected `natal_charts`
+columns are `user_id` (primary key), `birth_date`, nullable `birth_time`,
+`time_unknown`, `tz`, nullable paired `lat`/`lon`, `place_label`, and
+`updated_at`; enable owner-only RLS for direct user access even though this
+server always filters by the verified subject.
+
+Parcel P verifies legacy/shared-secret Supabase access tokens with pinned
+HS256. Projects that have migrated Auth token signing to asymmetric keys need
+a JWKS verifier before enabling these routes; configuring only a server API
+key does not enable user authentication.
+
+For a local disposable smoke test, start a memory backend with the explicit
+development header escape hatch:
+
+```bash
+SIDEREAL_NATAL_BACKEND=memory SIDEREAL_DEV_AUTH=1 \
+  python -m sidereal serve --db data/sidereal.db
+
+curl -sS -X POST http://127.0.0.1:8742/api/me/natal \
+  -H 'Content-Type: application/json' \
+  -H 'X-Dev-User-Id: demo-user' \
+  --data '{"birth_date":"1983-11-29","birth_time":null,"time_unknown":true,"tz":"Asia/Tokyo","lat":35.68,"lon":139.69,"place_label":"Tokyo, Japan"}'
+
+curl -sS http://127.0.0.1:8742/api/me/skypack \
+  -H 'X-Dev-User-Id: demo-user'
+```
+
+Never enable `SIDEREAL_DEV_AUTH` on Railway. Production calls use the Supabase
+Bearer token instead.
 
 ### Sky Listen API
 
@@ -383,11 +500,13 @@ curl --get http://127.0.0.1:8742/api/sky-listen \
 ```
 
 Omit `natal_id` for the generic placement block only; use `sign=libra` for a
-constellation/sign Listen. Responses are local-only symbolic study notes, not
-predictions. Browser `GET` requests to this endpoint from the exact development
-origins `http://127.0.0.1:8931` and `http://localhost:8931` are allowed while
-the existing Host-header guard remains active; other API routes do not receive
-that cross-origin grant.
+constellation/sign Listen. When `natal_id` is omitted and a valid Bearer token
+has a saved profile, the same endpoint composes `personal.available: true`
+from that user's in-memory natal chart. A valid user with no saved chart still
+gets the generic placement response. An invalid supplied token returns 401;
+it never silently downgrades to anonymous. File-based `natal_id` remains the
+backward-compatible local desk path and cannot be combined with Bearer auth.
+Responses are symbolic study notes, not predictions.
 
 ## Transit vs two-person synastry
 
@@ -442,14 +561,15 @@ python -m sidereal serve --db data/sidereal.db --charts-dir charts
 The default bind is `127.0.0.1:8742`. Sidereal refuses a non-loopback host
 unless exposure is explicit, for example
 `--host 0.0.0.0 --allow-lan`. That flag can expose sensitive birth data and
-saved charts to the local network; the app provides no accounts, access
-control, TLS, cloud storage, or telemetry. Keep the default unless you have
-secured the surrounding network yourself. LAN mode accepts numeric IP Host
+saved charts to the local network. The new `/api/me/*` surface has Bearer
+authentication, but legacy desk/report routes remain unauthenticated; the app
+does not supply TLS or telemetry. Keep the default unless you have secured the
+surrounding network yourself. LAN mode accepts numeric IP Host
 headers; if you deliberately browse through a local DNS name, add that exact
 name with repeatable `--trusted-host NAME`. Wildcards are refused so the Host
 guard continues to block DNS-rebinding origins.
 
-### Railway notes for public sky-day
+### Railway notes for public and personal sky
 
 For a future isolated Railway instance, install the web extra and pass
 Railway's port, public bind, and exact generated hostname explicitly:
@@ -462,16 +582,18 @@ python -m sidereal serve --host 0.0.0.0 --allow-lan \
 
 - Set `SKY_DAY_CORS_ORIGINS` when the game uses an origin beyond the built-in
   allowlist.
+- Configure the Supabase variables above for durable Save my sky. Do not set
+  `SIDEREAL_DEV_AUTH` in a public environment.
 - Set `SIDEREAL_EPHE_PATH` to a directory or mounted volume containing the
   Swiss `.se1` files. Without them, the documented Moshier fallback is used;
   strict Swiss mode should not be enabled until those files are present.
 - `SIDEREAL_BOUNDARY_PATH` may override the packaged Midpoint boundary JSON.
 - Use `/api/sky-day?tz=UTC` (or `/api/health`) as the health check. The day
   cache is in-memory per process and is intentionally rebuilt after restarts.
-- Do not place personal chart files or an interpretation database in the
-  public image. The current `serve` command still exposes the wider local-desk
-  routes and has no authentication, so a public deployment must be isolated
-  from any private Sidereal data.
+- Do not place legacy personal chart files in the public image. Authenticated
+  natal rows stay in Supabase and are computed in memory; the wider legacy
+  local-desk routes remain unauthenticated, so public deployments should not
+  mount a private `charts/` directory.
 
 The browser provides chart calculation and readable reports, a searchable
 timezone/place picker, saved-chart library actions, current-DB
@@ -500,6 +622,10 @@ tables. Its JSON API uses the same validation and calculation paths as the CLI:
 |--------|-------|---------|
 | `GET` | `/api/health` | Version, ephemeris probe, DB availability, and saved-chart count |
 | `GET` | `/api/sky-day` | Public, natal-free daily Midpoint body geometry |
+| `GET` | `/api/sky-listen` | Public placement or authenticated personal transit Listen |
+| `GET` | `/api/skypack` | Legacy local file-chart skypack export |
+| `POST` / `GET` / `DELETE` | `/api/me/natal` | Authenticated private natal profile CRUD |
+| `GET` | `/api/me/skypack` | Authenticated daily private skypack |
 | `POST` | `/api/chart` | Calculate and compose a full chart report |
 | `POST` | `/api/transit` | Run a saved-natal or inline-natal transit report |
 | `POST` | `/api/synastry` | Compare two saved and/or inline fixed charts |
