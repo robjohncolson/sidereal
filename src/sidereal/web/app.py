@@ -411,6 +411,7 @@ def create_app(
             "saved_charts": len(list_charts(settings.charts_dir)),
             "natal_backend": natal_backend,
             "auth_configured": auth_name != "RejectingAuthenticator",
+            "ai_seed": active_ai_seed_queue is not None,
         }
         try:
             batch = provider.calculate_positions(2451545.0)
