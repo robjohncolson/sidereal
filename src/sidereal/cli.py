@@ -78,6 +78,18 @@ def _positive_int(value: str) -> int:
     return parsed
 
 
+def _nonnegative_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            f"invalid non-negative integer: {value!r}"
+        ) from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("value must be a non-negative integer")
+    return parsed
+
+
 def _db_default() -> Path:
     configured = os.environ.get("SIDEREAL_DB") or os.environ.get("SIDEREAL_DB_PATH")
     return Path(configured).expanduser() if configured else DEFAULT_DB_PATH
@@ -489,6 +501,51 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_db_argument(ai_seed_fill_gaps)
     ai_seed_fill_gaps.set_defaults(handler=_run_ai_seed_fill_gaps)
+
+    ai_seed_export = ai_seed_commands.add_parser(
+        "export-prompts",
+        help="export key-free prompt payloads for an offline author",
+    )
+    ai_seed_export.add_argument(
+        "--limit",
+        required=True,
+        type=_positive_int,
+        help="maximum number of supported gaps to export",
+    )
+    ai_seed_export.add_argument(
+        "-o",
+        "--output",
+        required=True,
+        type=Path,
+        dest="out",
+        help="write one prompt payload per JSONL line",
+    )
+    ai_seed_export.add_argument(
+        "--few-shot",
+        type=_nonnegative_int,
+        default=0,
+        help="attach up to N ready same-type examples (default: %(default)s)",
+    )
+    ai_seed_export.add_argument(
+        "--notes-dir",
+        type=Path,
+        help="attach relevant .md/.markdown/.txt cultural source notes",
+    )
+    _add_db_argument(ai_seed_export)
+    ai_seed_export.set_defaults(handler=_run_ai_seed_export_prompts)
+
+    ai_seed_apply = ai_seed_commands.add_parser(
+        "apply-json",
+        help="validate and store records authored by an offline model",
+    )
+    ai_seed_apply.add_argument(
+        "--file",
+        required=True,
+        type=Path,
+        help="generated record or schema-versioned record batch",
+    )
+    _add_db_argument(ai_seed_apply)
+    ai_seed_apply.set_defaults(handler=_run_ai_seed_apply_json)
 
     serve = commands.add_parser(
         "serve",
@@ -1256,6 +1313,65 @@ def _run_ai_seed_fill_gaps(
         result = fill_interpretation_gaps(store, limit=args.limit)
     print(json.dumps(_json_ready(result), indent=2, sort_keys=True, ensure_ascii=False))
     return 0
+
+
+def _run_ai_seed_export_prompts(
+    args: argparse.Namespace,
+    _parser: argparse.ArgumentParser,
+) -> int:
+    from .interpret.ai_seed import export_offline_seed_prompts
+    from .interpret.store import InterpretationStore
+
+    database = _require_db(args.db)
+    output = args.out.expanduser()
+    if _same_output_path(output, database):
+        raise ValueError("prompt output must not overwrite the interpretation database")
+    with InterpretationStore(database) as store:
+        records = export_offline_seed_prompts(
+            store,
+            limit=args.limit,
+            few_shot=args.few_shot,
+            notes_dir=args.notes_dir,
+        )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    rendered = "".join(
+        json.dumps(
+            record,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        + "\n"
+        for record in records
+    )
+    output.write_text(rendered, encoding="utf-8")
+    print(
+        json.dumps(
+            {"exported": len(records), "output": str(output)},
+            indent=2,
+            sort_keys=True,
+            ensure_ascii=False,
+        )
+    )
+    return 0
+
+
+def _run_ai_seed_apply_json(
+    args: argparse.Namespace,
+    _parser: argparse.ArgumentParser,
+) -> int:
+    from .interpret.ai_seed import (
+        apply_offline_generated_records,
+        load_offline_generated_records,
+    )
+    from .interpret.store import InterpretationStore
+
+    database = _require_db(args.db)
+    records = load_offline_generated_records(args.file)
+    with InterpretationStore(database) as store:
+        result = apply_offline_generated_records(records, store)
+    print(json.dumps(result.to_dict(), indent=2, sort_keys=True))
+    return 1 if result.invalid else 0
 
 
 def _run_serve(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:

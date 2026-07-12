@@ -90,6 +90,7 @@ SOURCES: tuple[str, ...] = (
     "user",
     "generated_draft",
     "ai-deepseek",
+    "ai-offline",
 )
 
 SEED_DATE = "2026-07-10"

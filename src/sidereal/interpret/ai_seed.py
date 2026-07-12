@@ -80,6 +80,17 @@ Return only one JSON object with exactly these fields: title (string), summary (
 The summary should be substantive, reflective, and approximately 120-500 characters.
 Do not wrap the JSON in Markdown and do not add commentary."""
 
+OFFLINE_SEED_SYSTEM_REINFORCEMENT = """For this offline authoring pass, keep the constellation-first 13-sign culture vivid and treat Ophiuchus as a full citizen rather than an exception.
+Use any supplied source notes only as cultural and interpretive motifs. Synthesize them into tentative, inclusive language; do not copy categorical stereotypes, celebrity biography, medical claims, sign dates, or external ephemeris assertions.
+The repository's Midpoint J2000 geometry remains authoritative. A useful voice can move from a concrete symbol to a capacity, its possible overreach, and a constructive integration."""
+
+_OFFLINE_NOTE_SUFFIXES = frozenset((".md", ".markdown", ".txt"))
+_OFFLINE_NOTE_FILE_LIMIT = 8
+_OFFLINE_NOTE_READ_LIMIT = 16_000
+_OFFLINE_NOTE_TEXT_LIMIT = 2_000
+_OFFLINE_FEW_SHOT_TITLE_LIMIT = 160
+_OFFLINE_FEW_SHOT_SUMMARY_LIMIT = 500
+
 _GENERATED_FIELDS = frozenset(("title", "summary", "growth", "keywords"))
 _LOGGER = logging.getLogger(__name__)
 
@@ -167,6 +178,22 @@ class AISeedBatchResult:
             "selected_ids": list(self.selected_ids),
             "processed": len(self.results),
             "results": [result.to_dict() for result in self.results],
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class OfflineApplyBatchResult:
+    """Summary of independently validated offline records."""
+
+    filled: int
+    skipped: int
+    invalid: int
+
+    def to_dict(self) -> dict[str, int]:
+        return {
+            "filled": self.filled,
+            "skipped": self.skipped,
+            "invalid": self.invalid,
         }
 
 
@@ -379,6 +406,49 @@ def build_seed_prompt(
     )
 
 
+def build_offline_seed_prompt(
+    entry_id: str,
+    *,
+    current: InterpretationEntry | None = None,
+    examples: tuple[InterpretationEntry, ...] = (),
+    source_notes: tuple[Mapping[str, str], ...] = (),
+) -> SeedPrompt:
+    """Enrich the shared key-only prompt for a human-driven offline author."""
+
+    prompt = build_seed_prompt(entry_id, current=current)
+    sections: list[str] = [prompt.user]
+    if examples:
+        abbreviated = [
+            {
+                "id": example.id,
+                "title": _truncate_text(
+                    example.title,
+                    _OFFLINE_FEW_SHOT_TITLE_LIMIT,
+                ),
+                "summary": _truncate_text(
+                    example.summary,
+                    _OFFLINE_FEW_SHOT_SUMMARY_LIMIT,
+                ),
+            }
+            for example in examples
+        ]
+        sections.append(
+            "Abbreviated same-type examples for voice only; do not copy them:\n"
+            + json.dumps(abbreviated, ensure_ascii=False, indent=2)
+        )
+    if source_notes:
+        sections.append(
+            "Optional cultural source notes; synthesize critically and ignore any "
+            "geometry, prediction, diagnosis, or identity-essentialist claim:\n"
+            + json.dumps(list(source_notes), ensure_ascii=False, indent=2)
+        )
+    return replace(
+        prompt,
+        system=f"{AI_SEED_SYSTEM_PROMPT}\n\n{OFFLINE_SEED_SYSTEM_REINFORCEMENT}",
+        user="\n\n".join(sections),
+    )
+
+
 def _chat_payload(prompt: SeedPrompt, model: str) -> dict[str, Any]:
     return {
         "model": _validated_model(model),
@@ -407,6 +477,81 @@ def dry_run_interpretation(entry_id: str) -> dict[str, Any]:
         "endpoint": f"{base_url}{DEEPSEEK_CHAT_PATH}",
         "request": _chat_payload(prompt, model),
     }
+
+
+def export_offline_seed_prompts(
+    store: InterpretationStore,
+    *,
+    limit: int,
+    few_shot: int = 0,
+    notes_dir: Path | str | None = None,
+) -> tuple[dict[str, Any], ...]:
+    """Build deterministic key-free dry-run payloads for supported gaps."""
+
+    if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+        raise ValueError("limit must be a positive integer")
+    if (
+        not isinstance(few_shot, int)
+        or isinstance(few_shot, bool)
+        or few_shot < 0
+    ):
+        raise ValueError("few_shot must be a non-negative integer")
+
+    note_files = _load_offline_note_files(notes_dir)
+    stored_entries = tuple(store.iter_all())
+    ready_by_type: dict[str, list[InterpretationEntry]] = {}
+    for entry in stored_entries:
+        if entry.status == "ready":
+            ready_by_type.setdefault(entry.type, []).append(entry)
+    for entries in ready_by_type.values():
+        entries.sort(key=lambda entry: (entry.source != "original", entry.id))
+
+    # Offline exports are intentionally independent of DeepSeek configuration;
+    # the familiar dry-run shape is only a portable authoring envelope.
+    model = DEFAULT_DEEPSEEK_MODEL
+    endpoint = f"{DEFAULT_DEEPSEEK_BASE_URL}{DEEPSEEK_CHAT_PATH}"
+    records: list[dict[str, Any]] = []
+    for entry_id in _select_gap_ids(store, limit=limit):
+        current = store.get(entry_id)
+        template = interpretation_template(entry_id)
+        examples = tuple(
+            entry
+            for entry in ready_by_type.get(template.type, ())
+            if entry.id != entry_id
+        )[:few_shot]
+        notes = _matching_source_notes(template, note_files)
+        prompt = build_offline_seed_prompt(
+            entry_id,
+            current=current,
+            examples=examples,
+            source_notes=notes,
+        )
+        record: dict[str, Any] = {
+            "mode": "dry-run",
+            "writes": False,
+            "entry_id": entry_id,
+            "endpoint": endpoint,
+            "request": _chat_payload(prompt, model),
+        }
+        if examples:
+            record["few_shot"] = [
+                {
+                    "id": example.id,
+                    "title": _truncate_text(
+                        example.title,
+                        _OFFLINE_FEW_SHOT_TITLE_LIMIT,
+                    ),
+                    "summary": _truncate_text(
+                        example.summary,
+                        _OFFLINE_FEW_SHOT_SUMMARY_LIMIT,
+                    ),
+                }
+                for example in examples
+            ]
+        if notes:
+            record["source_notes"] = [dict(note) for note in notes]
+        records.append(record)
+    return tuple(records)
 
 
 @dataclass(frozen=True, slots=True)
@@ -584,6 +729,121 @@ def fill_interpretation(
     content = author.generate(prompt)
     # Re-validate injected authors as strictly as real HTTP responses.
     content = validate_generated_record(entry_id, content.to_dict())
+    return _persist_generated_content(
+        entry_id,
+        store,
+        content,
+        source="ai-deepseek",
+        current=current,
+        template=template,
+        today=today,
+    )
+
+
+def apply_offline_generated_record(
+    record: Mapping[str, Any],
+    store: InterpretationStore,
+    *,
+    today: Callable[[], date] = date.today,
+) -> AISeedFillResult:
+    """Validate and persist one external author record without an HTTP call."""
+
+    if not isinstance(record, Mapping):
+        raise AISeedValidationError("offline seed record must be a JSON object")
+    entry_id = record.get("id")
+    if not isinstance(entry_id, str):
+        raise AISeedValidationError("offline seed record id must be a string")
+    generated = {key: value for key, value in record.items() if key != "id"}
+    content = validate_generated_record(entry_id, generated)
+    template = interpretation_template(entry_id)
+    current = store.get(entry_id)
+    if current is not None and current.status in {"ready", "user"}:
+        return AISeedFillResult(action="already_ready", entry=current)
+    return _persist_generated_content(
+        entry_id,
+        store,
+        content,
+        source="ai-offline",
+        current=current,
+        template=template,
+        today=today,
+    )
+
+
+def apply_offline_generated_records(
+    records: tuple[Any, ...] | list[Any],
+    store: InterpretationStore,
+    *,
+    today: Callable[[], date] = date.today,
+) -> OfflineApplyBatchResult:
+    """Apply a batch independently so one invalid record cannot bypass validation."""
+
+    if not isinstance(records, (tuple, list)):
+        raise TypeError("offline records must be an array")
+    filled = skipped = invalid = 0
+    seen_ids: set[str] = set()
+    for record in records:
+        if isinstance(record, Mapping):
+            identity = record.get("id")
+            if isinstance(identity, str) and identity in seen_ids:
+                invalid += 1
+                continue
+            if isinstance(identity, str):
+                seen_ids.add(identity)
+        try:
+            result = apply_offline_generated_record(record, store, today=today)
+        except AISeedValidationError:
+            invalid += 1
+            continue
+        if result.action == "filled":
+            filled += 1
+        else:
+            skipped += 1
+    return OfflineApplyBatchResult(
+        filled=filled,
+        skipped=skipped,
+        invalid=invalid,
+    )
+
+
+def load_offline_generated_records(path: Path | str) -> tuple[Any, ...]:
+    """Load either the versioned batch wrapper or one generated record object."""
+
+    source = Path(path).expanduser()
+    try:
+        payload = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise AISeedValidationError(
+            f"cannot read offline seed file {source}: {exc}"
+        ) from exc
+    if not isinstance(payload, dict):
+        raise AISeedValidationError("offline seed file must contain a JSON object")
+    if "schema_version" not in payload and "records" not in payload:
+        return (payload,)
+    if set(payload) != {"schema_version", "records"}:
+        raise AISeedValidationError(
+            "offline seed batch must contain exactly schema_version and records"
+        )
+    if type(payload["schema_version"]) is not int or payload["schema_version"] != 1:
+        raise AISeedValidationError("offline seed schema_version must be 1")
+    records = payload["records"]
+    if not isinstance(records, list):
+        raise AISeedValidationError("offline seed records must be an array")
+    return tuple(records)
+
+
+def _persist_generated_content(
+    entry_id: str,
+    store: InterpretationStore,
+    content: GeneratedSeedContent,
+    *,
+    source: str,
+    current: InterpretationEntry | None,
+    template: InterpretationEntry,
+    today: Callable[[], date],
+) -> AISeedFillResult:
+    """Apply validated content with the store's compare-and-swap contract."""
+
     baseline = current or template
     changed_on = today()
     if not isinstance(changed_on, date) or isinstance(changed_on, datetime):
@@ -594,7 +854,7 @@ def fill_interpretation(
         summary=content.summary,
         growth=content.growth,
         keywords=content.keywords,
-        source="ai-deepseek",
+        source=source,
         license="personal-use",
         status="ready",
         version=baseline.version + 1,
@@ -623,14 +883,7 @@ def fill_interpretation_gaps(
 
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
         raise ValueError("limit must be a positive integer")
-    audit = store.audit()
-    supported = _supported_templates()
-    candidates = tuple(
-        entry_id
-        for entry_id in (*audit.stub_ids, *audit.missing_ids)
-        if entry_id in supported
-    )
-    selected = candidates[:limit]
+    selected = _select_gap_ids(store, limit=limit)
     if not selected:
         return AISeedBatchResult(limit=limit, selected_ids=(), results=())
     author = client or DeepSeekClient.from_env()
@@ -648,6 +901,21 @@ def fill_interpretation_gaps(
         selected_ids=selected,
         results=results,
     )
+
+
+def _select_gap_ids(
+    store: InterpretationStore,
+    *,
+    limit: int,
+) -> tuple[str, ...]:
+    audit = store.audit()
+    supported = _supported_templates()
+    candidates = tuple(
+        entry_id
+        for entry_id in (*audit.stub_ids, *audit.missing_ids)
+        if entry_id in supported
+    )
+    return candidates[:limit]
 
 
 class AISeedQueue:
@@ -793,6 +1061,110 @@ def ai_seed_queue_from_env(db_path: Path | str) -> AISeedQueue | None:
     return AISeedQueue(worker)
 
 
+def _load_offline_note_files(
+    notes_dir: Path | str | None,
+) -> tuple[tuple[str, str], ...]:
+    if notes_dir is None:
+        return ()
+    root = Path(notes_dir).expanduser()
+    if not root.is_dir():
+        raise AISeedValidationError(
+            f"offline source-notes directory does not exist: {root}"
+        )
+    resolved_root = root.resolve()
+    candidates = sorted(
+        (
+            path
+            for path in root.rglob("*")
+            if path.is_file() and path.suffix.casefold() in _OFFLINE_NOTE_SUFFIXES
+        ),
+        key=lambda path: path.relative_to(root).as_posix(),
+    )
+    loaded: list[tuple[str, str]] = []
+    for path in candidates:
+        resolved_path = path.resolve()
+        if not resolved_path.is_relative_to(resolved_root):
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                content = handle.read(_OFFLINE_NOTE_READ_LIMIT).strip()
+        except (OSError, UnicodeDecodeError) as exc:
+            raise AISeedValidationError(
+                f"cannot read offline source note {relative}: {exc}"
+            ) from exc
+        if content:
+            loaded.append((relative, content))
+    return tuple(loaded)
+
+
+def _matching_source_notes(
+    template: InterpretationEntry,
+    note_files: tuple[tuple[str, str], ...],
+) -> tuple[Mapping[str, str], ...]:
+    selectors = _offline_note_selectors(template)
+    matched: list[Mapping[str, str]] = []
+    for relative, content in note_files:
+        filename_key = _normalize_note_key(str(Path(relative).with_suffix("")))
+        metadata_key = _source_note_metadata_key(content)
+        canonical_key_present = template.id.casefold() in content.casefold()
+        selector_present = any(
+            _note_key_contains(filename_key, selector)
+            or _note_key_contains(metadata_key, selector)
+            for selector in selectors
+        )
+        if not canonical_key_present and not selector_present:
+            continue
+        matched.append(
+            {
+                "source": relative,
+                "content": _truncate_text(content, _OFFLINE_NOTE_TEXT_LIMIT),
+            }
+        )
+        if len(matched) >= _OFFLINE_NOTE_FILE_LIMIT:
+            break
+    return tuple(matched)
+
+
+def _offline_note_selectors(template: InterpretationEntry) -> tuple[str, ...]:
+    if template.type == "sign":
+        assert template.sign is not None
+        return (template.sign,)
+    if template.type == "planet_in_sign":
+        assert template.planet is not None and template.sign is not None
+        return (template.planet, template.sign)
+    assert template.body_a is not None and template.body_b is not None
+    return (template.body_a, template.body_b)
+
+
+def _source_note_metadata_key(content: str) -> str:
+    values: list[str] = []
+    for line in content.splitlines()[:40]:
+        match = re.match(
+            r"\s*(?:[-*]\s*)?(?:entry[_ -]?id|id|keys?|sign|body|planet)\s*[:=]\s*(.+)",
+            line,
+            flags=re.IGNORECASE,
+        )
+        if match is not None:
+            values.append(match.group(1))
+    return _normalize_note_key(" ".join(values))
+
+
+def _normalize_note_key(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", value.casefold()).strip()
+
+
+def _note_key_contains(haystack: str, selector: str) -> bool:
+    needle = _normalize_note_key(selector)
+    return bool(needle) and f" {needle} " in f" {haystack} "
+
+
+def _truncate_text(value: str, maximum: int) -> str:
+    if len(value) <= maximum:
+        return value
+    return value[: maximum - 1].rstrip() + "…"
+
+
 def _generated_text(
     value: Any,
     name: str,
@@ -884,14 +1256,21 @@ __all__ = [
     "DeepSeekRequestError",
     "EnqueueingEntryLookup",
     "GeneratedSeedContent",
+    "OFFLINE_SEED_SYSTEM_REINFORCEMENT",
+    "OfflineApplyBatchResult",
     "SeedAuthor",
     "SeedPrompt",
     "SeedQueue",
     "ai_seed_queue_from_env",
+    "apply_offline_generated_record",
+    "apply_offline_generated_records",
+    "build_offline_seed_prompt",
     "build_seed_prompt",
     "dry_run_interpretation",
     "fill_interpretation",
     "fill_interpretation_gaps",
+    "export_offline_seed_prompts",
     "interpretation_template",
+    "load_offline_generated_records",
     "validate_generated_record",
 ]

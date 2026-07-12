@@ -184,6 +184,67 @@ within the process. A failed fill leaves the stub unchanged and can be retried
 on a later request; the next request sees a successfully committed ready entry.
 Without the key, the HTTP hook is inert.
 
+### Offline shared seed authoring
+
+The same shared catalog can be authored without DeepSeek HTTP. Export bounded,
+key-free prompt payloads, have a strong local or hosted author return each id
+plus the four generated fields, then validate and apply them locally:
+
+```bash
+python -m sidereal ai-seed export-prompts \
+  --db data/sidereal.db --limit 20 --few-shot 2 \
+  -o /tmp/sidereal-prompts.jsonl
+
+# Optional when you have prepared local cultural notes:
+#   --notes-dir data/references/siderealist
+
+# Accepts one {id, title, summary, growth, keywords} object or this wrapper:
+# {"schema_version": 1, "records": [...]}
+python -m sidereal ai-seed apply-json \
+  --db data/sidereal.db --file /tmp/sidereal-filled.json
+```
+
+`export-prompts` selects only missing/stub `sign`, `planet_in_sign`, and
+`aspect` ids. `--few-shot` adds abbreviated ready records of the same type,
+preferring `source=original`. `--notes-dir` attaches matching UTF-8 Markdown or
+text snippets by sign/body filename or metadata key. Neither option includes an
+API key, personal chart data, or an automatic model invocation.
+
+Grounding from the [Siderealist articles index](https://siderealist.com/sidereal_articles.html),
+its [13-sign overview](https://siderealist.com/13signs.html), and linked sign
+pages is encouraged for constellation-first culture, vivid symbols, and
+Ophiuchus as a full citizen. Distill and synthesize that material into
+inclusive capacity/shadow/growth language; do not copy celebrity biographies,
+deterministic stereotypes, medical claims, or sign-date tables. External source
+material is interpretive context only and never overrides this repository's
+Midpoint J2000 geometry.
+
+`apply-json` runs the same exact-field and banned-phrase validator as the online
+worker. Valid stub/missing records become `status=ready`,
+`source=ai-offline`, `license=personal-use`, with the baseline version bumped;
+ready and user-authored records are skipped. Its JSON summary reports `filled`,
+`skipped`, and `invalid` counts.
+
+The direct Railway-volume path is to upload the compact filled JSON and run the
+same validator/upsert command from the dashboard shell:
+
+```bash
+python -m sidereal ai-seed apply-json --file /tmp/sidereal-filled.json \
+  --db /data/sidereal.db
+```
+
+For a reviewable, repeatable promotion artifact, extract the locally accepted
+rows in the full `InterpretationEntry` shape used under `data/seeds/`, preserve
+their already-bumped versions, and import that versioned pack on Railway:
+
+```bash
+python -m sidereal db import /tmp/seed_13_offline_ai_v1.json \
+  --db /data/sidereal.db
+```
+
+The compact `apply-json` author response is not itself a `db import` pack;
+`db import` expects `schema_version: 1` plus complete inventory-shaped records.
+
 ## Calculate a chart
 
 With known time and coordinates (longitude is east-positive):

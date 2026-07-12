@@ -45,12 +45,96 @@ def test_ai_seed_fill_and_fill_gaps_accept_database_contracts(
     assert fill_gaps.db == database
 
 
+def test_ai_seed_offline_commands_accept_export_and_apply_contracts(
+    tmp_path: Path,
+) -> None:
+    database = tmp_path / "interpretations.db"
+    output = tmp_path / "prompts.jsonl"
+    notes = tmp_path / "notes"
+    generated = tmp_path / "generated.json"
+
+    export = build_parser().parse_args(
+        [
+            "ai-seed",
+            "export-prompts",
+            "--limit",
+            "7",
+            "--few-shot",
+            "2",
+            "--notes-dir",
+            str(notes),
+            "-o",
+            str(output),
+            "--db",
+            str(database),
+        ]
+    )
+    apply = build_parser().parse_args(
+        [
+            "ai-seed",
+            "apply-json",
+            "--file",
+            str(generated),
+            "--db",
+            str(database),
+        ]
+    )
+
+    assert export.command == "ai-seed"
+    assert export.ai_seed_command == "export-prompts"
+    assert export.limit == 7
+    assert export.few_shot == 2
+    assert export.notes_dir == notes
+    assert export.out == output
+    assert export.db == database
+    assert apply.command == "ai-seed"
+    assert apply.ai_seed_command == "apply-json"
+    assert apply.file == generated
+    assert apply.db == database
+
+
 @pytest.mark.parametrize("value", ["0", "-1", "1.5", "many"])
 def test_ai_seed_fill_gaps_requires_a_positive_integer_limit(value: str) -> None:
     with pytest.raises(SystemExit) as raised:
         build_parser().parse_args(
             ["ai-seed", "fill-gaps", "--limit", value]
         )
+
+    assert raised.value.code == 2
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "1.5", "many"])
+def test_ai_seed_export_prompts_requires_a_positive_integer_limit(value: str) -> None:
+    with pytest.raises(SystemExit) as raised:
+        build_parser().parse_args(
+            ["ai-seed", "export-prompts", "--limit", value, "-o", "out.jsonl"]
+        )
+
+    assert raised.value.code == 2
+
+
+@pytest.mark.parametrize("value", ["-1", "1.5", "many"])
+def test_ai_seed_export_prompts_requires_a_nonnegative_few_shot(value: str) -> None:
+    with pytest.raises(SystemExit) as raised:
+        build_parser().parse_args(
+            [
+                "ai-seed",
+                "export-prompts",
+                "--limit",
+                "1",
+                "--few-shot",
+                value,
+                "-o",
+                "out.jsonl",
+            ]
+        )
+
+    assert raised.value.code == 2
+
+
+def test_ai_seed_apply_json_requires_a_file() -> None:
+    with pytest.raises(SystemExit) as raised:
+        build_parser().parse_args(["ai-seed", "apply-json"])
 
     assert raised.value.code == 2
 
