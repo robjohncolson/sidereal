@@ -54,7 +54,9 @@ def live_geometry() -> TransitGeometry:
 def _seeded_store(tmp_path: Path) -> InterpretationStore:
     store = InterpretationStore(tmp_path / "interpretations.db")
     store.initialize()
-    store.import_path(SEED_DIRECTORY)
+    for seed_file in sorted(SEED_DIRECTORY.glob("*.json")):
+        if seed_file.name != "seed_13_offline_ai_v1.json":
+            store.import_path(seed_file)
     return store
 
 

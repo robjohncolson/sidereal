@@ -94,16 +94,16 @@ def test_full_seed_import_applies_family_versions_without_inventory_gaps(
         placement = store.get("planet_in_sign:jupiter:ophiuchus")
         shared_aspect = store.get("aspect:jupiter:trine:mercury")
 
-    assert result.files == 13
-    assert result.records == 2192
+    assert result.files == 14
+    assert result.records == 2261
     assert result.inserted == 967
-    assert result.updated == 963
+    assert result.updated == 1032
     assert result.unchanged == 0
     assert result.skipped == 262
     assert (audit.expected, audit.ready, audit.stub, audit.missing) == (
         967,
-        897,
-        70,
+        966,
+        1,
         0,
     )
     assert placement is not None and placement.version >= 7

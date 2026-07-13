@@ -145,13 +145,13 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         jupiter_aries = store.get("planet_in_sign:jupiter:aries")
 
         assert core_ready_total == 872
-        assert first.files == 13
-        assert first.records == 2192
+        assert first.files == 14
+        assert first.records == 2261
         assert first.inserted == TOTAL_INVENTORY_COUNT
-        assert first.updated == 963
+        assert first.updated == 1032
         assert first.skipped == 262
         assert audit.expected == TOTAL_INVENTORY_COUNT
-        assert (audit.ready, audit.stub, audit.missing) == (897, 70, 0)
+        assert (audit.ready, audit.stub, audit.missing) == (966, 1, 0)
         assert sun_ophiuchus is not None and sun_ophiuchus.status == "ready"
         assert moon_sun_square is not None and moon_sun_square.status == "ready"
         assert jupiter_aries is not None and jupiter_aries.status == "ready"
@@ -159,7 +159,7 @@ def test_store_import_is_atomic_idempotent_and_auditable(tmp_path: Path) -> None
         second = store.import_path(SEED_DIRECTORY)
         assert second.inserted == second.updated == 0
         assert second.unchanged == TOTAL_INVENTORY_COUNT
-        assert second.skipped == 1225
+        assert second.skipped == 1294
 
 
 def test_aspect_key_is_unordered_and_alphabetical() -> None:

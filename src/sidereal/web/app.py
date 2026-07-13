@@ -52,6 +52,12 @@ from ..skyday import SkyDayCache, SkyDayCalculationError
 from ..skypack import build_skypack
 from ..synastry_library import list_synastries, load_synastry, save_synastry_snapshot
 from ..transit_library import list_transits, load_transit, save_transit_snapshot
+from ..transit_essay import (
+    TransitEssayService,
+    TransitEssayStoreError,
+    build_transit_essay_facts,
+    transit_essay_service_from_env,
+)
 from ..types import MomentInput
 from ..wheel import render_svg
 from .supabase_natal import natal_store_from_env
@@ -211,6 +217,7 @@ def create_app(
     authenticator: Authenticator | None = None,
     personal_sky_cache: PersonalSkyCache | None = None,
     ai_seed_queue: SeedQueue | None = None,
+    transit_essay_service: TransitEssayService | None = None,
     allow_dev_auth: bool | None = None,
 ) -> FastAPI:
     """Create a same-origin local API and static UI application."""
@@ -286,10 +293,33 @@ def create_app(
             require_swiss_ephemeris=settings.require_swiss_ephemeris,
         )
 
+    def transit_essay_facts_builder(
+        record: Any,
+        *,
+        when: Any,
+    ) -> dict[str, Any]:
+        with _optional_store(settings) as catalog:
+            return build_transit_essay_facts(
+                record,
+                when=when,
+                store=catalog,
+                boundary_path=settings.boundary_path,
+                ephe_path=settings.ephe_path,
+                require_swiss_ephemeris=settings.require_swiss_ephemeris,
+            )
+
     active_personal_cache = (
         personal_sky_cache
         if personal_sky_cache is not None
         else PersonalSkyCache(personal_pack_builder)
+    )
+    active_transit_essay_service = (
+        transit_essay_service
+        if transit_essay_service is not None
+        else transit_essay_service_from_env(
+            settings.db_path,
+            transit_essay_facts_builder,
+        )
     )
     static_dir = Path(__file__).with_name("static")
     app = FastAPI(
@@ -304,6 +334,7 @@ def create_app(
     app.state.natal_store = active_natal_store
     app.state.personal_sky_cache = active_personal_cache
     app.state.ai_seed_queue = active_ai_seed_queue
+    app.state.transit_essay_service = active_transit_essay_service
     app.add_middleware(
         ScopedCORSMiddleware,
         allowed_origins=personal_origins,
@@ -319,6 +350,9 @@ def create_app(
     if active_ai_seed_queue is not None:
         app.router.add_event_handler("startup", active_ai_seed_queue.start)
         app.router.add_event_handler("shutdown", active_ai_seed_queue.close)
+
+    app.router.add_event_handler("startup", active_transit_essay_service.start)
+    app.router.add_event_handler("shutdown", active_transit_essay_service.close)
 
     close_natal_store = getattr(active_natal_store, "close", None)
     if callable(close_natal_store):
@@ -350,6 +384,16 @@ def create_app(
         return JSONResponse(
             status_code=503,
             content={"detail": detail},
+        )
+
+    @app.exception_handler(TransitEssayStoreError)
+    async def transit_essay_store_error_handler(
+        _request: Any,
+        _exc: TransitEssayStoreError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Transit essay storage is temporarily unavailable"},
         )
 
     def authenticated_user_id(
@@ -412,6 +456,7 @@ def create_app(
             "natal_backend": natal_backend,
             "auth_configured": auth_name != "RejectingAuthenticator",
             "ai_seed": active_ai_seed_queue is not None,
+            "transit_essay": active_transit_essay_service.available,
         }
         try:
             batch = provider.calculate_positions(2451545.0)
@@ -561,6 +606,7 @@ def create_app(
     def personal_natal_delete(
         user_id: str = Depends(required_personal_user_id),
     ) -> Response:
+        active_transit_essay_service.invalidate_user(user_id)
         active_natal_store.delete(user_id)
         active_personal_cache.invalidate(user_id)
         return Response(status_code=204, headers={"Cache-Control": "private, no-store"})
@@ -575,6 +621,28 @@ def create_app(
             raise HTTPException(status_code=404, detail="No natal profile is saved")
         response.headers["Cache-Control"] = "private, no-store"
         return active_personal_cache.get(record)
+
+    @app.post("/api/me/transit-essay")
+    def personal_transit_essay_enqueue(
+        response: Response,
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = active_natal_store.get(user_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="No natal profile is saved")
+        response.headers["Cache-Control"] = "private, no-store"
+        return active_transit_essay_service.ensure(record)
+
+    @app.get("/api/me/transit-essay")
+    def personal_transit_essay_get(
+        response: Response,
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = active_natal_store.get(user_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="No natal profile is saved")
+        response.headers["Cache-Control"] = "private, no-store"
+        return active_transit_essay_service.get(record)
 
     @app.options("/api/me/{resource:path}", include_in_schema=False)
     def personal_preflight(

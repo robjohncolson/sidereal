@@ -240,14 +240,15 @@ def test_fresh_v2_store_imports_all_v1_seed_files_without_gaps(tmp_path: Path) -
         result = store.import_path(SEED_DIRECTORY)
         audit = store.audit()
 
-        assert result.files == 13
-        assert result.records == 2192
+        assert result.files == 14
+        assert result.records == 2261
         assert result.inserted == 967
-        assert result.updated == 963
+        assert result.updated == 1032
         assert result.skipped == 262
-        assert (audit.ready, audit.stub, audit.missing) == (897, 70, 0)
+        assert (audit.ready, audit.stub, audit.missing) == (966, 1, 0)
         assert store.get("aspect:jupiter:sextile:jupiter").status == "ready"  # type: ignore[union-attr]
-        assert store.get("aspect:uranus:square:uranus").status == "stub"  # type: ignore[union-attr]
+        assert store.get("aspect:uranus:square:uranus").status == "ready"  # type: ignore[union-attr]
+        assert store.get("aspect:asc:conjunction:mc").status == "stub"  # type: ignore[union-attr]
 
 
 def test_v1_database_migrates_transactionally_and_preserves_user_data(

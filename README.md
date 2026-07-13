@@ -99,11 +99,13 @@ Shipped seeds:
 | `seed_10_family_synastry_v1.json` | 66 sign-agnostic family synastry aspect readings |
 | `seed_11_family_placements_v1.json` | 101 v7 placement readings active across the three family studies |
 | `seed_12_family_tight_aspects_v1.json` | 57 v7 sign-agnostic aspect readings active at 2° exactness or tighter |
+| `seed_13_offline_ai_v1.json` | 69 validated offline-authored outer/node and angle aspect readings |
 
-After import: **897 ready**, **70 stubs**, **0 missing**. Seed 6 expands the
+After import: **966 ready**, **1 stub**, **0 missing**. Seed 6 expands the
 inventory with all five major same-body aspect keys for the planets and North
 Node that can occur on both sides of a transit. Its 35 Sun–Saturn readings are
-ready; the 20 outer-planet/North-Node self-aspects remain honest stubs. Seed 7
+ready; Seed 13 later upgrades the remaining supported outer/node/angle backlog
+while leaving `aspect:asc:conjunction:mc` as the sole explicit stub. Seed 7
 completes planet/node × Midpoint-sign character so aspect reports can attach
 zodiac color (not only planet-to-planet lore). Seeds 3–4 cover every
 sign—including Ophiuchus—on every house cusp, Mercury/Venus/Mars in every sign,
@@ -487,6 +489,8 @@ the verified JWT subject:
 | `GET` | `/api/me/natal` | Return that user's normalized profile metadata |
 | `DELETE` | `/api/me/natal` | Idempotently clear that user's profile |
 | `GET` | `/api/me/skypack` | Return today's `user_private` natal-bearing skypack |
+| `POST` | `/api/me/transit-essay` | Idempotently enqueue today's private whole-chart transit note |
+| `GET` | `/api/me/transit-essay` | Return today's essay status or validated result |
 
 Unknown or null birth time is normalized to `time_unknown: true` and stored as
 null. Calculation uses local noon while retaining `time_known: false`, so no
@@ -546,6 +550,42 @@ curl -sS http://127.0.0.1:8742/api/me/skypack \
 
 Never enable `SIDEREAL_DEV_AUTH` on Railway. Production calls use the Supabase
 Bearer token instead.
+
+### Personal transit essay API
+
+For an authenticated user with a saved natal profile, the transit-essay API
+computes the complete configured major transit-to-natal study for the current
+instant and sends its facts to the server-side DeepSeek worker. The fact object
+contains Midpoint placements, all movers, same-body J2000 deltas, and up to the
+24 tightest normalized-orb aspects across multiple moving bodies. It does not
+use the sphere's visibility or single-body Listen highlight filters, and it
+never sends a user id, birth fields, place text, token, or API key to the model.
+
+```bash
+curl -sS -X POST http://127.0.0.1:8742/api/me/transit-essay \
+  -H 'Authorization: Bearer <supabase_access_token>'
+
+curl -sS http://127.0.0.1:8742/api/me/transit-essay \
+  -H 'Authorization: Bearer <supabase_access_token>'
+```
+
+`POST` is idempotent for `(user, civil date in the natal timezone, natal
+fingerprint)`: it returns `pending` while the background completion runs and
+returns the cached `ready` record without another model call afterward. A new
+civil day or changed natal geometry creates a new key. Clients should poll
+`GET` every 8–15 seconds with backoff and stop after roughly 2–3 minutes.
+Responses are always `private, no-store`; missing natal profiles return 404.
+Without `DEEPSEEK_API_KEY`, both operations return `status: unavailable` and no
+provider request is attempted.
+
+Provider output must contain exactly `headline`, `body`, and at most five
+`watchpoints`. The server rejects predictive, medical, financial, legal,
+crisis, fate/guarantee language, HTML, and explicit aspects absent from the
+ephemeris facts. Failures expose only a generic `failed` status. Ready responses
+always include the epistemic footer “symbolic study notes, not predictions.”
+The queue is process-local; when `SIDEREAL_DB` points to an existing persistent
+volume database, pending/ready/failed rows are stored in the private
+`personal_transit_essays` SQLite table and can survive deploys.
 
 ### Sky Listen API
 
@@ -687,6 +727,7 @@ tables. Its JSON API uses the same validation and calculation paths as the CLI:
 | `GET` | `/api/skypack` | Legacy local file-chart skypack export |
 | `POST` / `GET` / `DELETE` | `/api/me/natal` | Authenticated private natal profile CRUD |
 | `GET` | `/api/me/skypack` | Authenticated daily private skypack |
+| `POST` / `GET` | `/api/me/transit-essay` | Async private daily whole-chart transit synthesis |
 | `POST` | `/api/chart` | Calculate and compose a full chart report |
 | `POST` | `/api/transit` | Run a saved-natal or inline-natal transit report |
 | `POST` | `/api/synastry` | Compare two saved and/or inline fixed charts |

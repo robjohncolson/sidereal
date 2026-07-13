@@ -67,7 +67,7 @@ def test_db_gaps_can_scope_to_report_json(
                     "readings": [
                         {"id": "planet:sun", "status": "ready"},
                         {
-                            "id": "aspect:neptune:opposition:uranus",
+                            "id": "aspect:asc:conjunction:mc",
                             "status": "stub",
                         },
                         {"id": "planet_in_sign:chiron:aries", "status": "missing"},
@@ -96,7 +96,7 @@ def test_db_gaps_can_scope_to_report_json(
         1,
     )
     assert audit["ready_ids"] == ["planet:sun"]
-    assert audit["stub_ids"] == ["aspect:neptune:opposition:uranus"]
+    assert audit["stub_ids"] == ["aspect:asc:conjunction:mc"]
     assert audit["missing_ids"] == ["planet_in_sign:chiron:aries"]
 
 
@@ -144,7 +144,6 @@ def test_db_gaps_can_scope_to_saved_chart_label(
     assert 0 < audit["expected"] < 967
     assert audit["ready"] + audit["stub"] == audit["expected"]
     assert audit["missing"] == 0
-    assert audit["stub"] > 0
 
 
 def test_db_gaps_rejects_two_chart_scopes() -> None:
