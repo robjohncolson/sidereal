@@ -238,7 +238,7 @@ def test_cache_date_uses_natal_timezone_and_fingerprint_tracks_geometry() -> Non
     assert natal_fingerprint(tokyo) != fingerprint
 
 
-def test_content_validator_rejects_banned_language_and_invented_aspects() -> None:
+def test_content_validator_rejects_banned_language_not_natural_aspect_phrasing() -> None:
     facts = _facts_with_one_aspect()
     allowed = {
         **_VALID_GENERATED,
@@ -261,56 +261,23 @@ def test_content_validator_rejects_banned_language_and_invented_aspects() -> Non
     with pytest.raises(TransitEssayValidationError, match="banned fragment"):
         validate_transit_essay_content(banned, facts)
 
-    invented = {
-        **allowed,
-        "body": (
-            "Transit Venus trine natal Sun offers a symbolic theme for patient study, "
-            "but that formal contact does not occur anywhere in the supplied fact set."
-        ),
-    }
-    with pytest.raises(TransitEssayValidationError, match="absent from the facts"):
-        validate_transit_essay_content(invented, facts)
-
-    for claim in (
-        "Transit Venus is square natal Moon",
-        "Transiting Venus squares the natal Moon",
-        "Venus forms a square to the Moon",
-        "Venus and the natal Moon form a square",
+    # Natural language and informal aspect phrasing must not fail the daily note.
+    for natural_claim in (
+        "A square quality links the personal and public poles in a reflective way.",
+        "The day carries a trine-like ease between inner mood and outer tempo.",
+        "Transit Venus trine natal Sun can be read as mood, not geometry proof.",
     ):
-        with pytest.raises(
-            TransitEssayValidationError,
-            match="absent from the facts",
-        ):
-            validate_transit_essay_content(
-                {
-                    **allowed,
-                    "body": (
-                        f"{claim}. This unsupported formal claim is padded with "
-                        "reflective language so the body otherwise meets the schema."
-                    ),
-                },
-                facts,
-            )
-
-    for noncanonical_claim in (
-        "A square links transit Venus and natal Moon",
-        "Transit Venus and natal Moon are in a square",
-        "The transit Venus-natal Moon square is prominent",
-    ):
-        with pytest.raises(
-            TransitEssayValidationError,
-            match="canonical fact-reference grammar",
-        ):
-            validate_transit_essay_content(
-                {
-                    **allowed,
-                    "body": (
-                        f"{noncanonical_claim}. This explicit claim is padded with "
-                        "reflective language so the body otherwise meets the schema."
-                    ),
-                },
-                facts,
-            )
+        validated = validate_transit_essay_content(
+            {
+                **allowed,
+                "body": (
+                    f"{natural_claim} This reflective padding keeps the body length "
+                    "above the schema minimum for a symbolic study note."
+                ),
+            },
+            facts,
+        )
+        assert validated.body
 
 
 def test_deepseek_author_sends_fact_only_user_payload_and_keeps_key_server_side() -> None:

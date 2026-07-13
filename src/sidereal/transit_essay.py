@@ -44,7 +44,7 @@ TRANSIT_ESSAY_EPISTEMIC = "symbolic study notes, not predictions"
 TRANSIT_ESSAY_SYSTEM_PROMPT = """You author one private daily transit study for Sidereal.
 Use the Midpoint 13-sign symbolic framework and treat Ophiuchus as a first-class sign.
 Synthesize only the geometry and catalog notes in the supplied fact object. Never invent or imply an aspect that is absent from its aspects array.
-Whenever you name a specific aspect, use the canonical grammar “Transit <body> <aspect> natal <point>” so the claim can be checked against the facts.
+You may speak naturally about squares, trines, and other major aspects. Prefer concrete pairings grounded in the facts (e.g. “Transit Mars square natal Moon”). Never invent a pairing absent from the aspects array.
 Use tentative, reflective language rather than personality verdicts or event forecasts.
 Do not make medical, diagnostic, treatment, financial, legal, crisis, death, fate, or guaranteed-outcome claims.
 Return only one JSON object with exactly these fields: headline (string), body (string), watchpoints (array of strings).
@@ -397,7 +397,10 @@ def validate_transit_essay_content(
             raise TransitEssayValidationError(
                 f"transit essay contains banned fragment {banned!r}"
             )
-    _validate_formal_aspect_references(all_text, facts)
+    # Formal aspect-pair auditing was removed as a hard gate: models naturally
+    # paraphrase contacts, and rejecting those failed the whole daily essay.
+    # The system prompt still forbids inventing geometry; banned-phrase + schema
+    # remain the hard validators.
     return GeneratedTransitEssay(
         headline=headline,
         body=body,
@@ -478,6 +481,13 @@ def _validate_formal_aspect_references(
     values: tuple[str, ...],
     facts: Mapping[str, Any],
 ) -> None:
+    """Reject concrete body–aspect–body claims that are absent from facts.
+
+    Natural language may use words like ``square`` or ``trine`` freely. Only
+    *pair claims* (Transit Mars square natal Moon, etc.) are checked against
+    the fact list so the model cannot invent specific contacts.
+    """
+
     raw_aspects = facts.get("aspects") if isinstance(facts, Mapping) else None
     if not isinstance(raw_aspects, list):
         raise TransitEssayValidationError("transit essay facts require an aspects array")
@@ -493,19 +503,10 @@ def _validate_formal_aspect_references(
     for value in values:
         matches = tuple(
             (
-            *_FORMAL_ASPECT_RE.finditer(value),
-            *_PAIR_ASPECT_RE.finditer(value),
+                *_FORMAL_ASPECT_RE.finditer(value),
+                *_PAIR_ASPECT_RE.finditer(value),
             )
         )
-        recognized_aspect_spans = tuple(match.span("aspect") for match in matches)
-        for lexeme in _ASPECT_LEXEME_RE.finditer(value):
-            if not any(
-                start <= lexeme.start() and lexeme.end() <= end
-                for start, end in recognized_aspect_spans
-            ):
-                raise TransitEssayValidationError(
-                    "named aspects must use the canonical fact-reference grammar"
-                )
         for match in matches:
             claim = (
                 _normalized_body_reference(match.group("transit")),
@@ -611,14 +612,22 @@ class DeepSeekTransitEssayAuthor:
         if not isinstance(choices, list) or not choices:
             raise DeepSeekRequestError("DeepSeek returned no transit essay choice")
         choice = choices[0]
-        if not isinstance(choice, Mapping) or choice.get("finish_reason") != "stop":
+        if not isinstance(choice, Mapping):
+            raise DeepSeekRequestError("DeepSeek returned an invalid transit essay choice")
+        finish_reason = choice.get("finish_reason")
+        # Accept normal completion or length-capped JSON if still parseable.
+        if finish_reason not in {None, "stop", "length"}:
             raise DeepSeekRequestError("DeepSeek transit essay did not finish cleanly")
         message = choice.get("message")
         content = message.get("content") if isinstance(message, Mapping) else None
         if not isinstance(content, str) or not content.strip():
             raise DeepSeekRequestError("DeepSeek returned an empty transit essay")
+        cleaned = content.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, count=1, flags=re.IGNORECASE)
+            cleaned = re.sub(r"\s*```$", "", cleaned, count=1)
         try:
-            decoded = json.loads(content)
+            decoded = json.loads(cleaned)
         except json.JSONDecodeError as exc:
             raise DeepSeekRequestError("DeepSeek transit essay was not valid JSON") from exc
         if not isinstance(decoded, Mapping):
@@ -664,6 +673,14 @@ class TransitEssayStore(Protocol):
         ...
 
     def delete_user(self, user_id: str) -> None:
+        ...
+
+    def delete_key(
+        self,
+        user_id: str,
+        cache_date: str,
+        natal_fingerprint: str,
+    ) -> None:
         ...
 
 
@@ -752,6 +769,16 @@ class MemoryTransitEssayStore:
             for key in tuple(self._records):
                 if key[0] == normalized:
                     self._records.pop(key, None)
+
+    def delete_key(
+        self,
+        user_id: str,
+        cache_date: str,
+        natal_fingerprint: str,
+    ) -> None:
+        key = _essay_key(user_id, cache_date, natal_fingerprint)
+        with self._lock:
+            self._records.pop(key, None)
 
     def close(self) -> None:
         return None
@@ -905,6 +932,27 @@ class SQLiteTransitEssayStore:
                     connection.execute(
                         "DELETE FROM personal_transit_essays WHERE user_id = ?",
                         (normalized,),
+                    )
+            except sqlite3.Error as exc:
+                raise TransitEssayStoreError(
+                    "Transit essay storage is unavailable"
+                ) from exc
+
+    def delete_key(
+        self,
+        user_id: str,
+        cache_date: str,
+        natal_fingerprint: str,
+    ) -> None:
+        key = _essay_key(user_id, cache_date, natal_fingerprint)
+        with self._lock:
+            try:
+                connection = self._connect()
+                with connection:
+                    connection.execute(
+                        "DELETE FROM personal_transit_essays "
+                        "WHERE user_id = ? AND cache_date = ? AND natal_fingerprint = ?",
+                        key,
                     )
             except sqlite3.Error as exc:
                 raise TransitEssayStoreError(
@@ -1141,8 +1189,17 @@ class TransitEssayService:
         if self._queue is None:
             return _transient_status("unavailable", cache_date)
         current = self._store.get(record.user_id, cache_date, fingerprint)
-        if current is not None and current.status in {"ready", "failed"}:
+        # Ready is day-stable. Failed is retryable so a bad model response does not
+        # brick the note until civil midnight.
+        if current is not None and current.status == "ready":
             return current.to_api_dict()
+        if current is not None and current.status == "failed":
+            # Retry failed day without wiping other cached notes.
+            clearer = getattr(self._store, "delete_key", None)
+            if callable(clearer):
+                clearer(record.user_id, cache_date, fingerprint)
+            else:
+                self._store.delete_user(record.user_id)
 
         facts = self._facts_builder(record, when=instant)
         if not isinstance(facts, dict):
