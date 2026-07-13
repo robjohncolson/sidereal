@@ -127,33 +127,33 @@ def _ready_essay() -> dict[str, Any]:
     }
 
 
-def test_format_sky_brief_has_canonical_sections_ready_note_and_no_private_fields() -> None:
+def test_format_sky_brief_has_data_sections_and_no_private_fields() -> None:
     record = replace(_record(), time_unknown=True, birth_time=None)
     facts = _facts(record, when=FIXED_NOW)
 
+    # essay arg ignored — DeepSeek note is pause reader only
     text = format_sky_brief_text(facts, essay=_ready_essay())
 
     assert text.startswith(
-        "# Moon Chorus sky brief\n"
         "date: 2026-07-13 (America/New_York)\n"
         f"epoch_utc: {FIXED_NOW.isoformat()}\n"
     )
-    assert f"epistemic: {SKY_BRIEF_EPISTEMIC}" in text
-    assert "## Natal placements" in text
+    assert "epistemic" not in text.casefold()
+    assert "prediction" not in text.casefold()
+    assert "symbolic" not in text.casefold()
+    assert "## Natal chart" in text
     assert "Sun · Scorpio · 12.3° · house 5" in text
     assert "Ascendant · Gemini · 2.0° · house 1" in text
-    assert "Time unknown · houses and angles may be omitted or marked uncertain." in text
-    assert "## Today’s movers (transit)" in text
+    assert "time_unknown: true" in text
+    assert "## Today's transits" in text
     assert "Mars · Leo · 4.1° · Rx · natal house 7" in text
-    assert "## Transit → natal contacts" in text
-    assert "Transit Mars square natal Moon · orb 1.2° · applying" in text
-    assert "Transit Sun conjunction natal Midheaven · orb 0.0° · exact" in text
-    assert "## Same-body deltas (optional short list)" in text
-    assert "Sun · transit vs natal separation 47.2°" in text
-    assert "## Today’s sky note" in text
-    assert "headline: A measured view of today’s sky" in text
-    assert "Hold the listed contacts as symbolic prompts.\nContext still matters." in text
-    assert "watchpoints:\n- Notice the tightest contact" in text
+    assert "## Transit contacts" in text
+    assert "Mars square Moon · orb 1.2° · applying" in text
+    assert "Sun conjunction Midheaven · orb 0.0° · exact" in text
+    assert "## Same-body deltas" in text
+    assert "Sun · 47.2°" in text
+    assert "## Today’s sky note" not in text
+    assert "A measured view of today’s sky" not in text
     assert "\r" not in text
     assert text.endswith("\n")
 
@@ -171,16 +171,16 @@ def test_format_sky_brief_has_canonical_sections_ready_note_and_no_private_field
         assert private_value not in text
 
 
-def test_format_sky_brief_omits_non_ready_essay_appendix() -> None:
+def test_format_sky_brief_never_embeds_essay_prose() -> None:
     facts = _facts(_record(), when=FIXED_NOW)
 
     text = format_sky_brief_text(
         facts,
         essay={
-            "status": "pending",
+            "status": "ready",
             "headline": "MUST NOT APPEAR",
             "body": "MUST NOT APPEAR",
-            "watchpoints": [],
+            "watchpoints": ["MUST NOT APPEAR"],
         },
     )
 
@@ -346,7 +346,6 @@ def test_brief_soft_fails_geometry_or_catalog_errors(error: Exception) -> None:
         "timezone": "America/New_York",
         "text": "",
         "has_essay": False,
-        "epistemic": SKY_BRIEF_EPISTEMIC,
     }
 
 
@@ -467,14 +466,15 @@ def test_sky_brief_route_auth_chart_gate_ready_essay_privacy_and_invalidation(
             "timezone",
             "text",
             "has_essay",
-            "epistemic",
         }
         assert payload["status"] == "ready"
         assert payload["cache_date"] == "2026-07-13"
         assert payload["timezone"] == record.tz
-        assert payload["has_essay"] is True
-        assert payload["epistemic"] == SKY_BRIEF_EPISTEMIC
-        assert "## Today’s sky note" in payload["text"]
+        assert payload["has_essay"] is True  # essay exists for note UI; not in text
+        assert "## Natal chart" in payload["text"]
+        assert "## Today's transits" in payload["text"]
+        assert "## Today’s sky note" not in payload["text"]
+        assert "epistemic" not in payload["text"].casefold()
         assert len(builder.calls) == 1
         assert client.get(
             "/api/me/sky-brief", headers=_headers()
@@ -502,7 +502,7 @@ def test_sky_brief_route_auth_chart_gate_ready_essay_privacy_and_invalidation(
         after_save = client.get("/api/me/sky-brief", headers=_headers()).json()
         assert after_save["status"] == "ready"
         assert after_save["has_essay"] is False
-        assert "## Today’s sky note" not in after_save["text"]
+        assert "## Natal chart" in after_save["text"]
         assert len(builder.calls) == 2
 
         deleted = client.delete("/api/me/natal", headers=_headers())

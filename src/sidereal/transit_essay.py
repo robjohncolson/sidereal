@@ -356,13 +356,18 @@ def format_sky_brief_text(
     facts: Mapping[str, Any],
     essay: Mapping[str, Any] | TransitEssayRecord | GeneratedTransitEssay | None = None,
 ) -> str:
-    """Render the private daily fact projection as canonical plain text.
+    """Render natal + transit geometry as plain data for external paste.
 
-    Only the explicitly documented fact fields are read. Private natal metadata
-    such as coordinates, user identifiers, e-mail addresses, and place labels
-    therefore cannot leak through incidental keys in ``facts``.
+    DeepSeek essay prose is **not** included — that stays in the pause reader
+    (TODAY'S SKY NOTE). No epistemic / disclaimer lines (they pollute LLM prompts).
+
+    Only documented fact fields are read so coordinates, user ids, and place
+    labels cannot leak through incidental keys in ``facts``.
+
+    ``essay`` is accepted for API compatibility but ignored.
     """
 
+    del essay  # essay is pause-reader only; never append to data export
     if not isinstance(facts, Mapping):
         raise TypeError("facts must be a mapping")
     cache_date = _brief_required_text(facts.get("cache_date"), "facts.cache_date")
@@ -372,13 +377,10 @@ def format_sky_brief_text(
     natal = _brief_mapping(facts.get("natal"))
     sky = _brief_mapping(facts.get("sky"))
     lines = [
-        "# Moon Chorus sky brief",
         f"date: {cache_date} ({timezone})",
         f"epoch_utc: {epoch_utc}",
-        "frame: sidereal / 13-sign midpoints (as product already uses)",
-        f"epistemic: {SKY_BRIEF_EPISTEMIC}",
         "",
-        "## Natal placements",
+        "## Natal chart",
     ]
     natal_placements = _brief_items(natal.get("placements"))
     if natal_placements:
@@ -395,13 +397,11 @@ def format_sky_brief_text(
                 parts.append(f"house {house}")
             lines.append(" · ".join(parts))
     else:
-        lines.append("No natal placements available.")
+        lines.append("(none)")
     if natal.get("time_unknown") is True:
-        lines.append(
-            "Time unknown · houses and angles may be omitted or marked uncertain."
-        )
+        lines.append("time_unknown: true")
 
-    lines.extend(("", "## Today’s movers (transit)"))
+    lines.extend(("", "## Today's transits"))
     movers = _brief_items(sky.get("movers"))
     if movers:
         for mover in movers:
@@ -417,48 +417,31 @@ def format_sky_brief_text(
                 parts.append(f"natal house {natal_house}")
             lines.append(" · ".join(parts))
     else:
-        lines.append("No transit movers available.")
+        lines.append("(none)")
 
-    lines.extend(("", "## Transit → natal contacts"))
+    lines.extend(("", "## Transit contacts"))
     aspects = _brief_items(facts.get("aspects"))
     if aspects:
         for aspect in aspects:
             applying = aspect.get("applying")
             motion = _brief_motion(applying, aspect.get("orb"))
             lines.append(
-                "Transit "
                 f"{_brief_display(aspect.get('transit_body'))} "
                 f"{_brief_display(aspect.get('aspect_id')).casefold()} "
-                f"natal {_brief_display(aspect.get('natal_point'))} · "
+                f"{_brief_display(aspect.get('natal_point'))} · "
                 f"orb {_brief_degree(aspect.get('orb'))} · {motion}"
             )
     else:
-        lines.append("No ranked transit contacts available.")
+        lines.append("(none)")
 
     same_body_deltas = _brief_items(facts.get("same_body_delta"))
     if same_body_deltas:
-        lines.extend(("", "## Same-body deltas (optional short list)"))
+        lines.extend(("", "## Same-body deltas"))
         for item in same_body_deltas:
             lines.append(
-                f"{_brief_display(item.get('body'))} · transit vs natal separation "
+                f"{_brief_display(item.get('body'))} · "
                 f"{_brief_degree(item.get('delta_deg'))}"
             )
-
-    essay_payload = _brief_essay_payload(essay)
-    if essay_payload is not None:
-        lines.extend(
-            (
-                "",
-                "## Today’s sky note",
-                f"headline: {essay_payload['headline']}",
-                "body:",
-                essay_payload["body"],
-                "watchpoints:",
-            )
-        )
-        watchpoints = essay_payload["watchpoints"]
-        if watchpoints:
-            lines.extend(f"- {item}" for item in watchpoints)
 
     return "\n".join(lines).rstrip() + "\n"
 
@@ -1474,7 +1457,7 @@ class TransitEssayService:
         return _transient_status("none", cache_date)
 
     def brief(self, record: NatalRecord) -> dict[str, Any]:
-        """Build a facts-only daily brief and append only this key's ready essay."""
+        """Build a facts-only natal + transit data export (no essay prose, no disclaimers)."""
 
         instant, cache_date, fingerprint = self._context(record)
         try:
@@ -1488,8 +1471,9 @@ class TransitEssayService:
                 current = self._store.get(record.user_id, cache_date, fingerprint)
             except TransitEssayStoreError:
                 current = None
-            essay = current if current is not None and current.status == "ready" else None
-            text = format_sky_brief_text(facts, essay=essay)
+            essay_ready = current is not None and current.status == "ready"
+            # Essay stays in TODAY'S SKY NOTE reader only — never in the copy block.
+            text = format_sky_brief_text(facts, essay=None)
         except (
             EphemerisError,
             InterpretationStoreError,
@@ -1503,15 +1487,13 @@ class TransitEssayService:
                 "timezone": record.tz,
                 "text": "",
                 "has_essay": False,
-                "epistemic": SKY_BRIEF_EPISTEMIC,
             }
         return {
             "status": "ready",
             "cache_date": cache_date,
             "timezone": record.tz,
             "text": text,
-            "has_essay": essay is not None,
-            "epistemic": SKY_BRIEF_EPISTEMIC,
+            "has_essay": essay_ready,
         }
 
     def invalidate_user(self, user_id: str) -> None:
