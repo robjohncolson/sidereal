@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from datetime import date, time
 import ipaddress
+import logging
 import math
 import os
 from pathlib import Path
@@ -77,6 +78,7 @@ _SKY_DAY_DEFAULT_ORIGINS = frozenset(
         "https://robjohncolson.github.io",
     )
 )
+_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -583,6 +585,15 @@ def create_app(
         )
         saved = active_natal_store.upsert(record)
         active_personal_cache.invalidate(user_id)
+        try:
+            active_transit_essay_service.invalidate_user(user_id)
+        except TransitEssayStoreError as exc:
+            # The natal row is already committed. Essay storage is optional, and
+            # invalidate_user still evicts the in-process facts cache in finally.
+            _LOGGER.warning(
+                "Private transit essay invalidation failed after natal save (%s)",
+                type(exc).__name__,
+            )
         # Build the private pack in the same request so the client does not depend
         # on a second hop (and so multi-instance memory backends still work).
         pack = active_personal_cache.get(saved)
@@ -643,6 +654,17 @@ def create_app(
             raise HTTPException(status_code=404, detail="No natal profile is saved")
         response.headers["Cache-Control"] = "private, no-store"
         return active_transit_essay_service.get(record)
+
+    @app.get("/api/me/sky-brief")
+    def personal_sky_brief_get(
+        response: Response,
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = active_natal_store.get(user_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="No natal profile is saved")
+        response.headers["Cache-Control"] = "private, no-store"
+        return active_transit_essay_service.brief(record)
 
     @app.options("/api/me/{resource:path}", include_in_schema=False)
     def personal_preflight(

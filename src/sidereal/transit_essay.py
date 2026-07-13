@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 import hashlib
@@ -21,6 +22,7 @@ from .aspects import shortest_arc
 from .auth import normalize_user_id
 from .chart import compute
 from .config import ASPECT_POINT_IDS, BODY_IDS
+from .ephemeris import EphemerisError
 from .interpret.ai_seed import (
     BANNED_GENERATED_FRAGMENTS,
     DeepSeekConfig,
@@ -29,6 +31,7 @@ from .interpret.ai_seed import (
     UrllibDeepSeekTransport,
 )
 from .interpret.schema import InterpretationEntry, aspect_key
+from .interpret.store import InterpretationStoreError
 from .natal import NatalRecord
 from .personal_sky import compute_natal_chart
 from .timebase import parse_timezone
@@ -41,6 +44,10 @@ TRANSIT_ESSAY_TYPE = "personal_transit_essay"
 TRANSIT_ESSAY_FACTS_TYPE = "transit_essay_facts"
 TRANSIT_ESSAY_MAX_ASPECTS = 24
 TRANSIT_ESSAY_EPISTEMIC = "symbolic study notes, not predictions"
+SKY_BRIEF_EPISTEMIC = (
+    "Symbolic study notes, not predictions. "
+    "Not medical, legal, or financial advice."
+)
 TRANSIT_ESSAY_SYSTEM_PROMPT = """You author one private daily transit study for Sidereal.
 Use the Midpoint 13-sign symbolic framework and treat Ophiuchus as a first-class sign.
 Synthesize only the geometry and catalog notes in the supplied fact object. Never invent or imply an aspect that is absent from its aspects array.
@@ -343,6 +350,226 @@ def build_transit_essay_facts(
         "same_body_delta": same_body_delta,
         "aspects": aspects,
     }
+
+
+def format_sky_brief_text(
+    facts: Mapping[str, Any],
+    essay: Mapping[str, Any] | TransitEssayRecord | GeneratedTransitEssay | None = None,
+) -> str:
+    """Render the private daily fact projection as canonical plain text.
+
+    Only the explicitly documented fact fields are read. Private natal metadata
+    such as coordinates, user identifiers, e-mail addresses, and place labels
+    therefore cannot leak through incidental keys in ``facts``.
+    """
+
+    if not isinstance(facts, Mapping):
+        raise TypeError("facts must be a mapping")
+    cache_date = _brief_required_text(facts.get("cache_date"), "facts.cache_date")
+    timezone = _brief_required_text(facts.get("timezone"), "facts.timezone")
+    epoch_utc = _brief_required_text(facts.get("epoch_utc"), "facts.epoch_utc")
+
+    natal = _brief_mapping(facts.get("natal"))
+    sky = _brief_mapping(facts.get("sky"))
+    lines = [
+        "# Moon Chorus sky brief",
+        f"date: {cache_date} ({timezone})",
+        f"epoch_utc: {epoch_utc}",
+        "frame: sidereal / 13-sign midpoints (as product already uses)",
+        f"epistemic: {SKY_BRIEF_EPISTEMIC}",
+        "",
+        "## Natal placements",
+    ]
+    natal_placements = _brief_items(natal.get("placements"))
+    if natal_placements:
+        for placement in natal_placements:
+            parts = [
+                _brief_display(placement.get("body")),
+                _brief_display(placement.get("sign")),
+                _brief_degree(placement.get("degree_in_sign")),
+            ]
+            if placement.get("retro") is True:
+                parts.append("Rx")
+            house = _brief_house(placement.get("house"))
+            if house is not None:
+                parts.append(f"house {house}")
+            lines.append(" · ".join(parts))
+    else:
+        lines.append("No natal placements available.")
+    if natal.get("time_unknown") is True:
+        lines.append(
+            "Time unknown · houses and angles may be omitted or marked uncertain."
+        )
+
+    lines.extend(("", "## Today’s movers (transit)"))
+    movers = _brief_items(sky.get("movers"))
+    if movers:
+        for mover in movers:
+            parts = [
+                _brief_display(mover.get("body")),
+                _brief_display(mover.get("sign")),
+                _brief_degree(mover.get("degree_in_sign")),
+            ]
+            if mover.get("retro") is True:
+                parts.append("Rx")
+            natal_house = _brief_house(mover.get("natal_house"))
+            if natal_house is not None:
+                parts.append(f"natal house {natal_house}")
+            lines.append(" · ".join(parts))
+    else:
+        lines.append("No transit movers available.")
+
+    lines.extend(("", "## Transit → natal contacts"))
+    aspects = _brief_items(facts.get("aspects"))
+    if aspects:
+        for aspect in aspects:
+            applying = aspect.get("applying")
+            motion = _brief_motion(applying, aspect.get("orb"))
+            lines.append(
+                "Transit "
+                f"{_brief_display(aspect.get('transit_body'))} "
+                f"{_brief_display(aspect.get('aspect_id')).casefold()} "
+                f"natal {_brief_display(aspect.get('natal_point'))} · "
+                f"orb {_brief_degree(aspect.get('orb'))} · {motion}"
+            )
+    else:
+        lines.append("No ranked transit contacts available.")
+
+    same_body_deltas = _brief_items(facts.get("same_body_delta"))
+    if same_body_deltas:
+        lines.extend(("", "## Same-body deltas (optional short list)"))
+        for item in same_body_deltas:
+            lines.append(
+                f"{_brief_display(item.get('body'))} · transit vs natal separation "
+                f"{_brief_degree(item.get('delta_deg'))}"
+            )
+
+    essay_payload = _brief_essay_payload(essay)
+    if essay_payload is not None:
+        lines.extend(
+            (
+                "",
+                "## Today’s sky note",
+                f"headline: {essay_payload['headline']}",
+                "body:",
+                essay_payload["body"],
+                "watchpoints:",
+            )
+        )
+        watchpoints = essay_payload["watchpoints"]
+        if watchpoints:
+            lines.extend(f"- {item}" for item in watchpoints)
+
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _brief_mapping(value: Any) -> Mapping[str, Any]:
+    return value if isinstance(value, Mapping) else {}
+
+
+def _brief_items(value: Any) -> tuple[Mapping[str, Any], ...]:
+    if not isinstance(value, (list, tuple)):
+        return ()
+    return tuple(item for item in value if isinstance(item, Mapping))
+
+
+def _brief_required_text(value: Any, name: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise TransitEssayValidationError(f"{name} must be a non-empty string")
+    result = value.strip()
+    if any(character in result for character in "\r\n\x00"):
+        raise TransitEssayValidationError(f"{name} must be a single line")
+    return result
+
+
+def _brief_display(value: Any) -> str:
+    if not isinstance(value, str) or not value.strip():
+        return "Unknown"
+    identifier = re.sub(r"\s+", " ", value.strip().replace("_", " "))
+    special = {"asc": "Ascendant", "mc": "Midheaven"}
+    return special.get(identifier.casefold(), identifier.title())
+
+
+def _brief_degree(value: Any) -> str:
+    number = _brief_finite_number(value, "sky brief degree")
+    if abs(number) < 0.05:
+        number = 0.0
+    return f"{number:.1f}°"
+
+
+def _brief_finite_number(value: Any, name: str) -> float:
+    if isinstance(value, bool):
+        raise TransitEssayValidationError(f"{name} must be finite")
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as exc:
+        raise TransitEssayValidationError(f"{name} must be finite") from exc
+    if not math.isfinite(number):
+        raise TransitEssayValidationError(f"{name} must be finite")
+    return number
+
+
+def _brief_motion(applying: Any, orb: Any) -> str:
+    if abs(_brief_finite_number(orb, "sky brief orb")) <= 1e-10:
+        return "exact"
+    if applying is True:
+        return "applying"
+    if applying is False:
+        return "separating"
+    return "motion indeterminate"
+
+
+def _brief_house(value: Any) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        raise TransitEssayValidationError("sky brief house must be an integer")
+    try:
+        number = int(value)
+    except (TypeError, ValueError) as exc:
+        raise TransitEssayValidationError("sky brief house must be an integer") from exc
+    if number != value or not 1 <= number <= 12:
+        raise TransitEssayValidationError("sky brief house must be from 1 through 12")
+    return number
+
+
+def _brief_essay_payload(
+    essay: Mapping[str, Any] | TransitEssayRecord | GeneratedTransitEssay | None,
+) -> dict[str, Any] | None:
+    if essay is None:
+        return None
+    if isinstance(essay, TransitEssayRecord):
+        if essay.status != "ready":
+            return None
+        payload: Mapping[str, Any] = essay.to_api_dict()
+    elif isinstance(essay, GeneratedTransitEssay):
+        payload = essay.to_dict()
+    elif isinstance(essay, Mapping):
+        payload = essay
+    else:
+        raise TypeError("essay must be a mapping or transit essay record")
+    if payload.get("status") not in (None, "ready"):
+        return None
+
+    headline = _brief_multiline_text(payload.get("headline"), "essay.headline")
+    body = _brief_multiline_text(payload.get("body"), "essay.body")
+    headline = " ".join(headline.splitlines())
+    raw_watchpoints = payload.get("watchpoints", ())
+    if not isinstance(raw_watchpoints, (list, tuple)) or any(
+        not isinstance(item, str) for item in raw_watchpoints
+    ):
+        raise TransitEssayValidationError("essay.watchpoints must be an array")
+    watchpoints = tuple(
+        " ".join(_brief_multiline_text(item, "essay.watchpoint").splitlines())
+        for item in raw_watchpoints
+    )
+    return {"headline": headline, "body": body, "watchpoints": watchpoints}
+
+
+def _brief_multiline_text(value: Any, name: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise TransitEssayValidationError(f"{name} must be a non-empty string")
+    return value.replace("\r\n", "\n").replace("\r", "\n").replace("\x00", "").strip()
 
 
 def validate_transit_essay_content(
@@ -1163,6 +1390,10 @@ class TransitEssayService:
         self._facts_builder = facts_builder
         self._author = author
         self._clock = clock
+        self._facts_cache: dict[tuple[str, str, str], dict[str, Any]] = {}
+        self._facts_condition = Condition(RLock())
+        self._facts_pending: set[tuple[str, str, str]] = set()
+        self._facts_generation: dict[str, int] = {}
         self._queue = (
             None
             if author is None
@@ -1201,13 +1432,12 @@ class TransitEssayService:
             else:
                 self._store.delete_user(record.user_id)
 
-        facts = self._facts_builder(record, when=instant)
-        if not isinstance(facts, dict):
-            raise TypeError("transit essay facts builder must return a dict")
-        if facts.get("cache_date") != cache_date:
-            raise TransitEssayValidationError(
-                "transit essay facts cache_date disagrees with the user civil day"
-            )
+        facts = self._facts_for_context(
+            record,
+            instant=instant,
+            cache_date=cache_date,
+            fingerprint=fingerprint,
+        )
         pending = self._store.ensure_pending(
             record.user_id,
             cache_date,
@@ -1243,8 +1473,60 @@ class TransitEssayService:
             return current.to_api_dict()
         return _transient_status("none", cache_date)
 
+    def brief(self, record: NatalRecord) -> dict[str, Any]:
+        """Build a facts-only daily brief and append only this key's ready essay."""
+
+        instant, cache_date, fingerprint = self._context(record)
+        try:
+            facts = self._facts_for_context(
+                record,
+                instant=instant,
+                cache_date=cache_date,
+                fingerprint=fingerprint,
+            )
+            try:
+                current = self._store.get(record.user_id, cache_date, fingerprint)
+            except TransitEssayStoreError:
+                current = None
+            essay = current if current is not None and current.status == "ready" else None
+            text = format_sky_brief_text(facts, essay=essay)
+        except (
+            EphemerisError,
+            InterpretationStoreError,
+            OSError,
+            TypeError,
+            ValueError,
+        ):
+            return {
+                "status": "failed",
+                "cache_date": cache_date,
+                "timezone": record.tz,
+                "text": "",
+                "has_essay": False,
+                "epistemic": SKY_BRIEF_EPISTEMIC,
+            }
+        return {
+            "status": "ready",
+            "cache_date": cache_date,
+            "timezone": record.tz,
+            "text": text,
+            "has_essay": essay is not None,
+            "epistemic": SKY_BRIEF_EPISTEMIC,
+        }
+
     def invalidate_user(self, user_id: str) -> None:
-        self._store.delete_user(user_id)
+        normalized = normalize_user_id(user_id)
+        try:
+            self._store.delete_user(normalized)
+        finally:
+            with self._facts_condition:
+                self._facts_generation[normalized] = (
+                    self._facts_generation.get(normalized, 0) + 1
+                )
+                for key in tuple(self._facts_cache):
+                    if key[0] == normalized:
+                        self._facts_cache.pop(key, None)
+                self._facts_condition.notify_all()
 
     def wait_until_idle(self, timeout_seconds: float = 5.0) -> bool:
         return (
@@ -1262,6 +1544,52 @@ class TransitEssayService:
             transit_essay_cache_date(record, instant),
             natal_fingerprint(record),
         )
+
+    def _facts_for_context(
+        self,
+        record: NatalRecord,
+        *,
+        instant: datetime,
+        cache_date: str,
+        fingerprint: str,
+    ) -> dict[str, Any]:
+        key = _essay_key(record.user_id, cache_date, fingerprint)
+        with self._facts_condition:
+            while True:
+                cached = self._facts_cache.get(key)
+                if cached is not None:
+                    return deepcopy(cached)
+                if key not in self._facts_pending:
+                    self._facts_pending.add(key)
+                    generation = self._facts_generation.get(record.user_id, 0)
+                    break
+                self._facts_condition.wait()
+
+        try:
+            facts = self._facts_builder(record, when=instant)
+            if not isinstance(facts, dict):
+                raise TypeError("transit essay facts builder must return a dict")
+            if facts.get("cache_date") != cache_date:
+                raise TransitEssayValidationError(
+                    "transit essay facts cache_date disagrees with the user civil day"
+                )
+            snapshot = deepcopy(facts)
+        except Exception:
+            with self._facts_condition:
+                self._facts_pending.discard(key)
+                self._facts_condition.notify_all()
+            raise
+
+        with self._facts_condition:
+            if generation == self._facts_generation.get(record.user_id, 0):
+                existing = self._facts_cache.setdefault(key, snapshot)
+                while len(self._facts_cache) > 2_048:
+                    self._facts_cache.pop(next(iter(self._facts_cache)))
+            else:
+                existing = snapshot
+            self._facts_pending.discard(key)
+            self._facts_condition.notify_all()
+            return deepcopy(existing)
 
     def _run_job(self, job: _TransitEssayJob) -> None:
         assert self._author is not None
@@ -1380,6 +1708,7 @@ __all__ = [
     "DeepSeekTransitEssayAuthor",
     "GeneratedTransitEssay",
     "MemoryTransitEssayStore",
+    "SKY_BRIEF_EPISTEMIC",
     "SQLiteTransitEssayStore",
     "TRANSIT_ESSAY_EPISTEMIC",
     "TRANSIT_ESSAY_FACTS_TYPE",
@@ -1395,6 +1724,7 @@ __all__ = [
     "TransitEssayStoreError",
     "TransitEssayValidationError",
     "build_transit_essay_facts",
+    "format_sky_brief_text",
     "natal_fingerprint",
     "transit_essay_cache_date",
     "transit_essay_service_from_env",
