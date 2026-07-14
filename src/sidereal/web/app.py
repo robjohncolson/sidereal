@@ -13,7 +13,18 @@ import os
 from pathlib import Path
 from typing import Any
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Query, Response
+from fastapi import (
+    Body,
+    Depends,
+    FastAPI,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+)
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -51,12 +62,19 @@ from ..personal_sky import PersonalSkyCache, build_personal_skypack, compute_nat
 from ..sky_listen import build_sky_listen, build_sky_listen_from_chart
 from ..skyday import SkyDayCache, SkyDayCalculationError
 from ..skypack import build_skypack
+from ..sky_chat import (
+    SkyChatService,
+    SkyChatStoreError,
+    build_sky_chat_facts,
+    sky_chat_service_from_env,
+)
 from ..synastry_library import list_synastries, load_synastry, save_synastry_snapshot
 from ..transit_library import list_transits, load_transit, save_transit_snapshot
 from ..transit_essay import (
     TransitEssayService,
     TransitEssayStoreError,
     build_transit_essay_facts,
+    natal_fingerprint,
     transit_essay_service_from_env,
 )
 from ..types import MomentInput
@@ -220,6 +238,7 @@ def create_app(
     personal_sky_cache: PersonalSkyCache | None = None,
     ai_seed_queue: SeedQueue | None = None,
     transit_essay_service: TransitEssayService | None = None,
+    sky_chat_service: SkyChatService | None = None,
     allow_dev_auth: bool | None = None,
 ) -> FastAPI:
     """Create a same-origin local API and static UI application."""
@@ -310,6 +329,23 @@ def create_app(
                 require_swiss_ephemeris=settings.require_swiss_ephemeris,
             )
 
+    def sky_chat_facts_builder(
+        record: Any,
+        focus: Any,
+        *,
+        when: Any,
+    ) -> dict[str, Any]:
+        with _optional_store(settings) as catalog:
+            return build_sky_chat_facts(
+                record,
+                focus,
+                when=when,
+                store=catalog,
+                boundary_path=settings.boundary_path,
+                ephe_path=settings.ephe_path,
+                require_swiss_ephemeris=settings.require_swiss_ephemeris,
+            )
+
     active_personal_cache = (
         personal_sky_cache
         if personal_sky_cache is not None
@@ -321,6 +357,14 @@ def create_app(
         else transit_essay_service_from_env(
             settings.db_path,
             transit_essay_facts_builder,
+        )
+    )
+    active_sky_chat_service = (
+        sky_chat_service
+        if sky_chat_service is not None
+        else sky_chat_service_from_env(
+            settings.db_path,
+            sky_chat_facts_builder,
         )
     )
     static_dir = Path(__file__).with_name("static")
@@ -337,6 +381,7 @@ def create_app(
     app.state.personal_sky_cache = active_personal_cache
     app.state.ai_seed_queue = active_ai_seed_queue
     app.state.transit_essay_service = active_transit_essay_service
+    app.state.sky_chat_service = active_sky_chat_service
     app.add_middleware(
         ScopedCORSMiddleware,
         allowed_origins=personal_origins,
@@ -355,6 +400,8 @@ def create_app(
 
     app.router.add_event_handler("startup", active_transit_essay_service.start)
     app.router.add_event_handler("shutdown", active_transit_essay_service.close)
+    app.router.add_event_handler("startup", active_sky_chat_service.start)
+    app.router.add_event_handler("shutdown", active_sky_chat_service.close)
 
     close_natal_store = getattr(active_natal_store, "close", None)
     if callable(close_natal_store):
@@ -371,6 +418,18 @@ def create_app(
     @app.exception_handler(ValueError)
     async def value_error_handler(_request: Any, exc: ValueError) -> JSONResponse:
         return JSONResponse(status_code=400, content={"detail": str(exc)})
+
+    @app.exception_handler(RequestValidationError)
+    async def request_validation_error_handler(
+        request: Request,
+        exc: RequestValidationError,
+    ) -> JSONResponse:
+        if request.url.path == "/api/me/sky-chat":
+            return JSONResponse(
+                status_code=400,
+                content={"detail": "Sky Chat request body must be valid JSON"},
+            )
+        return await request_validation_exception_handler(request, exc)
 
     @app.exception_handler(NatalStoreError)
     async def natal_store_error_handler(
@@ -396,6 +455,16 @@ def create_app(
         return JSONResponse(
             status_code=503,
             content={"detail": "Transit essay storage is temporarily unavailable"},
+        )
+
+    @app.exception_handler(SkyChatStoreError)
+    async def sky_chat_store_error_handler(
+        _request: Any,
+        _exc: SkyChatStoreError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Sky chat storage is temporarily unavailable"},
         )
 
     def authenticated_user_id(
@@ -459,6 +528,7 @@ def create_app(
             "auth_configured": auth_name != "RejectingAuthenticator",
             "ai_seed": active_ai_seed_queue is not None,
             "transit_essay": active_transit_essay_service.available,
+            "sky_chat": active_sky_chat_service.available,
         }
         try:
             batch = provider.calculate_positions(2451545.0)
@@ -575,6 +645,7 @@ def create_app(
         response: Response,
         user_id: str = Depends(required_personal_user_id),
     ) -> dict[str, Any]:
+        previous = active_natal_store.get(user_id)
         record = natal_record_from_payload(user_id, payload)
         # Validate civil-time/ephemeris calculation before replacing a good row.
         compute_natal_chart(
@@ -594,6 +665,16 @@ def create_app(
                 "Private transit essay invalidation failed after natal save (%s)",
                 type(exc).__name__,
             )
+        if previous is None or natal_fingerprint(previous) != natal_fingerprint(saved):
+            try:
+                active_sky_chat_service.invalidate_user(user_id)
+            except SkyChatStoreError as exc:
+                # The natal row is already committed; the fingerprint still
+                # prevents an old thread from binding to the updated chart.
+                _LOGGER.warning(
+                    "Private Sky Chat invalidation failed after natal save (%s)",
+                    type(exc).__name__,
+                )
         # Build the private pack in the same request so the client does not depend
         # on a second hop (and so multi-instance memory backends still work).
         pack = active_personal_cache.get(saved)
@@ -618,6 +699,7 @@ def create_app(
         user_id: str = Depends(required_personal_user_id),
     ) -> Response:
         active_transit_essay_service.invalidate_user(user_id)
+        active_sky_chat_service.invalidate_user(user_id)
         active_natal_store.delete(user_id)
         active_personal_cache.invalidate(user_id)
         return Response(status_code=204, headers={"Cache-Control": "private, no-store"})
@@ -654,6 +736,33 @@ def create_app(
             raise HTTPException(status_code=404, detail="No natal profile is saved")
         response.headers["Cache-Control"] = "private, no-store"
         return active_transit_essay_service.get(record)
+
+    @app.post("/api/me/sky-chat")
+    def personal_sky_chat_post(
+        response: Response,
+        payload: Any = Body(default=None),
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = active_natal_store.get(user_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="No natal profile is saved")
+        response.headers["Cache-Control"] = "private, no-store"
+        result = active_sky_chat_service.post(record, payload)
+        if result.get("status") == "limited":
+            response.status_code = 429
+        return result
+
+    @app.get("/api/me/sky-chat")
+    def personal_sky_chat_get(
+        response: Response,
+        thread_id: str | None = Query(default=None),
+        user_id: str = Depends(required_personal_user_id),
+    ) -> dict[str, Any]:
+        record = active_natal_store.get(user_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="No natal profile is saved")
+        response.headers["Cache-Control"] = "private, no-store"
+        return active_sky_chat_service.get(record, thread_id=thread_id)
 
     @app.get("/api/me/sky-brief")
     def personal_sky_brief_get(

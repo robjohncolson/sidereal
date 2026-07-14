@@ -29,8 +29,8 @@ authenticated Supabase-backed natal rows when the variables below are set.
 | `SUPABASE_SECRET_KEY` | Preferred current `sb_secret_*` server key for owner-keyed `natal_charts` CRUD. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Legacy server-role JWT fallback when no secret key is set. |
 | `SIDEREAL_NATAL_BACKEND` | Use `supabase` in production (`auto` is the default). |
-| `SIDEREAL_DB` | Interpretation + private transit-essay SQLite path; point this at a persistent Railway volume. |
-| `DEEPSEEK_API_KEY` | Server-only key that enables shared seed fills and private transit essays. |
+| `SIDEREAL_DB` | Interpretation, private transit-essay, and Sky Chat SQLite path; point this at a persistent Railway volume. |
+| `DEEPSEEK_API_KEY` | Server-only key that enables shared seed fills, private transit essays, and Sky Chat. |
 | `DEEPSEEK_MODEL` | Optional model override; defaults to `deepseek-v4-flash`. |
 | `DEEPSEEK_BASE_URL` | Optional API base; defaults to `https://api.deepseek.com`. |
 
@@ -44,9 +44,9 @@ For durable AI fills, attach a Railway volume and set, for example,
 `SIDEREAL_DB=/data/sidereal.db`. The start script initializes/imports the
 catalog only when that file is absent; later `ai-deepseek` entries and private
 `personal_transit_essays` rows remain in the same database across deploys.
-Without `DEEPSEEK_API_KEY`, neither the Listen seed hook nor the transit-essay
-author starts a provider worker; the authenticated essay API reports
-`status: unavailable`.
+Without `DEEPSEEK_API_KEY`, the Listen seed hook, transit-essay author, and Sky
+Chat author do not start provider workers; both authenticated AI APIs report
+`status: unavailable` without waiting.
 
 The transit essay is keyed by verified user, the civil date in the saved natal
 timezone, and a natal-geometry fingerprint. Moon Chorus should enqueue once,
@@ -56,6 +56,16 @@ idempotent POST safely re-enqueues a persisted pending row. Ready rows remain
 cached for that civil day. Essay text is private user data: keep the volume
 private, never copy it into logs, public sky-day payloads, share URLs, or
 leaderboards.
+
+Sky Chat uses the same private route and storage boundary. Enqueue with
+`POST /api/me/sky-chat`, then poll `GET /api/me/sky-chat` every 2–4 seconds for
+up to roughly 90 seconds. Threads are keyed by verified user, natal civil day,
+and natal fingerprint; the server ignores stale client thread ids, permits one
+pending job per user, and caps successful assistant replies at ten per natal
+civil day. Client-selected instants cannot open another day's allowance, and
+natal deletion/re-save does not reset the current ledger.
+Keep chat rows and the Railway volume private. Never log full chat alongside
+natal metadata, and never expose `DEEPSEEK_API_KEY` to the browser.
 
 ## Point Moon Chorus at it
 
@@ -99,8 +109,9 @@ Expect `type: "skyday"`, `privacy: "public"`, 12 movers.
 ## Notes
 
 - Ephemeris files are **downloaded in the Docker build** (not stored in git).
-- Interpretation seeds initialize the SQLite catalog; AI fills and private
-  transit essays require a persistent `SIDEREAL_DB` volume to survive deploys.
+- Interpretation seeds initialize the SQLite catalog; AI fills, private
+  transit essays, and Sky Chat threads require a persistent `SIDEREAL_DB`
+  volume to survive deploys.
 - Keep `charts/` empty on Railway. Authenticated natal metadata stays in
   Supabase and private chart geometry is computed in memory.
 - Never set `SIDEREAL_DEV_AUTH=1` on Railway.

@@ -166,7 +166,7 @@ python -m sidereal ai-seed fill-gaps \
 
 | Variable | Purpose |
 |----------|---------|
-| `DEEPSEEK_API_KEY` | Server-only credential; required by fill commands and never returned to clients |
+| `DEEPSEEK_API_KEY` | Server-only credential; enables fill commands, transit essays, and Sky Chat; never returned to clients |
 | `DEEPSEEK_MODEL` | Optional model override; defaults to current `deepseek-v4-flash` |
 | `DEEPSEEK_BASE_URL` | Optional API base; defaults to `https://api.deepseek.com` |
 | `SIDEREAL_DB` | SQLite path, preferably on a persistent Railway volume |
@@ -491,6 +491,8 @@ the verified JWT subject:
 | `GET` | `/api/me/skypack` | Return today's `user_private` natal-bearing skypack |
 | `POST` | `/api/me/transit-essay` | Idempotently enqueue today's private whole-chart transit note |
 | `GET` | `/api/me/transit-essay` | Return today's essay status or validated result |
+| `POST` | `/api/me/sky-chat` | Ask one focus-scoped question in today's private Sky Temple thread |
+| `GET` | `/api/me/sky-chat` | Poll today's private Sky Temple thread |
 
 Unknown or null birth time is normalized to `time_unknown: true` and stored as
 null. Calculation uses local noon while retaining `time_known: false`, so no
@@ -586,6 +588,39 @@ always include the epistemic footer “symbolic study notes, not predictions.”
 The queue is process-local; when `SIDEREAL_DB` points to an existing persistent
 volume database, pending/ready/failed rows are stored in the private
 `personal_transit_essays` SQLite table and can survive deploys.
+
+### Sky Temple Chat API
+
+Sky Chat uses the same Bearer authentication, saved natal profile, ephemeris,
+DeepSeek configuration, private CORS policy, and civil-day boundary as the
+transit essay. Each question carries a body, sign, natal point, aspect, or
+whole-sky focus. The server treats those ids only as selectors, recomputes all
+geometry, and sends a capped fact packet plus the last eight thread turns to
+the model. Client labels, birth coordinates, place text, user ids, tokens, and
+API keys are never included in that packet.
+
+```bash
+curl -sS -X POST http://127.0.0.1:8742/api/me/sky-chat \
+  -H 'Authorization: Bearer <supabase_access_token>' \
+  -H 'Content-Type: application/json' \
+  --data '{"message":"What is known about this contact?","focus":{"kind":"aspect","body":"mars","natal_point":"moon","aspect_id":"square"}}'
+
+curl -sS http://127.0.0.1:8742/api/me/sky-chat \
+  -H 'Authorization: Bearer <supabase_access_token>'
+```
+
+`POST` normally returns `pending`; poll `GET` every 2–4 seconds until the
+latest assistant turn is `ready` or `failed`. Threads are private and keyed by
+verified user, civil date in the natal timezone, and natal fingerprint. At
+most one assistant job is pending per user, and only ten successful replies
+are allowed per civil day; the next request returns HTTP 429 with a top-level
+`limited` envelope. An optional `when` may select an instant within the current
+natal civil day; it cannot open another day's allowance. Re-saving unchanged
+natal geometry preserves the thread, and deleting/re-saving natal does not
+reset that day's successful-reply ledger. Invalid model output is retained only
+as a generic failed turn, so a later question can still be asked. Without
+`DEEPSEEK_API_KEY`, the API returns `unavailable` immediately and performs no
+provider request.
 
 ### Sky Listen API
 
@@ -728,6 +763,7 @@ tables. Its JSON API uses the same validation and calculation paths as the CLI:
 | `POST` / `GET` / `DELETE` | `/api/me/natal` | Authenticated private natal profile CRUD |
 | `GET` | `/api/me/skypack` | Authenticated daily private skypack |
 | `POST` / `GET` | `/api/me/transit-essay` | Async private daily whole-chart transit synthesis |
+| `POST` / `GET` | `/api/me/sky-chat` | Async private daily focus-scoped Sky Temple dialogue |
 | `POST` | `/api/chart` | Calculate and compose a full chart report |
 | `POST` | `/api/transit` | Run a saved-natal or inline-natal transit report |
 | `POST` | `/api/synastry` | Compare two saved and/or inline fixed charts |
